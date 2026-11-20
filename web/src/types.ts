@@ -54,6 +54,7 @@ export interface FixRequest {
   files: FileInput[];
   findingIds: string[];
   mode?: FixMode;
+  aiFindings?: Finding[];
 }
 
 export interface PatchedFile {

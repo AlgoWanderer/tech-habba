@@ -8,7 +8,9 @@ import {
   ScanMode,
   FixMode,
   HealthResponse,
-  ExperimentSummary
+  ExperimentSummary,
+  Finding,
+  FixRequest
 } from './types';
 import {
   mockScanResponse,
@@ -84,7 +86,12 @@ export const apiClient = {
     return response.json();
   },
 
-  async fix(files: FileInput[], findingIds: string[], mode: FixMode = 'rules'): Promise<FixResponse> {
+  async fix(
+    files: FileInput[],
+    findingIds: string[],
+    mode: FixMode = 'rules',
+    aiFindings?: Finding[]
+  ): Promise<FixResponse> {
     if (isMock) {
       await new Promise(r => setTimeout(r, 200));
       if (mode === 'hybrid') {
@@ -104,10 +111,15 @@ export const apiClient = {
       return mockFixResponse;
     }
 
+    const payload: FixRequest = { files, findingIds, mode };
+    if (mode === 'hybrid' && Array.isArray(aiFindings) && aiFindings.length > 0) {
+      payload.aiFindings = aiFindings;
+    }
+
     const response = await fetch(`${API_URL}/api/fix`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ files, findingIds, mode })
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {

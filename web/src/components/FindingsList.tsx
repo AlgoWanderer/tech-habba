@@ -33,6 +33,7 @@ const ORDER: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
 export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs }) => {
   const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id ?? null);
   const autoCount = findings.filter((f) => f.fixable === 'auto').length;
+  const aiCount = findings.filter((f) => f.source === 'ai').length;
   const reviewCount = findings.length - autoCount;
   const groups = ORDER.map((sev) => ({ sev, items: findings.filter((f) => f.severity === sev) })).filter((g) => g.items.length);
 
@@ -46,9 +47,15 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
         }
         subtitle={`${autoCount} auto-fixable · ${reviewCount} need review${typeof scanMs === 'number' ? ` · scanned in ${scanMs} ms` : ''}`}
         action={
-          onFixAll && autoCount > 0 ? (
+          onFixAll && (autoCount > 0 || aiCount > 0) ? (
             <Button onClick={onFixAll} disabled={isFixing} icon={isFixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}>
-              {isFixing ? 'Verifying patches…' : `Fix ${autoCount} automatically`}
+              {isFixing
+                ? 'Verifying patches…'
+                : autoCount > 0 && aiCount > 0
+                  ? `Fix ${autoCount + aiCount} (rules + AI)`
+                  : autoCount > 0
+                    ? `Fix ${autoCount} automatically`
+                    : `Fix ${aiCount} with AI`}
             </Button>
           ) : undefined
         }

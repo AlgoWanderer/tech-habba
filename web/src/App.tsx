@@ -158,9 +158,13 @@ export default function App() {
     setIsFixing(true);
     setError(null);
     try {
-      const ids = scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
       const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
-      setFixResponse(await apiClient.fix(files, ids, fixMode));
+      const aiFindings = scanResponse.findings.filter((f) => f.source === 'ai');
+      // In hybrid mode, include auto-fixable rule findings plus AI findings for the AI patcher
+      const ids = fixMode === 'hybrid'
+        ? scanResponse.findings.filter((f) => f.fixable === 'auto' || f.source === 'ai').map((f) => f.id)
+        : scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
+      setFixResponse(await apiClient.fix(files, ids, fixMode, aiFindings));
     } catch (err: any) {
       setError(err?.message || 'Fix request failed');
     } finally {
