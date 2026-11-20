@@ -39,8 +39,8 @@ The other 19 planted flaws (11 IDOR, 7 vulnerable dependencies, 1 string-built q
 | Flaw | Example | Auto-fix |
 |---|---|---|
 | Hard-coded secrets | `const KEY = "sk_live_..."`, passwords in DB URIs | ✅ moved to `.env` as `process.env.*` |
-| NoSQL / SQL injection | `User.find(req.body)`, template-string SQL | ✅ inputs cast / parameterised |
-| Unauthenticated routes | `app.get("/api/users", ...)` with no auth middleware | ✅ `requireAuth` added |
+| NoSQL / SQL injection | `User.find(req.body)`, template-string SQL | ✅ simple cases (field values cast, simple SQL parameterised); whole-filter, `$where` and `LIKE` patterns are reported for review |
+| Unauthenticated routes | `app.get("/api/users", ...)` or `router.get(...)` with no auth middleware | ✅ `requireAuth` added |
 | Vulnerable dependencies | `jsonwebtoken@8.5.1` | Reported, upgrade suggested |
 | IDOR / BOLA | `Order.findById(req.params.id)` with no ownership check | Reported for human review |
 
@@ -109,6 +109,7 @@ node corpus/benchmark/run.js            # regenerate the benchmark numbers
 ## Limitations
 
 - **IDOR/BOLA** and other business-logic flaws are reported, never auto-fixed.
+- **Custom auth middleware** is recognised by name patterns (e.g. `requireAuth`, `protect`, `verifyJwt`, `checkToken`) or by an inline 401/403 check in the handler. A route protected by a check with an unusual name can be reported as unauthenticated. Review the proposed patch before applying it.
 - **Dependency checks** use a built-in advisory list, not the live npm advisory database.
 - **The corpus** shares its flaw list with the scanner (see the caveat above). A held-out set of model-generated apps is being added in `corpus/wild/`.
 - **The LLM-only fixer baseline** is not yet measured. Real model outputs are scored by `corpus/baselines/run-all.js` once saved.
