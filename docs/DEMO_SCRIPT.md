@@ -60,7 +60,7 @@
   2. Click **Fix all (rules + AI, verified)**.
   3. In the Patch Results list, point directly at the **RED "Rejected"** AI patch.
 * **Spoken Pitch:**
-  > "Now let's switch from pure deterministic Rules to **Hybrid Mode** (Rules + Gemini 2.5 Flash + Verifier).
+  > "Now let's switch from pure deterministic Rules to **Hybrid Mode** (Rules + Gemini 3.1 Flash-Lite + Verifier).
   > 
   > Watch the scanner: in addition to deterministic rules, Gemini surfaces deep flaws the rules missed, tagged with a violet **AI 82%** badge and confidence score.
   > 

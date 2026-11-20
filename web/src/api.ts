@@ -223,7 +223,7 @@ export const apiClient = {
             meanMs: 140
           },
           {
-            model: "Gemini 2.5 Flash (hybrid)",
+            model: "Gemini 3.1 Flash-Lite (hybrid)",
             precision: 0.68,
             recall: 0.92,
             f1: 0.78,
