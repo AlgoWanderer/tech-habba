@@ -18,6 +18,7 @@ const ADVISORIES = [
   ['ejs', '3.1.7', 'critical', 'Template injection leading to RCE (CVE-2022-29078)'],
   ['body-parser', '1.20.3', 'high', 'Denial of service with URL encoding enabled (CVE-2024-45590)'],
   ['axios', '0.21.2', 'high', 'ReDoS in trim (CVE-2021-3749)'],
+  ['nodemailer', '6.6.1', 'high', 'Command injection via sendmail transport and header injection (CVE-2020-7769, CVE-2021-23400)'],
 ];
 const RANK = { critical: 4, high: 3, medium: 2, low: 1 };
 

@@ -6,7 +6,7 @@ export const MUTATING = new Set(['post', 'put', 'patch', 'delete', 'all']);
 
 // Names that indicate an authentication / authorization middleware.
 export const AUTH_NAME =
-  /auth|protect|verify(?!captcha)|jwt|passport|ensure|logged|guard|admin|require(?:User|Login|Session|Role)|checkToken|isUser|bearer|clerk|firebase|apikey|acl|permission|(?:has|check)Role/i;
+  /auth|protect|verify(?!captcha)|jwt|passport|ensure|logged|guard|admin|require(?:User|Login|Session|Role)|checkToken|isUser|bearer|clerk|firebase|apikey|\bacl\b|permission|(?:has|check)Role|(?:check|is|must|needs?)Log(?:ged)?In/i;
 
 const PUBLIC = [
   /^\*$/,
@@ -20,10 +20,39 @@ const PUBLIC = [
 
 export const isPublicPath = (p) => PUBLIC.some((re) => re.test(p.toLowerCase()));
 
-/** Does a handler/middleware expression look like auth? */
-export function looksLikeAuth(node, code) {
+const DENY = /\.status\(\s*40[13]\s*\)|\.sendStatus\(\s*40[13]\s*\)|\.statusCode\s*=\s*40[13]\b/;
+
+/**
+ * A function is auth middleware by behaviour if it takes (req, res, next), can answer 401/403,
+ * and calls next() - whatever it is named (checkLogin, gate, mustBeSignedIn, ...).
+ */
+export function isAuthMiddlewareFn(fn, code) {
+  if (!isFunction(fn) || fn.params.length < 3 || fn.params[2].type !== 'Identifier') return false;
+  if (!DENY.test(code.slice(fn.body.start, fn.body.end))) return false;
+  const next = fn.params[2].name;
+  let calls = false;
+  walk(fn.body, (n) => {
+    if (n.type === 'CallExpression' && n.callee.type === 'Identifier' && n.callee.name === next) calls = true;
+  });
+  return calls;
+}
+
+/** Names of same-file functions that behave like auth middleware. */
+export function collectAuthMiddleware(ast, code) {
+  const names = new Set();
+  walk(ast, (n) => {
+    if (n.type === 'FunctionDeclaration' && n.id && isAuthMiddlewareFn(n, code)) names.add(n.id.name);
+    if (n.type === 'VariableDeclarator' && n.id.type === 'Identifier' && isAuthMiddlewareFn(n.init, code)) names.add(n.id.name);
+    if (n.type === 'AssignmentExpression' && n.left.type === 'Identifier' && isAuthMiddlewareFn(n.right, code)) names.add(n.left.name);
+  });
+  return names;
+}
+
+/** Does a middleware argument look like auth (by name, or by behaviour for same-file code)? */
+export function looksLikeAuth(node, code, authFns = new Set()) {
   if (!node) return false;
-  if (isFunction(node)) return false;
+  if (isFunction(node)) return isAuthMiddlewareFn(node, code);
+  if (node.type === 'Identifier' && authFns.has(node.name)) return true;
   return AUTH_NAME.test(code.slice(node.start, node.end));
 }
 
@@ -42,12 +71,13 @@ function receiverName(call) {
 }
 
 /**
- * Returns {routes, uses}. route: {call, verb, path, receiver, handlers, handler, pathArg}.
+ * Returns {routes, uses}. route: {call, verb, path, receiver, handlers, handler, pathArg, authFns}.
  * use: {call, receiver, path|null, auth:boolean}.
  */
 export function extractRoutes(ast, code) {
   const routes = [];
   const uses = [];
+  const authFns = collectAuthMiddleware(ast, code);
   walk(ast, (node) => {
     if (node.type !== 'CallExpression' || node.callee.type !== 'MemberExpression' || node.callee.computed) return;
     const verb = calleeProp(node);
@@ -57,7 +87,7 @@ export function extractRoutes(ast, code) {
     if (verb === 'use') {
       const path = stringValue(args[0]);
       const mws = path == null ? args : args.slice(1);
-      uses.push({ call: node, receiver, path, auth: mws.some((m) => looksLikeAuth(m, code)) });
+      uses.push({ call: node, receiver, path, auth: mws.some((m) => looksLikeAuth(m, code, authFns)) });
       return;
     }
     if (!VERBS.has(verb) || args.length < 2) return;
@@ -65,7 +95,7 @@ export function extractRoutes(ast, code) {
     if (path == null || !(path.startsWith('/') || path === '*')) return;
     const handler = args[args.length - 1];
     if (!isFunction(handler) && handler.type !== 'Identifier' && handler.type !== 'MemberExpression' && handler.type !== 'CallExpression') return;
-    routes.push({ call: node, verb, path, receiver, handlers: args.slice(1), handler, pathArg: args[0] });
+    routes.push({ call: node, verb, path, receiver, handlers: args.slice(1), handler, pathArg: args[0], authFns });
   });
   return { routes, uses };
 }
@@ -83,7 +113,7 @@ export function coveredByUse(route, uses) {
 
 export function isProtected(route, uses, code) {
   const mws = route.handlers.slice(0, -1);
-  if (mws.some((m) => looksLikeAuth(m, code))) return true;
+  if (mws.some((m) => looksLikeAuth(m, code, route.authFns))) return true;
   if (coveredByUse(route, uses)) return true;
   return inlineAuth(route.handler, code);
 }
