@@ -34,12 +34,12 @@ function dedupe(findings) {
     }
     const fixes = [prev._fix, f._fix];
     if (fixes.every(Boolean)) {
-      Object.defineProperty(prev, '_fix', { value: { type: 'multi', parts: fixes.flatMap((x) => (x.type === 'multi' ? x.parts : [x])) } });
+      Object.defineProperty(prev, '_fix', { value: { type: 'multi', parts: fixes.flatMap((x) => (x.type === 'multi' ? x.parts : [x])) }, enumerable: false, writable: true, configurable: true });
       delete prev.fixPreview;
     } else if (prev.fixable === 'auto') {
       prev.fixable = 'review';
       delete prev.fixPreview;
-      Object.defineProperty(prev, '_fix', { value: null });
+      Object.defineProperty(prev, '_fix', { value: null, enumerable: false, writable: true, configurable: true });
     }
   }
   return [...byId.values()];

@@ -92,6 +92,19 @@ const readJson = (file) => {
 export const BASELINES_PATH = path.resolve(here, '../corpus/baselines/results.json');
 export const EXPERIMENT_PATH = path.resolve(here, '../corpus/experiment/results.json');
 
+export const MODEL_EVAL_PATH = path.resolve(here, 'eval/model-eval.json');
+
+/**
+ * GET /api/model-eval: rules vs Gemini vs base/fine-tuned Qwen (server/eval/models.js), summary rows only:
+ * { method, models: [{ model, precision, recall, f1, accuracy, categoryAccuracy, meanMs, snippets, invalidOrError }] }
+ */
+export function loadModelEval(file = MODEL_EVAL_PATH) {
+  const r = readJson(file);
+  if (!r || typeof r !== 'object' || !r.models) return null;
+  const models = Object.entries(r.models).map(([model, { rows, ...s }]) => ({ model, ...s }));
+  return models.length ? { method: r.method, models } : null;
+}
+
 /** GET /api/experiment: role C's three-way experiment, without the bulky per-app rows. Null if missing. */
 export function loadExperiment(file = EXPERIMENT_PATH) {
   const r = readJson(file);

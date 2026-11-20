@@ -1,0 +1,29 @@
+{
+  "source": "https://github.com/appsecco/dvna (commit 9ba473add536f66ac9007966acb2a775dd31277a, MIT)",
+  "labels": "Only flaws documented in DVNA's own docs/solution/*.md, at the line in this copy of the code. Categories are SlopStop's five; everything else is listed in outOfScope.",
+  "apps": [
+    {
+      "app": "dvna",
+      "flaws": [
+        { "category": "injection", "file": "core/appHandler.js", "line": 10, "severity": "critical", "note": "A1 SQL injection: req.body.login concatenated into a raw sequelize.query (User Search)" },
+        { "category": "injection", "file": "core/appHandler.js", "line": 39, "severity": "critical", "note": "A1 command injection: exec('ping -c 2 ' + req.body.address) (Connectivity Test)" },
+        { "category": "secret", "file": "server.js", "line": 24, "severity": "high", "note": "A2 insecure session secret: hard-coded 'keyboard cat'" },
+        { "category": "auth", "file": "routes/app.js", "line": 42, "severity": "high", "note": "A5 users API only checks login, not the admin role (documented route name differs: /admin/api/users)" },
+        { "category": "idor", "file": "core/appHandler.js", "line": 145, "severity": "high", "note": "A5 userEditSubmit loads and updates the user by req.body.id with no check that it is the caller" },
+        { "category": "dependency", "file": "package.json", "line": 25, "severity": "critical", "note": "A9 mathjs 3.10.1 remote code execution (used by /app/calc)" }
+      ],
+      "outOfScope": [
+        { "type": "XSS (reflected, stored, DOM)", "file": "views/ (not copied) + core/appHandler.js", "line": 68, "note": "A7; templates not included, the search term is reflected" },
+        { "type": "XXE", "file": "core/appHandler.js", "line": 235, "note": "A4 libxmljs parseXmlString with noent:true" },
+        { "type": "Insecure deserialization", "file": "core/appHandler.js", "line": 218, "note": "A8 node-serialize unserialize of an uploaded file (node-serialize 0.0.4 is also a vulnerable dependency)" },
+        { "type": "Open redirect", "file": "core/appHandler.js", "line": 188, "note": "AX unvalidated redirect of req.query.url" },
+        { "type": "Weak password reset token", "file": "core/authHandler.js", "line": 49, "note": "A2 token is md5(login), so anyone can reset any password" },
+        { "type": "Sensitive data exposure", "file": "core/appHandler.js", "line": 207, "note": "A3 users API returns full user objects including password hashes" },
+        { "type": "CSRF", "file": "routes/app.js", "line": 56, "note": "AX no CSRF tokens on state-changing forms" },
+        { "type": "Security misconfiguration", "file": "server.js", "line": 11, "note": "A6 stack traces and X-Powered-By header" },
+        { "type": "Insufficient logging", "file": "server.js", "line": 15, "note": "A10" },
+        { "type": "Code execution via mathjs.eval", "file": "core/appHandler.js", "line": 197, "note": "sink of the A9 mathjs issue (labelled once, as the dependency)" }
+      ]
+    }
+  ]
+}

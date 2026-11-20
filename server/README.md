@@ -92,6 +92,11 @@ AI findings carry `source:"ai"`, `confidence` (0-1) and `fixable:"review"`, with
 - **AI patches that fail either mode are rejected.** Rule fixes are annotated only. Anything the sandbox cannot run is reported as not testable, never as a failure.
 - **It executes the submitted code** (child process with a timeout), which is fine for this local-only tool but not for a public server.
 
+**Model comparison** (`server/eval/models.js`, served by `GET /api/model-eval`): rules vs Gemini vs base and fine-tuned Qwen (Ollama) on role A's training task. Each snippet gets `{vulnerable, category, reason}`, scored against ground truth on 110 snippets from the 30 corpus apps (+ DVNA when present). The response is `{ method, models: [{ model, precision, recall, f1, accuracy, categoryAccuracy, meanMs, snippets, invalidOrError }] }`.
+```
+node server/eval/models.js --models rules,gemini,ollama:qwen2.5-coder:1.5b,ollama:slopstop-qwen --delay 1000
+```
+
 CLI: `npx slopstop scan <files> --ai` runs hybrid detection and marks AI findings `[AI 82%]`; `--fix` stays rules-only.
 
 ## Tests
