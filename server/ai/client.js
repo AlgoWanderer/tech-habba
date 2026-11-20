@@ -102,8 +102,77 @@ export function createGeminiClient({ apiKey, model = DEFAULT_MODEL, fallbacks = 
   };
 }
 
-/** The configured client, or null when there is no key (AI features then report "not configured"). */
+// Gemini schemas use OpenAPI-style upper-case types ("OBJECT"); Ollama expects JSON Schema ("object").
+export function toJsonSchema(s) {
+  if (Array.isArray(s)) return s.map(toJsonSchema);
+  if (!s || typeof s !== 'object') return s;
+  return Object.fromEntries(Object.entries(s).map(([k, v]) => [k, k === 'type' && typeof v === 'string' ? v.toLowerCase() : toJsonSchema(v)]));
+}
+
+/**
+ * Local open model via Ollama (e.g. base "qwen2.5-coder:1.5b" or role A's fine-tuned "slopstop-qwen").
+ * Code never leaves the machine. Same interface as the Gemini client.
+ */
+export function createOllamaClient({ model, baseUrl = 'http://127.0.0.1:11434', timeoutMs = 120000, fetchImpl = fetch } = {}) {
+  if (!model) throw new AiError('Ollama model not set (OLLAMA_MODEL)');
+  let calls = 0;
+  return {
+    name: `ollama:${model}`,
+    lastModel: model,
+    get calls() {
+      return calls;
+    },
+    async generateJson(systemText, userText, responseSchema) {
+      calls++;
+      let res;
+      try {
+        res = await fetchImpl(`${baseUrl.replace(/\/$/, '')}/api/chat`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            stream: false,
+            format: responseSchema ? toJsonSchema(responseSchema) : 'json',
+            options: { temperature: 0.1 },
+            messages: [
+              { role: 'system', content: systemText },
+              { role: 'user', content: userText },
+            ],
+          }),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+      } catch (e) {
+        throw new AiError(e.name === 'TimeoutError' ? `Ollama timed out after ${timeoutMs} ms` : `Ollama not reachable at ${baseUrl} (${e.message})`, { retryable: false });
+      }
+      if (!res.ok) {
+        let detail = '';
+        try {
+          detail = (await res.json())?.error ?? '';
+        } catch {}
+        throw new AiError(`Ollama returned HTTP ${res.status}${detail ? `: ${String(detail).slice(0, 200)}` : ''}`, { status: res.status });
+      }
+      const text = (await res.json())?.message?.content ?? '';
+      try {
+        return JSON.parse(text);
+      } catch {
+        const m = text.match(/[[{][\s\S]*[\]}]/);
+        if (m) {
+          try {
+            return JSON.parse(m[0]);
+          } catch {}
+        }
+        throw new AiError('Model returned invalid JSON');
+      }
+    },
+  };
+}
+
+/**
+ * The configured client, or null when nothing is configured (AI features then report "not configured").
+ * AI_PROVIDER=ollama uses OLLAMA_MODEL (+ OLLAMA_URL); otherwise Gemini with GEMINI_API_KEY.
+ */
 export function getAiClient(env = process.env) {
+  if (env.AI_PROVIDER === 'ollama') return env.OLLAMA_MODEL ? createOllamaClient({ model: env.OLLAMA_MODEL, baseUrl: env.OLLAMA_URL || undefined }) : null;
   if (!env.GEMINI_API_KEY) return null;
   const fallbacks = env.GEMINI_FALLBACK_MODELS !== undefined ? env.GEMINI_FALLBACK_MODELS.split(',').map((s) => s.trim()).filter(Boolean) : DEFAULT_FALLBACKS;
   return createGeminiClient({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || DEFAULT_MODEL, fallbacks });

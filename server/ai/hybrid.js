@@ -96,7 +96,11 @@ export async function fixHybrid(core, files, ids, client, { aiFindings, httpTest
     .map((c) => ({ path: c.path, original: files.find((f) => f.path === c.path)?.content ?? '', patched: c.content }))
     .filter((p) => p.patched !== p.original);
   const carried = leftAi.map((f) => relocate(f, current)).filter(Boolean);
-  const findings = merge(core, await core.scan(current), carried);
+  // A rule finding whose fix the HTTP test proved (IDOR pattern not recognised, behaviour verified) is not
+  // reported again for the same route.
+  const proven = queue.filter((f) => results.get(f.id)?.status === 'applied' && /HTTP test proved it works/.test(results.get(f.id)?.reason ?? ''));
+  const ruleAfter = (await core.scan(current)).filter((r) => !proven.some((p) => p.ruleId === r.ruleId && p.file === r.file && p.snippet.trim() === r.snippet.trim()));
+  const findings = merge(core, ruleAfter, carried);
   return {
     patched,
     envFile: base.envFile,

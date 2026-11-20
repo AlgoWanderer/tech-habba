@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { loadCore } from '../coreAdapter.js';
-import { createFakeClient, createGeminiClient, getAiClient } from '../ai/client.js';
+import { createFakeClient, createGeminiClient, createOllamaClient, getAiClient } from '../ai/client.js';
 import { aiDetect, toFindings } from '../ai/detect.js';
 import { maskForModel } from '../ai/mask.js';
 import { aiPatch, countRoutes, enclosingRange } from '../ai/patch.js';
@@ -65,6 +65,21 @@ describe('gemini client', () => {
     expect(urls.map((u) => u.split('/models/')[1].split(':')[0])).toEqual(['gone', 'busy', 'works']);
     const bad = createGeminiClient({ apiKey: 'k', model: 'gone', fallbacks: [], retries: 0, fetchImpl });
     await expect(bad.generateJson('s', 'u')).rejects.toThrow(/404/);
+  });
+
+  it('talks to a local Ollama model with a JSON-schema format and parses the reply', async () => {
+    let sent;
+    const fetchImpl = async (url, init) => {
+      sent = { url, body: JSON.parse(init.body) };
+      return { ok: true, json: async () => ({ message: { content: '```json\n{"vulnerable": true, "category": "auth", "reason": "x"}\n```' } }) };
+    };
+    const c = createOllamaClient({ model: 'slopstop-qwen', fetchImpl });
+    expect(await c.generateJson('sys', 'code', { type: 'OBJECT', properties: { vulnerable: { type: 'BOOLEAN' } } })).toEqual({ vulnerable: true, category: 'auth', reason: 'x' });
+    expect(sent.url).toBe('http://127.0.0.1:11434/api/chat');
+    expect(sent.body).toMatchObject({ model: 'slopstop-qwen', stream: false, format: { type: 'object', properties: { vulnerable: { type: 'boolean' } } } });
+    expect(sent.body.messages.map((m) => m.role)).toEqual(['system', 'user']);
+    expect(getAiClient({ AI_PROVIDER: 'ollama', OLLAMA_MODEL: 'slopstop-qwen' }).name).toBe('ollama:slopstop-qwen');
+    expect(getAiClient({ AI_PROVIDER: 'ollama' })).toBeNull();
   });
 
   it('never leaks the key in errors and is null without a key', async () => {
