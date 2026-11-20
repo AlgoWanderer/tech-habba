@@ -110,6 +110,19 @@ VITE_API_URL=http://localhost:3001
 * `VITE_USE_MOCK=true`: Fully runs standalone in browser using frozen contract samples (`contract/sample-scan.json`, `contract/sample-fix.json`).
 * `VITE_USE_MOCK=false`: Connects directly to the live backend server on port 3001.
 
+### Pre-commit hook and GitHub Action
+```bash
+npx slopstop-init                      # pre-commit hook: blocks commits with critical/high findings
+npx slopstop scan --staged --fix       # see verified fix proposals (never written to disk)
+```
+In any repo's workflow (fails the PR on critical/high findings in changed files, posts fixes to the job summary):
+```yaml
+- uses: actions/checkout@v4
+  with: { fetch-depth: 0 }
+- uses: AlgoWanderer/tech-habba@main
+```
+Suppress intentional cases with a `.slopstopignore` file (paths) or `// slopstop-ignore <ruleId>: reason` on or above the line. Suppressed findings are still listed. This repo gates its own PRs this way (`.github/workflows/ci.yml`).
+
 ---
 
 ## 4. 3-Minute Demo Script (Screen Order & Pitch Flow)

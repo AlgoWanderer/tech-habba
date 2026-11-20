@@ -40,8 +40,11 @@ export async function createApp({ core, hardener } = {}) {
 
   app.get('/api/health', (req, res) => res.json({ ok: true, mockCore: core.isMock, mockHardener: hardener.isMock }));
 
+  // The API is a local-only dev tool (bound to 127.0.0.1) that processes code the user pastes in.
+  // slopstop-ignore route-no-auth: local-only, see above
   app.post('/api/scan', wrap(async (req, res) => res.json(await runScan(core, parseFiles(req.body)))));
 
+  // slopstop-ignore route-no-auth: local-only
   app.post('/api/fix', wrap(async (req, res) => {
     const files = parseFiles(req.body);
     const ids = req.body.findingIds;
@@ -49,8 +52,10 @@ export async function createApp({ core, hardener } = {}) {
     res.json(await runFix(core, files, ids));
   }));
 
+  // slopstop-ignore route-no-auth: local-only
   app.post('/api/exploit', wrap(async (req, res) => res.json(await runExploit())));
 
+  // slopstop-ignore route-no-auth: local-only
   app.post('/api/harden-prompt', wrap(async (req, res) => {
     const prompt = req.body?.prompt;
     if (typeof prompt !== 'string' || !prompt.trim()) throw badRequest('Body must include prompt: string.');
@@ -59,6 +64,7 @@ export async function createApp({ core, hardener } = {}) {
   }));
 
   // Not part of the frozen contract: an additive, read-only endpoint for the scorecard page.
+  // slopstop-ignore route-no-auth: local-only, public benchmark numbers
   app.get('/api/benchmark', (req, res) => {
     const metric = loadBenchmark();
     if (!metric) return res.status(404).json({ error: 'No benchmark results yet (corpus/benchmark/results.json).' });
