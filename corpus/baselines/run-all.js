@@ -76,7 +76,10 @@ const baselineResults = {
     reason: "Gitleaks is not installed locally on PATH. Install via `winget install Gitleaks.Gitleaks` or download binary."
   },
   llmFixer: {
-    status: "completed",
+    // simulateLLMFixer() does NOT call a model: it is regex rewriting plus deliberately injected
+    // errors. Its numbers must not be presented as real LLM behaviour.
+    status: "simulated",
+    note: "No LLM was called. simulateLLMFixer() approximates LLM rewrites with regex replacements and injected errors. Do not cite these numbers as real LLM results; run a real model to replace them.",
     promptTemplate: LLM_SYSTEM_PROMPT,
     totalApps: 30,
     appsPassingSyntax: 0,
