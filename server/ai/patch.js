@@ -81,6 +81,8 @@ function schemaFields(body) {
 /** {reqProps: what middleware assigns to req, models: Map<ModelName, Set<field>>} for simple mongoose code. */
 export function fileFacts(content) {
   const reqProps = new Set([...content.matchAll(/\breq\.(\w+)\s*=(?!=)/g)].map((m) => m[1]));
+  const signed = content.match(/\bsign\s*\(\s*\{([^{}]*)\}/);
+  const tokenKeys = signed ? [...signed[1].matchAll(/(?:^|,)\s*(\w+)\s*(?::|,|$)/g)].map((k) => k[1]) : [];
   const schemas = new Map();
   for (const m of content.matchAll(/\b(\w+)\s*=\s*new\s+(?:mongoose\.)?Schema\(\s*\{/g)) schemas.set(m[1], balanced(content, m.index + m[0].length - 1));
   const models = new Map();
@@ -91,7 +93,7 @@ export function fileFacts(content) {
     const name = content.slice(0, m.index).match(/(?:const|let|var)\s+(\w+)\s*=\s*$/)?.[1] ?? m[1];
     if (body !== undefined) models.set(name, schemaFields(body));
   }
-  return { reqProps, models };
+  return { reqProps, models, tokenKeys };
 }
 
 function balanced(text, openIdx) {
@@ -103,9 +105,10 @@ function balanced(text, openIdx) {
   return undefined;
 }
 
-function factsText({ reqProps, models }) {
+function factsText({ reqProps, models, tokenKeys }) {
   const lines = [];
   lines.push(`Authenticated data on req (set by this file's middleware): ${reqProps.size ? [...reqProps].map((p) => `req.${p}`).join(', ') : 'none found'}`);
+  if (tokenKeys.length) lines.push(`The login token is signed with only these keys, so the authenticated object holds exactly: ${tokenKeys.join(', ')} (e.g. ${[...reqProps][0] ? `req.${[...reqProps][0]}.${tokenKeys[0]}` : tokenKeys[0]})`);
   for (const [name, fields] of models) lines.push(`Model ${name} fields: _id, ${[...fields].join(', ')}`);
   return lines.join('\n');
 }
@@ -138,7 +141,7 @@ const slice = (lines, a, b) => lines.slice(a - 1, b).map((l, i) => `${String(a +
  *   -> { result: {findingId, status: "applied"|"rejected", reason, source: "ai"}, patched: {path, original, patched} | null }
  * `files` is the current state (e.g. after rule fixes); `ruleFindings` = rule scan of those files.
  */
-export async function aiPatch(core, files, finding, client, { ruleFindings, httpTest = false } = {}) {
+export async function aiPatch(core, files, finding, client, { ruleFindings, httpTest = false, retries = 1 } = {}) {
   const reject = (reason) => ({ result: { findingId: finding.id, status: 'rejected', reason: `AI patch rejected: ${reason}`, source: 'ai' }, patched: null });
   const file = files.find((f) => f.path === finding.file);
   if (!file) return reject('file not found.');
@@ -147,7 +150,7 @@ export async function aiPatch(core, files, finding, client, { ruleFindings, http
   const { start, end } = enclosingRange(file.content, finding.line);
   const { files: masked } = await maskForModel(core, [file]);
   const mlines = masked[0].content.split('\n');
-  const user = [
+  const baseUser = [
     `FLAW (${finding.category}, line ${finding.line}): ${finding.message}`,
     `FILE: ${file.path}`,
     `FACTS ABOUT THIS FILE (use these exact names):\n${factsText(fileFacts(file.content))}`,
@@ -155,54 +158,85 @@ export async function aiPatch(core, files, finding, client, { ruleFindings, http
     `TARGET lines ${start}-${end}:\n${slice(mlines, start, end)}`,
     `CONTEXT after:\n${slice(mlines, end + 1, Math.min(mlines.length, end + CONTEXT)) || '(none)'}`,
   ].join('\n\n');
-
-  let out;
-  try {
-    out = await client.generateJson(PATCH_SYSTEM, user, PATCH_SCHEMA);
-  } catch (e) {
-    return reject(`model error (${e.message}).`);
-  }
-  const replacement = stripFences(out?.replacement).replace(/\s+$/, '');
-  if (!replacement.trim()) return reject('empty replacement.');
-  if (containsPlaceholder(replacement)) return reject('it contains a masked secret placeholder.');
-
-  const patchedText = [...lines.slice(0, start - 1), ...replacement.split('\n'), ...lines.slice(end)].join('\n');
-  if (patchedText === file.content) return reject('it changed nothing.');
-  if (countRoutes(patchedText) < countRoutes(file.content)) return reject('it deleted a route.');
-  const problems = semanticProblems(file.content, replacement, lines.slice(start - 1, end).join('\n'));
-  if (problems.length) return reject(`${problems.join('; ')}.`);
-
   const isRuleTarget = finding.source !== 'ai';
-  const [check] = await verify([{ path: file.path, original: file.content, patched: patchedText }], {
-    scan: core.scan,
-    originalFindings: ruleFindings ?? (await core.scan(files)),
-    targets: isRuleTarget ? [finding] : [],
-  });
-  if (!check.accepted) return reject(check.reason);
 
-  if (!isRuleTarget) {
-    const newEnd = start + replacement.split('\n').length - 1;
-    const { files: maskedAfter } = await maskForModel(core, [{ path: file.path, content: patchedText }]);
-    let re;
+  /** One model attempt through every gate. -> { ok: true, out, patchedText, http } | { ok: false, reason, replacement } */
+  async function attempt(feedback) {
+    const user = feedback
+      ? `${baseUser}\n\nYOUR PREVIOUS ATTEMPT WAS REJECTED BY THE VERIFIER:\n${feedback.reason}\nPrevious attempt:\n${feedback.replacement}\nFix the problem the verifier found. Keep everything else.`
+      : baseUser;
+    let out;
     try {
-      re = await client.generateJson(RECHECK_SYSTEM, `FLAW: ${finding.message}\n\nCODE:\n${slice(maskedAfter[0].content.split('\n'), start, newEnd)}`, RECHECK_SCHEMA);
+      out = await client.generateJson(PATCH_SYSTEM, user, PATCH_SCHEMA);
     } catch (e) {
-      return reject(`re-check failed (${e.message}).`);
+      return { ok: false, reason: `model error (${e.message}).`, modelError: true };
     }
-    if (!re?.fixed) return reject(`independent re-check says the flaw is still there (${String(re?.reason ?? '').slice(0, 120)}).`);
+    const replacement = stripFences(out?.replacement).replace(/\s+$/, '');
+    const no = (reason) => ({ ok: false, reason, replacement: replacement.slice(0, 4000) });
+    if (!replacement.trim()) return no('empty replacement.');
+    if (containsPlaceholder(replacement)) return no('it contains a masked secret placeholder.');
+
+    const patchedText = [...lines.slice(0, start - 1), ...replacement.split('\n'), ...lines.slice(end)].join('\n');
+    if (patchedText === file.content) return no('it changed nothing.');
+    if (countRoutes(patchedText) < countRoutes(file.content)) return no('it deleted a route.');
+    const problems = semanticProblems(file.content, replacement, lines.slice(start - 1, end).join('\n'));
+    if (problems.length) return no(`${problems.join('; ')}.`);
+
+    const [check] = await verify([{ path: file.path, original: file.content, patched: patchedText }], {
+      scan: core.scan,
+      originalFindings: ruleFindings ?? (await core.scan(files)),
+      targets: isRuleTarget ? [finding] : [],
+    });
+    // The IDOR rule recognises ownership checks by pattern (e.g. req.user). When that pattern is the ONLY
+    // objection, behaviour decides: if the HTTP test proves strangers are refused and the owner still gets
+    // their record, the fix is accepted. Without a passing HTTP test the re-scan rejection stands.
+    const onlyIdorPattern = !check.accepted && finding.ruleId === 'idor-suspect' && check.syntax !== 'failed' && check.introduced.length === 0 && check.remaining.length === 1 && check.remaining[0] === finding.id;
+    let behaviourOverride = null;
+    if (onlyIdorPattern && httpTest) {
+      const h = await httpCheck(files, files.map((f) => (f.path === file.path ? { path: f.path, content: patchedText } : f)), finding);
+      if (h.testable && h.passed) behaviourOverride = h;
+      else if (h.testable) return no(`${h.summary}.`);
+    }
+    if (!check.accepted && !behaviourOverride) return no(check.reason);
+    if (behaviourOverride) {
+      return { ok: true, out, patchedText, http: ` ${behaviourOverride.summary}. (The IDOR rule's pattern did not recognise this ownership check; the HTTP test proved it works.)` };
+    }
+
+    if (!isRuleTarget) {
+      const newEnd = start + replacement.split('\n').length - 1;
+      const { files: maskedAfter } = await maskForModel(core, [{ path: file.path, content: patchedText }]);
+      let re;
+      try {
+        re = await client.generateJson(RECHECK_SYSTEM, `FLAW: ${finding.message}\n\nCODE:\n${slice(maskedAfter[0].content.split('\n'), start, newEnd)}`, RECHECK_SCHEMA);
+      } catch (e) {
+        return { ok: false, reason: `re-check failed (${e.message}).`, modelError: true };
+      }
+      if (!re?.fixed) return no(`independent re-check says the flaw is still there (${String(re?.reason ?? '').slice(0, 120)}).`);
+    }
+
+    // Last gate: actually run the app. Attack must be blocked AND a legitimate user must still get through.
+    let http = '';
+    if (httpTest) {
+      const patchedFiles = files.map((f) => (f.path === file.path ? { path: f.path, content: patchedText } : f));
+      const h = await httpCheck(files, patchedFiles, finding);
+      if (h.testable && !h.passed) return no(`${h.summary}.`);
+      http = h.testable ? ` ${h.summary}.` : ` (HTTP test: not testable, ${h.reason}.)`;
+    }
+    return { ok: true, out, patchedText, http };
   }
 
-  // Last gate: actually run the app. Attack must be blocked AND a legitimate user must still get through.
-  let http = '';
-  if (httpTest) {
-    const patchedFiles = files.map((f) => (f.path === file.path ? { path: f.path, content: patchedText } : f));
-    const h = await httpCheck(files, patchedFiles, finding);
-    if (h.testable && !h.passed) return reject(`${h.summary}.`);
-    http = h.testable ? ` ${h.summary}.` : ` (HTTP test: not testable, ${h.reason}.)`;
+  // Feedback loop: a rejected attempt is retried with the verifier's reason (the retry passes every gate again).
+  const tries = [];
+  let a = await attempt(null);
+  for (let r = 0; !a.ok && !a.modelError && r < retries; r++) {
+    tries.push(a.reason);
+    a = await attempt(a);
   }
+  if (!a.ok) return reject(tries.length ? `${a.reason} (after ${tries.length + 1} attempts; first rejection: ${tries[0]})` : a.reason);
 
+  const retried = tries.length ? ` Fixed on attempt ${tries.length + 1} after the verifier rejected: ${tries.join(' | ').slice(0, 200)}.` : '';
   return {
-    result: { findingId: finding.id, status: 'applied', reason: `AI patch verified (node --check, re-scan${isRuleTarget ? '' : ', re-check'}): ${String(out.explanation ?? '').slice(0, 160)}${http}`, source: 'ai' },
-    patched: { path: file.path, original: file.content, patched: patchedText },
+    result: { findingId: finding.id, status: 'applied', reason: `AI patch verified (node --check, re-scan${isRuleTarget ? '' : ', re-check'}${a.http.includes('HTTP test passed') ? ', HTTP test' : ''}): ${String(a.out.explanation ?? '').slice(0, 160)}${a.http}${retried}`, source: 'ai' },
+    patched: { path: file.path, original: file.content, patched: a.patchedText },
   };
 }

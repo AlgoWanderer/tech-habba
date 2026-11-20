@@ -87,6 +87,32 @@ describe('HTTP test (attack mode + normal mode)', { timeout: 60000 }, () => {
     expect(good.result.reason).toMatch(/HTTP test passed on GET \/api\/loans\/:id/);
   });
 
+  it('feedback loop: the verifier rejection is sent back and a corrected second attempt is applied', async () => {
+    const files = [{ path: 'index.js', content: APP.replaceAll('req.member', 'req.user') }];
+    const idor = (await core.scan(files)).find((f) => f.ruleId === 'idor-suspect');
+    const route = (filter) => `app.get("/api/loans/:id", verifyMember, async (req, res) => {\n  const loan = await Loan.findOne({ _id: req.params.id, ${filter} });\n  res.json(loan);\n});`;
+    const client = createFakeClient((_s, _u, n) => ({ replacement: route(n === 1 ? 'memberId: req.user._id' : 'memberId: req.user.id'), explanation: 'ownership' }));
+    const r = await aiPatch(core, files, idor, client, { httpTest: true });
+    expect(r.result.status).toBe('applied');
+    expect(r.result.reason).toMatch(/Fixed on attempt 2 after the verifier rejected: HTTP normal mode FAILED/);
+    expect(client.calls).toBe(2);
+    expect(client.sent[1].userText).toMatch(/YOUR PREVIOUS ATTEMPT WAS REJECTED BY THE VERIFIER:\nHTTP normal mode FAILED.*owner can no longer get their own record/);
+    expect(client.sent[1].userText).toContain('req.user._id');
+  });
+
+  it('IDOR: when only the rule pattern objects (req.member), a passing HTTP test decides', async () => {
+    const idor = await find('idor-suspect');
+    const route = (filter) => `app.get("/api/loans/:id", verifyMember, async (req, res) => {\n  const loan = await Loan.findOne({ _id: req.params.id, ${filter} });\n  res.json(loan);\n});`;
+    const good = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: 'ownership' })), { httpTest: true });
+    expect(good.result.status).toBe('applied');
+    expect(good.result.reason).toMatch(/the HTTP test proved it works/);
+    const bad = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member._id'), explanation: 'ownership' })), { httpTest: true });
+    expect(bad.result.status).toBe('rejected');
+    expect(bad.result.reason).toMatch(/HTTP normal mode FAILED/);
+    const noHttp = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: 'ownership' })), { httpTest: false });
+    expect(noHttp.result.status).toBe('rejected'); // without behavioural proof the rule re-scan still decides
+  });
+
   it('reports untestable cases instead of failing them', async () => {
     const secret = { id: 's', ruleId: 'secret-hardcoded', category: 'secret', file: 'index.js', line: 6, message: '' };
     expect(await httpCheck(FILES, FILES, secret)).toMatchObject({ testable: false });
