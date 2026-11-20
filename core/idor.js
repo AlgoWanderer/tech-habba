@@ -6,7 +6,7 @@ import { extractRoutes } from './scanner/routes.js';
 const LOOKUPS = new Set([
   'findById', 'findByIdAndUpdate', 'findByIdAndDelete', 'findByIdAndRemove', 'findOne', 'findOneAndUpdate',
   'findOneAndDelete', 'updateOne', 'deleteOne', 'replaceOne', 'findUnique', 'findFirst', 'findByPk', 'update',
-  'delete', 'destroy', 'query', 'execute', 'get', 'doc',
+  'destroy', 'query', 'execute', 'doc',
 ]);
 const OWNERSHIP = /req\.(?:user|auth|session|userId|currentUser)\b|res\.locals\.(?:user|auth)|currentUser|getServerSession|\bctx\.user\b/;
 const ID_PARAM = /:(\w*id)\b/gi;

@@ -14,7 +14,7 @@ const PUBLIC = [
   /^\/(?:api\/)?(?:v\d+\/)?(?:health|healthz|status|ping|ready|readyz|live|livez|version|metrics)\/?$/,
   /(?:^|\/)(?:login|signin|sign-in|signup|sign-up|register|logout|forgot-password|reset-password|verify-email|refresh|refresh-token|oauth|callback|csrf-token)(?:\/|$)/,
   /^\/(?:api\/)?(?:v\d+\/)?auth(?:\/|$)/,
-  /^\/(?:public|static|assets|docs|swagger|favicon\.ico|robots\.txt)(?:\/|$)/,
+  /^\/(?:api\/)?(?:v\d+\/)?(?:public|static|assets|docs|swagger|openapi(?:\.json)?|favicon\.ico|robots\.txt)(?:\/|$)/,
   /webhooks?(?:\/|$)/,
 ];
 

@@ -6,6 +6,7 @@ import { scanSecrets, scanSecretsRegex } from './secrets.js';
 import { scanInjection } from './injection.js';
 import { scanAuth } from './auth.js';
 import { isAuditFile, parseAudit } from './deps.js';
+import { scanPackageJson } from './advisories.js';
 import { scanIdor } from '../idor.js';
 
 const TS_FILE = /\.(?:c|m)?tsx?$/i;
@@ -47,16 +48,23 @@ function dedupe(findings) {
 export function analyze(files, options = {}) {
   const list = (Array.isArray(files) ? files : []).map((f) => ({ path: normPath(f.path), content: String(f.content ?? '') }));
   const findings = [];
-  const pkg = list.find((f) => /(?:^|\/)package\.json$/.test(f.path) && !SKIP.test(f.path));
+  const isPkg = (f) => /(?:^|\/)package\.json$/.test(f.path) && !SKIP.test(f.path);
+  const pkg = list.find(isPkg);
+  let audited = Boolean(options.audit);
   for (const f of list) {
     if (SKIP.test(f.path)) continue;
     if (/\.json$/i.test(f.path)) {
-      if (isAuditFile(f.path, f.content)) findings.push(...parseAudit(f.content, pkg?.content, pkg?.path ?? 'package.json'));
+      if (isAuditFile(f.path, f.content)) {
+        audited = true;
+        findings.push(...parseAudit(f.content, pkg?.content, pkg?.path ?? 'package.json'));
+      }
       continue;
     }
     findings.push(...scanFile(f.path, f.content));
   }
   if (options.audit) findings.push(...parseAudit(options.audit, pkg?.content, pkg?.path ?? 'package.json'));
+  // No npm audit output supplied: fall back to the built-in advisory list.
+  if (!audited) for (const f of list.filter(isPkg)) findings.push(...scanPackageJson(f.path, f.content));
   const out = dedupe(findings);
   out.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.ruleId.localeCompare(b.ruleId));
   return out;
