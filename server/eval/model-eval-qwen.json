@@ -8,7 +8,9 @@
       "dvna"
     ],
     "note": "Test apps are never in the training data. Rules = deterministic engine on the same snippets.",
-    "generatedAt": "2026-11-20T23:15:21.444Z"
+    "generatedAt": "2026-11-20T23:15:21.444Z",
+    "scoring": "invalid or failed answers count as wrong (fn on vulnerable, fp on safe)",
+    "rescoredAt": "2026-11-20T23:28:42.636Z"
   },
   "models": {
     "rules": {
@@ -1862,12 +1864,12 @@
       "snippets": 122,
       "invalidOrError": 36,
       "tp": 36,
-      "fp": 29,
-      "fn": 3,
+      "fp": 43,
+      "fn": 25,
       "tn": 18,
-      "precision": 0.554,
-      "recall": 0.923,
-      "f1": 0.692,
+      "precision": 0.456,
+      "recall": 0.59,
+      "f1": 0.514,
       "accuracy": 0.443,
       "categoryAccuracy": 0.278,
       "meanMs": 2574,
