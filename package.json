@@ -1,0 +1,6 @@
+{
+  "name": "slopstop",
+  "private": true,
+  "type": "module",
+  "workspaces": ["core", "server", "cli", "web", "corpus"]
+}
