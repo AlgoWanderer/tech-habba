@@ -103,11 +103,16 @@ export function modelPredictor(client) {
   return async (snip) => client.generateJson(CLASSIFY_SYSTEM, snip.code, CLASSIFY_SCHEMA);
 }
 
+// An invalid or failed answer counts as WRONG: a miss on a vulnerable snippet (fn), a false alarm on a
+// safe one (fp). Excluding them (the first version did) flattered models that often answer garbage;
+// role A caught this in #46.
 export function score(rows) {
-  const valid = rows.filter((r) => r.pred && typeof r.pred.vulnerable === 'boolean');
+  const isValid = (r) => r.pred && typeof r.pred.vulnerable === 'boolean';
+  const valid = rows.filter(isValid);
+  const invalid = rows.filter((r) => !isValid(r));
   const tp = valid.filter((r) => r.truth.vulnerable && r.pred.vulnerable).length;
-  const fp = valid.filter((r) => !r.truth.vulnerable && r.pred.vulnerable).length;
-  const fn = valid.filter((r) => r.truth.vulnerable && !r.pred.vulnerable).length;
+  const fp = valid.filter((r) => !r.truth.vulnerable && r.pred.vulnerable).length + invalid.filter((r) => !r.truth.vulnerable).length;
+  const fn = valid.filter((r) => r.truth.vulnerable && !r.pred.vulnerable).length + invalid.filter((r) => r.truth.vulnerable).length;
   const tn = valid.filter((r) => !r.truth.vulnerable && !r.pred.vulnerable).length;
   const catOk = valid.filter((r) => r.truth.vulnerable && r.pred.vulnerable && r.truth.categories.includes(r.pred.category)).length;
   const r3 = (n) => Math.round(n * 1000) / 1000;
@@ -133,12 +138,30 @@ function parseArgs(argv) {
     else if (argv[i] === '--max') opt.max = Number(argv[++i]);
     else if (argv[i] === '--delay') opt.delay = Number(argv[++i]);
     else if (argv[i] === '--out') opt.out = path.resolve(argv[++i]);
+    else if (argv[i] === '--rescore') opt.rescore = argv[++i].split(',').map((p) => path.resolve(p));
   }
   return opt;
 }
 
+/** Recompute every model's metrics from the saved per-snippet rows (no model calls). */
+export function rescoreFile(file) {
+  const r = JSON.parse(readFileSync(file, 'utf8'));
+  for (const [name, m] of Object.entries(r.models)) if (Array.isArray(m.rows)) r.models[name] = { ...score(m.rows), rows: m.rows };
+  r.method = { ...r.method, scoring: 'invalid or failed answers count as wrong (fn on vulnerable, fp on safe)', rescoredAt: new Date().toISOString() };
+  writeFileSync(file, JSON.stringify(r, null, 2) + '\n');
+  return r;
+}
+
 async function main() {
   const opt = parseArgs(process.argv.slice(2));
+  if (opt.rescore) {
+    for (const f of opt.rescore) {
+      const r = rescoreFile(f);
+      console.log(path.relative(ROOT, f));
+      for (const [name, s] of Object.entries(r.models)) console.log(`- ${name.padEnd(36)} accuracy ${s.accuracy}  precision ${s.precision}  recall ${s.recall}  F1 ${s.f1}  category ${s.categoryAccuracy}  invalid ${s.invalidOrError}`);
+    }
+    return;
+  }
   const core = await loadCore({ forceMock: false });
   if (core.isMock) throw new Error('core/ engine not found');
   const sets = loadSets();
