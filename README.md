@@ -6,7 +6,7 @@ Track 03 · R1 *Vibe-coded and vulnerable* · Team Skuld
 
 AI coding tools ship working apps in minutes, and the same flaws keep showing up: hard-coded keys, routes with no login check, raw request bodies passed into database queries, and outdated packages. Asking another LLM to "fix it" often swaps those bugs for broken syntax or deleted features.
 
-SlopStop takes the opposite approach. It **scans**, applies **deterministic fixes** (no AI in the fix path), **verifies** every patch with `node --check` and a re-scan, and rejects anything that fails. It never writes to your files without your confirmation.
+SlopStop **scans**, **fixes** and **verifies** before anything ships. **Rules mode** is fully deterministic. **Hybrid mode** adds an LLM (Gemini) to find and fix what the rules miss. Every AI fix must pass six checks the model does not control, including a real HTTP attack test, and anything that fails is rejected. **AI proposes, deterministic code proves.** SlopStop never writes to your files without your confirmation.
 
 ![SlopStop dashboard: scan results](docs/img/scan.png)
 
@@ -32,7 +32,45 @@ The other 19 planted flaws (11 IDOR, 7 vulnerable dependencies, 1 string-built q
 | **SlopStop** | **56 / 56** | 37 planted flaws auto-fixed | 0 |
 | Semgrep 1.186 (JS, Express, NodeJsScan and secrets rulesets) | 12 / 56 | none (detection only) | 1 |
 
-**Caveat:** the team wrote the corpus from the same list of flaw types the scanner targets, so expect lower numbers on real-world code.
+**Caveat:** the team wrote the corpus from the same list of flaw types the scanner targets, so expect lower numbers on real-world code. The outside test below confirms this.
+
+## AI + verifier: the experiment
+
+**Hypothesis:** an LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship.
+
+**Experiment:** three arms run on the same 51 apps.
+
+| Arm | What it does |
+|---|---|
+| **Rules** | The deterministic engine |
+| **AI only** | Gemini detects flaws, then rewrites each file, with no verification |
+| **Hybrid** | Rules plus Gemini; every AI patch must pass six checks |
+
+The six checks are: `node --check`, a rule re-scan, real names only, an independent AI re-check, **HTTP attack mode** (the exploit must be blocked) and **HTTP normal mode** (the real user must still get through).
+
+Gemini 3.1 Flash-Lite, 2 runs per AI arm. Method, numbers and failure analysis: [corpus/experiment/README.md](corpus/experiment/README.md).
+
+| | Rules | AI only | **Hybrid** |
+|---|---|---|---|
+| Corpus (30 apps): planted flaws found | 56/56 | 37/56 | **56/56** |
+| Corpus: critical/high removed | 86% | 55% | **99%** |
+| **DVNA** (outside app we did not write): documented flaws found | **1/6** | **4/6** | 3/6 |
+| DVNA: critical/high removed | 46% | 27% | **62%** |
+| Apps broken (syntax or deleted routes) | 0 | 0 | 0 |
+
+- **The rules are tuned to our corpus.** On outside code they find 1 of 6; the AI finds 4 of 6.
+- **The AI alone fixes far less, unverified.** Hybrid removes 99% of critical/high findings.
+- **The verifier catches the AI's mistakes.** On Gemini-written apps it rejected 13 of 16 AI patches. In live testing it caught an ownership check that compiled and passed the re-scan but locked users out of their own records. Only the HTTP normal-mode test caught it.
+- **Prompt Hardener:** Gemini code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
+- **Negative result:** "the LLM alone breaks apps" was not shown. The AI-only arm broke 0 apps by our syntax and route checks; its weakness is fixing much less.
+
+**Model comparison** on the same snippet-classification task used for fine-tuning (`node server/eval/models.js`, 110 labelled snippets the models never trained on):
+
+| Model | Precision | Recall | F1 |
+|---|---|---|---|
+| Rules | 0.95 | 1.00 | 0.97 |
+| Gemini 3.1 Flash-Lite | 0.79 | 0.82 | 0.80 |
+| Qwen2.5-Coder-1.5B, base and fine-tuned (local, via Ollama) | in progress | | |
 
 ## What it checks
 
@@ -108,8 +146,10 @@ node corpus/benchmark/run.js            # regenerate the benchmark numbers
 
 ## Limitations
 
-- **IDOR/BOLA** and other business-logic flaws are reported, never auto-fixed.
+- **IDOR/BOLA** and other business-logic flaws are never auto-fixed by rules. In Hybrid mode the AI may fix them, and the fix is applied only if the HTTP test proves strangers are refused and the owner still gets their data.
+- **The rules miss what they were not built for:** on DVNA they missed command injection, a low-entropy session secret, a missing admin-role check, IDOR via `req.body.id` and `mathjs`.
+- **The HTTP test** covers missing auth, IDOR and NoSQL injection in apps the sandbox can run (mongoose and JWT stubs). Anything else is reported as not testable. It runs the submitted code locally, so the API must stay local-only.
+- **AI output varies between runs**, so the experiment reports means and ranges.
 - **Custom auth middleware** is recognised by name patterns (e.g. `requireAuth`, `protect`, `verifyJwt`, `checkToken`) or by an inline 401/403 check in the handler. A route protected by a check with an unusual name can be reported as unauthenticated. Review the proposed patch before applying it.
 - **Dependency checks** use a built-in advisory list, not the live npm advisory database.
-- **The corpus** shares its flaw list with the scanner (see the caveat above). A held-out set of model-generated apps is being added in `corpus/wild/`.
-- **The LLM-only fixer baseline** is not yet measured. Real model outputs are scored by `corpus/baselines/run-all.js` once saved.
+- **The corpus** shares its flaw list with the scanner (see the caveat above), which is why we also test on DVNA and on 20 Gemini-written apps.
