@@ -66,6 +66,26 @@ npx slopstop scan src/app.js       # scan files on disk
 The hook blocks commits with critical/high findings. Bypass once with `git commit --no-verify`
 or `SLOPSTOP_SKIP=1`. While core/ is not installed it allows every commit with a warning.
 
+## AI modes (Phase 2)
+
+Put `GEMINI_API_KEY=...` in `server/.env` (git-ignored; never commit it). Optional: `GEMINI_MODEL` (default `gemini-2.5-flash`). Without a key everything works as before and the AI modes return 400 "AI not configured". `GET /api/health` reports `ai: true|false`.
+
+| Request | What runs |
+|---|---|
+| `POST /api/scan {files, mode:"rules"}` (default) | Deterministic rules, unchanged |
+| `POST /api/scan {files, mode:"ai"}` | The model only (the "AI only" baseline) |
+| `POST /api/scan {files, mode:"hybrid"}` | Rules + model; a rule finding wins over an overlapping AI finding |
+| `POST /api/fix {files, findingIds, mode:"hybrid", aiFindings}` | Rule fixes as usual, then a model patch for every requested finding the rules left for review, each verified |
+
+AI findings carry `source:"ai"`, `confidence` (0-1) and `fixable:"review"`, with ids like `ai-injection:index.js:15`. For a hybrid fix, send back the AI findings from the hybrid scan as `aiFindings`: model output varies between calls, so the server re-checks the ones you send (their snippet must still be in the code) instead of asking again.
+
+**Safety gates on the model** (`server/ai/`):
+- **Privacy:** secrets found by the rules are masked (`<REDACTED_SECRET_n>`) before any code is sent. The key is sent only in a header, never logged.
+- **Detector output is untrusted:** unknown files, out-of-range lines and confidence below 0.5 are dropped, and snippets come from the real file.
+- **Every AI patch must pass:** no masked placeholder in the output, no deleted route, `node --check`, a rule re-scan (target gone, nothing new critical/high), and for AI-found flaws an independent re-check by the model. Anything else is reported as `rejected` with the reason and never applied. At most 10 AI patches per request.
+
+CLI: `npx slopstop scan <files> --ai` runs hybrid detection and marks AI findings `[AI 82%]`; `--fix` stays rules-only.
+
 ## Tests
 
 ```
