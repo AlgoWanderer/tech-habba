@@ -1,7 +1,7 @@
 // GET /api/benchmark: serves role C's corpus/benchmark/results.json in the shape the dashboard
 // scorecard (role D, web/src/types.ts BenchmarkMetric) expects. Only real numbers are passed
 // through; anything missing is omitted so the dashboard shows "not measured". Never invents data.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -99,10 +99,19 @@ export const MODEL_EVAL_PATH = path.resolve(here, 'eval/model-eval.json');
  * { method, models: [{ model, precision, recall, f1, accuracy, categoryAccuracy, meanMs, snippets, invalidOrError }] }
  */
 export function loadModelEval(file = MODEL_EVAL_PATH) {
-  const r = readJson(file);
-  if (!r || typeof r !== 'object' || !r.models) return null;
-  const models = Object.entries(r.models).map(([model, { rows, ...s }]) => ({ model, ...s }));
-  return models.length ? { method: r.method, models } : null;
+  // model-eval.json plus any model-eval-*.json next to it (e.g. role A's Qwen run on another laptop);
+  // a model name that appears in several files keeps the last one read.
+  const dir = path.dirname(file);
+  const extra = existsSync(dir) ? readdirSync(dir).filter((n) => /^model-eval-.+\.json$/.test(n)).sort().map((n) => path.join(dir, n)) : [];
+  const byModel = new Map();
+  let method = null;
+  for (const f of [file, ...extra]) {
+    const r = readJson(f);
+    if (!r || typeof r !== 'object' || !r.models) continue;
+    method ??= r.method;
+    for (const [model, { rows, ...s }] of Object.entries(r.models)) byModel.set(model, { model, ...s });
+  }
+  return byModel.size ? { method, models: [...byModel.values()] } : null;
 }
 
 /** GET /api/experiment: role C's three-way experiment, without the bulky per-app rows. Null if missing. */

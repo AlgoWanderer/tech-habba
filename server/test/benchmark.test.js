@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { loadBenchmark, loadModelEval, toBenchmarkMetric } from '../benchmark.js';
@@ -77,6 +77,13 @@ describe('loadBenchmark', () => {
     writeFileSync(path.join(dir, 'me.json'), JSON.stringify({ method: { snippets: 2 }, models: { rules: { precision: 1, recall: 0.5, rows: [{}, {}] }, 'gemini (x)': { precision: 0.8, recall: 0.9, rows: [] } } }));
     expect(loadModelEval(path.join(dir, 'me.json'))).toEqual({ method: { snippets: 2 }, models: [{ model: 'rules', precision: 1, recall: 0.5 }, { model: 'gemini (x)', precision: 0.8, recall: 0.9 }] });
     expect(loadModelEval(path.join(dir, 'missing.json'))).toBeNull();
+  });
+  it('model eval: merges model-eval-*.json files (e.g. a Qwen run from another laptop)', () => {
+    const sub = path.join(dir, 'me');
+    mkdirSync(sub);
+    writeFileSync(path.join(sub, 'model-eval.json'), JSON.stringify({ method: { snippets: 110 }, models: { rules: { f1: 0.97 }, gemini: { f1: 0.8 } } }));
+    writeFileSync(path.join(sub, 'model-eval-qwen.json'), JSON.stringify({ method: { snippets: 110 }, models: { rules: { f1: 0.97 }, 'ollama:slopstop-qwen': { f1: 0.7, rows: [] } } }));
+    expect(loadModelEval(path.join(sub, 'model-eval.json')).models.map((m) => `${m.model}=${m.f1}`)).toEqual(['rules=0.97', 'gemini=0.8', 'ollama:slopstop-qwen=0.7']);
   });
   it('cleans up', () => rmSync(dir, { recursive: true, force: true }));
 });
