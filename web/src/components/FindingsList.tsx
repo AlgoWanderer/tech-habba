@@ -1,243 +1,136 @@
 import React, { useState } from 'react';
 import { Finding, FindingSeverity, FindingCategory } from '../types';
-import {
-  Key,
-  ShieldOff,
-  Bug,
-  Package,
-  EyeOff,
-  Sparkles,
-  ChevronDown,
-  ChevronRight,
-  Code2,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react';
+import { KeyRound, ShieldOff, Syringe, Package, UserX, Wand2, ChevronDown, CheckCircle2, Loader2, Info } from 'lucide-react';
+import { Badge, Button, Callout, Card, CardHeader, CodeBlock, Label, SEVERITY, SeverityBadge, cx } from './ui';
 
 interface FindingsListProps {
   findings: Finding[];
   onFixAll?: () => void;
   isFixing?: boolean;
+  /** Called when a finding is opened, e.g. to scroll the editor to its line. */
+  onSelect?: (f: Finding) => void;
+  /** Round-trip time of the scan request, measured in the browser. */
+  scanMs?: number | null;
 }
 
-const getCategoryIcon = (category: FindingCategory) => {
-  switch (category) {
-    case 'secret':
-      return (
-        <span title="Hardcoded Secret">
-          <Key className="w-4 h-4 text-rose-600" />
-        </span>
-      );
-    case 'injection':
-      return (
-        <span title="Injection Sink">
-          <Bug className="w-4 h-4 text-orange-600" />
-        </span>
-      );
-    case 'auth':
-      return (
-        <span title="Missing Auth">
-          <ShieldOff className="w-4 h-4 text-indigo-600" />
-        </span>
-      );
-    case 'dependency':
-      return (
-        <span title="Vulnerable Dependency">
-          <Package className="w-4 h-4 text-amber-600" />
-        </span>
-      );
-    case 'idor':
-      return (
-        <span title="IDOR / BOLA Logic">
-          <EyeOff className="w-4 h-4 text-purple-600" />
-        </span>
-      );
-    default:
-      return (
-        <span title="Vulnerability">
-          <AlertCircle className="w-4 h-4 text-slate-500" />
-        </span>
-      );
-  }
+const CATEGORY: Record<FindingCategory, { label: string; icon: React.ReactNode }> = {
+  secret: { label: 'Hard-coded secret', icon: <KeyRound className="w-4 h-4" /> },
+  injection: { label: 'Injection', icon: <Syringe className="w-4 h-4" /> },
+  auth: { label: 'Missing auth', icon: <ShieldOff className="w-4 h-4" /> },
+  dependency: { label: 'Vulnerable dependency', icon: <Package className="w-4 h-4" /> },
+  idor: { label: 'IDOR / ownership', icon: <UserX className="w-4 h-4" /> },
 };
 
-const getSeverityBadge = (severity: FindingSeverity) => {
-  switch (severity) {
-    case 'critical':
-      return (
-        <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-rose-100 text-rose-800 border border-rose-200">
-          Critical
-        </span>
-      );
-    case 'high':
-      return (
-        <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-orange-100 text-orange-800 border border-orange-200">
-          High
-        </span>
-      );
-    case 'medium':
-      return (
-        <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-amber-100 text-amber-800 border border-amber-200">
-          Medium
-        </span>
-      );
-    case 'low':
-      return (
-        <span className="px-2 py-0.5 text-xs font-bold uppercase rounded bg-slate-100 text-slate-800 border border-slate-200">
-          Low
-        </span>
-      );
-  }
+const REVIEW_NOTE: Partial<Record<FindingCategory, string>> = {
+  idor: 'Ownership checks are business logic, so SlopStop flags this for a human instead of guessing a patch.',
+  dependency: 'Upgrading a package can change behaviour. Run the suggested install command and re-test.',
+  injection: 'This query uses a whole request object, an operator value, $where or concatenated SQL, which cannot be fixed safely without knowing the intent.',
+  secret: 'The secret sits in a dynamic template or a file that could not be parsed. Move it to an environment variable by hand.',
 };
 
-export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false }) => {
-  const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id || null);
+const ORDER: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
 
-  const autoFixableCount = findings.filter(f => f.fixable === 'auto').length;
-  const reviewCount = findings.filter(f => f.fixable === 'review').length;
-
-  const severityOrder: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
-  const groupedFindings = severityOrder.map(sev => ({
-    severity: sev,
-    items: findings.filter(f => f.severity === sev)
-  })).filter(g => g.items.length > 0);
+export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id ?? null);
+  const autoCount = findings.filter((f) => f.fixable === 'auto').length;
+  const reviewCount = findings.length - autoCount;
+  const groups = ORDER.map((sev) => ({ sev, items: findings.filter((f) => f.severity === sev) })).filter((g) => g.items.length);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col h-full">
-      {/* Header bar */}
-      <div className="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
-        <div>
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>Security Findings</span>
-            <span className="text-xs bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full font-semibold">
-              {findings.length}
-            </span>
-          </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {autoFixableCount} auto-fixable with deterministic AST rewrites • {reviewCount} manual review
-          </p>
-        </div>
+    <Card>
+      <CardHeader
+        title={
+          <span className="inline-flex items-center gap-2">
+            Findings <Badge>{findings.length}</Badge>
+          </span>
+        }
+        subtitle={`${autoCount} auto-fixable · ${reviewCount} need review${typeof scanMs === 'number' ? ` · scanned in ${scanMs} ms` : ''}`}
+        action={
+          onFixAll && autoCount > 0 ? (
+            <Button onClick={onFixAll} disabled={isFixing} icon={isFixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}>
+              {isFixing ? 'Verifying patches…' : `Fix ${autoCount} automatically`}
+            </Button>
+          ) : undefined
+        }
+      />
 
-        {onFixAll && autoFixableCount > 0 && (
-          <button
-            onClick={onFixAll}
-            disabled={isFixing}
-            className="flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 text-white text-xs font-semibold rounded-md shadow-sm transition-colors cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{isFixing ? 'Verifying Patches...' : `Fix All Auto-Fixable (${autoFixableCount})`}</span>
-          </button>
-        )}
-      </div>
-
-      {/* Findings items grouped by severity */}
-      <div className="p-4 overflow-y-auto flex-1 space-y-5">
+      <div className="p-5 space-y-6">
         {findings.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-            <p className="font-semibold text-slate-700">No vulnerabilities detected</p>
-            <p className="text-xs text-slate-400 mt-1">Code adheres to all pre-ship security invariants.</p>
+          <div className="py-10 text-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+            <p className="font-medium">No issues found</p>
+            <p className="text-sm text-slate-500 mt-1">Nothing matched SlopStop's rules in these files.</p>
           </div>
         ) : (
-          groupedFindings.map(group => (
-            <div key={group.severity} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  {group.severity} ({group.items.length})
-                </span>
-                <div className="h-px bg-slate-200 flex-1"></div>
+          groups.map((g) => (
+            <div key={g.sev}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className={cx('w-2 h-2 rounded-full flex-shrink-0', SEVERITY[g.sev].dot)} />
+                <span className="text-sm font-medium text-slate-700">{SEVERITY[g.sev].label}</span>
+                <span className="text-sm text-slate-400 tabular-nums">{g.items.length}</span>
               </div>
 
-              <div className="space-y-2">
-                {group.items.map(item => {
-                  const isExpanded = expandedId === item.id;
+              <ul className="border border-slate-200 rounded-lg divide-y divide-slate-200 overflow-hidden">
+                {g.items.map((f) => {
+                  const open = expandedId === f.id;
                   return (
-                    <div
-                      key={item.id}
-                      className={`border rounded-lg transition-all ${
-                        isExpanded ? 'border-sky-300 bg-sky-50/20 shadow-sm' : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
+                    <li key={f.id} className={cx(open && 'bg-slate-50/70')}>
                       <button
-                        onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                        className="w-full text-left p-3 flex items-start gap-3 cursor-pointer"
+                        onClick={() => {
+                          setExpandedId(open ? null : f.id);
+                          if (!open) onSelect?.(f);
+                        }}
+                        title={onSelect ? 'Show this line in the editor' : undefined}
+                        aria-expanded={open}
+                        className="w-full text-left px-4 py-3 flex items-start gap-3 cursor-pointer hover:bg-slate-50 transition-colors"
                       >
-                        <div className="mt-0.5 flex-shrink-0">
-                          {getCategoryIcon(item.category)}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap mb-1">
-                            {getSeverityBadge(item.severity)}
-                            <span className="font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                              {item.file}:{item.line}
+                        <span className="mt-0.5 text-slate-500 flex-shrink-0" title={CATEGORY[f.category]?.label}>
+                          {CATEGORY[f.category]?.icon}
+                        </span>
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-sm text-slate-900 leading-5">{f.message}</span>
+                          <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                            <span className="font-mono text-slate-700">
+                              {f.file}:{f.line}
                             </span>
-                            <span className="text-xs font-mono text-slate-400">
-                              {item.ruleId}
-                            </span>
-
-                            {item.fixable === 'auto' ? (
-                              <span className="ml-auto text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded flex items-center gap-1">
-                                <Sparkles className="w-3 h-3 text-emerald-600" />
-                                Auto-Fixable
-                              </span>
-                            ) : (
-                              <span className="ml-auto text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-                                Review Required
-                              </span>
-                            )}
-                          </div>
-
-                          <p className="text-xs font-medium text-slate-800 leading-relaxed">
-                            {item.message}
-                          </p>
-                        </div>
-
-                        <div className="text-slate-400 mt-0.5">
-                          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                        </div>
+                            <span>{CATEGORY[f.category]?.label ?? f.category}</span>
+                            <span className="font-mono">{f.ruleId}</span>
+                          </span>
+                        </span>
+                        <span className="flex items-center gap-2 flex-shrink-0">
+                          <SeverityBadge severity={f.severity} />
+                          {f.fixable === 'auto' ? <Badge tone="success">Auto-fix</Badge> : <Badge tone="warning">Review</Badge>}
+                          <ChevronDown className={cx('w-4 h-4 text-slate-400 transition-transform', open && 'rotate-180')} />
+                        </span>
                       </button>
 
-                      {/* Expanded code snippet and preview */}
-                      {isExpanded && (
-                        <div className="px-3 pb-3 pt-1 border-t border-slate-100 space-y-2 text-xs">
+                      {open && (
+                        <div className="px-4 pb-4 pl-11 space-y-3">
                           <div>
-                            <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center gap-1">
-                              <Code2 className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Offending Code ({item.file}:{item.line}):</span>
-                            </div>
-                            <pre className="p-2.5 bg-slate-900 text-rose-300 rounded font-mono text-xs overflow-x-auto">
-                              <code>{item.snippet}</code>
-                            </pre>
+                            <Label className="mb-1.5">Current code</Label>
+                            <CodeBlock tone="bad">{f.snippet}</CodeBlock>
                           </div>
-
-                          {item.fixPreview && (
+                          {f.fixPreview && (
                             <div>
-                              <div className="text-[11px] font-semibold text-emerald-700 mb-1 flex items-center gap-1">
-                                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>Deterministic Fix Preview:</span>
-                              </div>
-                              <pre className="p-2.5 bg-slate-900 text-emerald-300 rounded font-mono text-xs overflow-x-auto">
-                                <code>{item.fixPreview}</code>
-                              </pre>
+                              <Label className="mb-1.5">{f.fixable === 'auto' ? 'After the fix' : 'Suggested action'}</Label>
+                              <CodeBlock tone={f.fixable === 'auto' ? 'good' : 'plain'}>{f.fixPreview}</CodeBlock>
                             </div>
                           )}
-
-                          {item.fixable === 'review' && (
-                            <div className="p-2 bg-amber-50 border border-amber-200 rounded text-amber-900 text-xs">
-                              <strong>Note:</strong> IDOR/BOLA requires application business authorization logic. SlopStop reports this for human security review.
-                            </div>
+                          {f.fixable === 'review' && REVIEW_NOTE[f.category] && (
+                            <Callout tone="warning" icon={<Info className="w-4 h-4" />}>
+                              {REVIEW_NOTE[f.category]}
+                            </Callout>
                           )}
                         </div>
                       )}
-                    </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
           ))
         )}
       </div>
-    </div>
+    </Card>
   );
 };

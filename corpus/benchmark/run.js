@@ -43,6 +43,7 @@ const unmatchedFindings = [];
 const rejections = [];
 let totalGroundTruthFlaws = 0;
 let detectedGroundTruthFlaws = 0;
+let fixedGroundTruthFlaws = 0; // planted flaws whose matching finding got a verified, applied patch
 let totalFindings = 0;
 let matchedFindings = 0;
 let findingsOnCleanApps = 0;
@@ -64,6 +65,7 @@ for (const app of groundTruth.apps) {
 
   // One-to-one matching of findings to ground-truth flaws.
   const used = new Set();
+  const applied = new Set(fix.results.filter((r) => r.status === 'applied').map((r) => r.findingId));
   for (const gt of app.flaws) {
     totalGroundTruthFlaws++;
     const cat = (recallByCategory[gt.category] ??= { flaws: 0, detected: 0 });
@@ -75,6 +77,10 @@ for (const app of groundTruth.apps) {
       used.add(idx);
       detectedGroundTruthFlaws++;
       cat.detected++;
+      if (applied.has(before.findings[idx].id)) {
+        fixedGroundTruthFlaws++;
+        cat.fixed = (cat.fixed ?? 0) + 1;
+      }
     } else {
       missed.push({ app: app.app, ...gt });
     }
@@ -133,6 +139,7 @@ const benchmarkResults = {
     flawedApps: groundTruth.apps.length - cleanApps,
     totalGroundTruthFlaws,
     detectedGroundTruthFlaws,
+    fixedGroundTruthFlaws,
     recall: round(recall, 3),
     precision: round(precision, 3),
     totalFindings,
@@ -163,5 +170,6 @@ const s = benchmarkResults.summary;
 console.log('Benchmark completed!');
 console.log(`Recall: ${detectedGroundTruthFlaws}/${totalGroundTruthFlaws} | findings on clean apps: ${findingsOnCleanApps} | precision vs ground truth: ${Math.round(precision * 100)}%`);
 console.log(`Critical/High: ${totalCriticalHighBefore} -> ${totalCriticalHighAfter} (${s.criticalHighReductionPercent}% fewer)`);
+console.log(`Planted flaws auto-fixed: ${fixedGroundTruthFlaws}/${totalGroundTruthFlaws} ${JSON.stringify(Object.fromEntries(Object.entries(recallByCategory).map(([k, v]) => [k, `${v.fixed ?? 0}/${v.flaws}`])))}`);
 console.log(`Fixes: ${fixesAttempted} attempted, ${verifierRejections} rejected by the verifier, ${reviewFlawsList.length} left for human review`);
 console.log(`Time per app: mean ${s.meanDurationMsPerFile} ms, p95 ${s.p95DurationMsPerFile} ms`);

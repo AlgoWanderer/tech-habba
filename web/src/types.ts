@@ -112,4 +112,15 @@ export interface BenchmarkMetric {
     reason: string;
     count?: number;
   }>;
+  detectedVulnerabilities?: number;
+  cleanApps?: number;
+  falsePositivesOnCleanApps?: number;
+  fixesApplied?: number;
+  comparison?: Array<{
+    tool: string;
+    detected?: number;
+    total?: number;
+    fixed?: number;
+    findingsOnCleanApps?: number;
+  }>;
 }

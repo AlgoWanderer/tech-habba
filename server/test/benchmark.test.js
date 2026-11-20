@@ -36,6 +36,13 @@ describe('toBenchmarkMetric', () => {
     });
   });
 
+  it('passes through recall, clean-app and fix counts when present', () => {
+    const m = toBenchmarkMetric({
+      summary: { ...RESULTS.summary, detectedGroundTruthFlaws: 56, fixedGroundTruthFlaws: 37, cleanApps: 5, falsePositivesOnCleanApps: 0, fixesAttempted: 56, verifierRejections: 0 },
+    });
+    expect(m).toMatchObject({ detectedVulnerabilities: 56, cleanApps: 5, falsePositivesOnCleanApps: 0, fixesApplied: 56, plantedFlawsFixed: 37 });
+  });
+
   it('omits missing numbers instead of inventing them', () => {
     expect(toBenchmarkMetric({ summary: { totalApps: 30, rejectionRate: 'n/a' } })).toEqual({ totalApps: 30 });
     expect(toBenchmarkMetric({ summary: {} })).toBeNull();
@@ -53,6 +60,18 @@ describe('loadBenchmark', () => {
   it('loads a real file', () => {
     writeFileSync(path.join(dir, 'ok.json'), JSON.stringify(RESULTS));
     expect(loadBenchmark(path.join(dir, 'ok.json')).totalApps).toBe(30);
+  });
+  it('adds a SlopStop vs Semgrep comparison only when Semgrep actually ran', () => {
+    const full = { ...RESULTS, summary: { ...RESULTS.summary, detectedGroundTruthFlaws: 56, fixedGroundTruthFlaws: 37, falsePositivesOnCleanApps: 0, fixesAttempted: 56, verifierRejections: 0 } };
+    writeFileSync(path.join(dir, 'full.json'), JSON.stringify(full));
+    writeFileSync(path.join(dir, 'base.json'), JSON.stringify({ semgrep: { status: 'run', version: '1.186.0', detectedGroundTruthFlaws: 12, totalGroundTruthFlaws: 56, findingsOnCleanApps: 1 }, gitleaks: { status: 'run', detectedGroundTruthFlaws: 0 } }));
+    writeFileSync(path.join(dir, 'notrun.json'), JSON.stringify({ semgrep: { status: 'not run' } }));
+    expect(loadBenchmark(path.join(dir, 'full.json'), path.join(dir, 'base.json')).comparison).toEqual([
+      { tool: 'SlopStop', detected: 56, total: 56, fixed: 56, plantedFixed: 37, findingsOnCleanApps: 0 },
+      { tool: 'Semgrep 1.186.0', detected: 12, total: 56, fixed: 0, plantedFixed: 0, findingsOnCleanApps: 1 },
+    ]);
+    expect(loadBenchmark(path.join(dir, 'full.json'), path.join(dir, 'notrun.json')).comparison).toBeUndefined();
+    expect(loadBenchmark(path.join(dir, 'full.json'), path.join(dir, 'missing.json')).comparison).toBeUndefined();
   });
   it('cleans up', () => rmSync(dir, { recursive: true, force: true }));
 });

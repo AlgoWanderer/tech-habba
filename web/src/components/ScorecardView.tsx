@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../api';
 import { BenchmarkMetric } from '../types';
-import {
-  BarChart3,
-  Timer,
-  ShieldCheck,
-  AlertOctagon,
-  Percent,
-  RefreshCw,
-  FileCode
-} from 'lucide-react';
+import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target } from 'lucide-react';
+import { Badge, Button, Card, CardHeader, cx } from './ui';
+
+const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
+
+const NotMeasured = () => <span className="text-base font-normal text-slate-400">Not measured</span>;
 
 export const ScorecardView: React.FC = () => {
   const [data, setData] = useState<BenchmarkMetric | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadBenchmark = async () => {
+  const load = async () => {
     setLoading(true);
     try {
-      const results = await apiClient.getBenchmarkResults();
-      setData(results);
+      setData(await apiClient.getBenchmarkResults());
     } catch (err) {
       console.error('Failed loading benchmark data', err);
     } finally {
@@ -28,224 +24,196 @@ export const ScorecardView: React.FC = () => {
   };
 
   useEffect(() => {
-    loadBenchmark();
+    load();
   }, []);
 
-  const formatNumber = (val: number | undefined | null, suffix: string = '') => {
-    if (val === undefined || val === null || isNaN(val)) {
-      return <span className="text-slate-400 font-normal italic text-sm">not measured</span>;
-    }
-    return `${val}${suffix}`;
-  };
+  const before = data?.baselineVulnerabilities;
+  const after = data?.slopstopVulnerabilities;
+  const reduction = isNum(before) && isNum(after) && before > 0 ? Math.round(((before - after) / before) * 1000) / 10 : null;
+  const failures = [...(data?.failureAnalysis ?? [])].sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+  const reviewTotal = failures.reduce((s, f) => s + (f.count ?? 0), 0);
 
-  // Sort failure analysis so IDOR is first
-  const sortedFailures = data?.failureAnalysis
-    ? [...data.failureAnalysis].sort((a, b) => {
-        if (a.category.toLowerCase().includes('idor')) return -1;
-        if (b.category.toLowerCase().includes('idor')) return 1;
-        return 0;
-      })
-    : [];
+  const kpis = [
+    {
+      label: 'Critical + high before',
+      icon: <ShieldAlert className="w-4 h-4 text-rose-600" />,
+      value: isNum(before) ? before : null,
+      hint: isNum(data?.totalApps)
+        ? isNum(data?.cleanApps)
+          ? `Across ${data!.totalApps} corpus apps (${data!.totalApps! - data!.cleanApps!} with planted flaws)`
+          : `Across ${data!.totalApps} corpus apps`
+        : 'Unpatched corpus',
+    },
+    {
+      label: 'Critical + high after',
+      icon: <ShieldCheck className="w-4 h-4 text-emerald-600" />,
+      value: isNum(after) ? after : null,
+      hint: reduction !== null ? `${reduction}% fewer after verified fixes` : 'After fix and re-scan',
+      accent: 'text-emerald-700',
+    },
+    {
+      label: 'Time per app',
+      icon: <Timer className="w-4 h-4 text-slate-500" />,
+      value: isNum(data?.msPerFile) ? `${Math.round(data!.msPerFile!)} ms` : null,
+      hint: 'Scan, fix, verify and re-scan',
+    },
+    {
+      label: 'Patches rejected',
+      icon: <Ban className="w-4 h-4 text-slate-500" />,
+      value: isNum(data?.rejectionRate) ? `${(data!.rejectionRate! * 100).toFixed(1)}%` : null,
+      hint: 'Failed node --check or re-scan',
+    },
+  ];
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+    <div className="max-w-5xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-sky-600" />
-            <h2 className="text-base font-bold text-slate-900">
-              Benchmark Scorecard & Empirical Validation
-            </h2>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Quantitative evaluation from <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-700">corpus/benchmark/results.json</code>.
-            Only strictly measured parameters are shown.
+          <h1 className="text-xl font-semibold">Benchmark</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Measured on the team corpus (<code className="font-mono text-[13px]">corpus/benchmark/results.json</code>). Missing values
+            are shown as not measured, never estimated.
           </p>
         </div>
-
-        <button
-          onClick={loadBenchmark}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-700 bg-slate-100 hover:bg-slate-200 rounded border border-slate-300 transition-colors cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Reload Metrics</span>
-        </button>
+        <Button variant="secondary" onClick={load} disabled={loading} icon={<RefreshCw className={cx('w-4 h-4', loading && 'animate-spin')} />}>
+          Reload
+        </Button>
       </div>
 
-      {/* Main KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Baseline Vulnerabilities */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Baseline Vulns
-            </span>
-            <AlertOctagon className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-black text-rose-700">
-            {formatNumber(data?.baselineVulnerabilities)}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            Raw vulnerabilities in AI vibe-coded apps
-          </p>
-        </div>
-
-        {/* SlopStop Post-Patch Vulns */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              SlopStop Vulns
-            </span>
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-black text-emerald-700">
-            {formatNumber(data?.slopstopVulnerabilities)}
-          </div>
-          <p className="text-[11px] text-emerald-600 font-medium mt-1">
-            {data?.baselineVulnerabilities && data?.slopstopVulnerabilities !== undefined
-              ? `${Math.round(
-                  ((data.baselineVulnerabilities - data.slopstopVulnerabilities) /
-                    data.baselineVulnerabilities) *
-                    100
-                )}% deterministic reduction`
-              : 'Verified post-rescan count'}
-          </p>
-        </div>
-
-        {/* Throughput ms per file */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Scan Speed
-            </span>
-            <Timer className="w-4 h-4 text-sky-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900">
-            {formatNumber(data?.msPerFile, ' ms / file')}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Deterministic AST parser latency</p>
-        </div>
-
-        {/* Rejection Rate */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Patch Rejection Rate
-            </span>
-            <Percent className="w-4 h-4 text-amber-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900">
-            {data?.rejectionRate !== undefined && data?.rejectionRate !== null
-              ? `${(data.rejectionRate * 100).toFixed(1)}%`
-              : formatNumber(undefined)}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            Failed node --check / discarded patches
-          </p>
-        </div>
+        {kpis.map((k) => (
+          <Card key={k.label} className="p-5">
+            <div className="flex items-center justify-between text-sm text-slate-500">
+              {k.label}
+              {k.icon}
+            </div>
+            <div className={cx('mt-3 text-[28px] leading-8 font-semibold tabular-nums', k.accent ?? 'text-slate-900')}>
+              {k.value ?? <NotMeasured />}
+            </div>
+            <div className="mt-1.5 text-xs text-slate-500">{k.hint}</div>
+          </Card>
+        ))}
       </div>
 
-      {/* Baseline vs SlopStop Comparison Card */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm space-y-4">
-        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-          Comparative Security Invariant Enforcement
-        </h3>
+      <DetectionCard data={data} />
 
-        <div className="space-y-3">
+      <Card>
+        <CardHeader title="Before and after" subtitle="Critical and high findings across the whole corpus" />
+        <div className="p-5 space-y-5">
+          <Bar label="Unpatched" value={before} max={before} color="bg-rose-500" />
+          <Bar label="After SlopStop" value={after} max={before} color="bg-emerald-500" />
+        </div>
+      </Card>
+
+      <Card>
+        <CardHeader
+          icon={<ListChecks className="w-5 h-5" />}
+          title="Left for human review"
+          subtitle="SlopStop never guesses at business logic. These findings are reported, not patched."
+          action={reviewTotal ? <Badge>{reviewTotal} findings</Badge> : undefined}
+        />
+        <div className="p-5">
+          {failures.length === 0 ? (
+            <p className="py-6 text-center text-sm text-slate-400">Not measured</p>
+          ) : (
+            <ul className="border border-slate-200 rounded-lg divide-y divide-slate-200">
+              {failures.map((f, i) => (
+                <li key={i} className="px-4 py-3 flex items-center gap-4">
+                  <span className="w-36 flex-shrink-0 font-mono text-[13px] text-slate-800 whitespace-nowrap">{f.category}</span>
+                  <span className="flex-1 min-w-0 text-sm text-slate-500">{f.reason}</span>
+                  {isNum(f.count) && <span className="text-sm font-medium tabular-nums text-slate-700">{f.count}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const DetectionCard: React.FC<{ data: BenchmarkMetric | null }> = ({ data }) => {
+  const found = data?.detectedVulnerabilities;
+  const total = data?.totalVulnerabilities;
+  const clean = data?.cleanApps;
+  const falseAlarms = data?.falsePositivesOnCleanApps;
+  const rows = data?.comparison ?? [];
+  const cell = (v?: number) => (isNum(v) ? v : <span className="text-slate-400">not measured</span>);
+
+  return (
+    <Card>
+      <CardHeader
+        icon={<Target className="w-5 h-5" />}
+        title="Detection"
+        subtitle="Planted flaws found in the corpus, compared with an existing scanner on the same apps."
+      />
+      <div className="p-5 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 items-start">
+        <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-xs font-medium mb-1">
-              <span className="text-rose-700">Baseline Vibe-Coded Repositories (Unprotected)</span>
-              <span className="font-mono text-rose-800 font-bold">
-                {formatNumber(data?.baselineVulnerabilities)} vulnerabilities
-              </span>
+            <div className="text-[28px] leading-8 font-semibold tabular-nums">
+              {isNum(found) && isNum(total) ? (
+                <>
+                  Found {found} <span className="text-slate-400 font-normal">/ {total}</span>
+                </>
+              ) : (
+                <NotMeasured />
+              )}
             </div>
-            <div className="w-full bg-slate-100 rounded-full h-3">
-              <div
-                className="bg-rose-500 h-3 rounded-full"
-                style={{ width: '100%' }}
-              ></div>
-            </div>
+            <div className="mt-1 text-sm text-slate-500">planted flaws detected</div>
           </div>
-
           <div>
-            <div className="flex justify-between text-xs font-medium mb-1">
-              <span className="text-emerald-700">SlopStop Verified Auto-Patched</span>
-              <span className="font-mono text-emerald-800 font-bold">
-                {formatNumber(data?.slopstopVulnerabilities)} remaining (IDOR / Review)
-              </span>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-3">
-              <div
-                className="bg-emerald-500 h-3 rounded-full"
-                style={{
-                  width:
-                    data?.baselineVulnerabilities && data?.slopstopVulnerabilities !== undefined
-                      ? `${Math.max(
-                          6,
-                          Math.min(
-                            100,
-                            (data.slopstopVulnerabilities / data.baselineVulnerabilities) * 100
-                          )
-                        )}%`
-                      : '0%'
-                }}
-              ></div>
+            <div className="text-[28px] leading-8 font-semibold tabular-nums">{isNum(falseAlarms) ? falseAlarms : <NotMeasured />}</div>
+            <div className="mt-1 text-sm text-slate-500">
+              false alarms on {isNum(clean) ? `${clean} clean apps` : 'the clean apps'}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Failure Analysis List (IDOR FIRST!) */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileCode className="w-4 h-4 text-slate-700" />
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Failure Analysis & Honest Limitations
-            </h3>
-          </div>
-          <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded">
-            IDOR Prioritized
-          </span>
-        </div>
-
-        <p className="text-xs text-slate-500">
-          SlopStop guarantees zero regressions by rejecting AST patches that cannot be verified deterministically.
-          Business-logic vulnerabilities (such as authorization ownership) are strictly highlighted for human engineering review.
-        </p>
-
-        {sortedFailures.length === 0 ? (
-          <div className="p-4 bg-slate-50 rounded text-center text-xs text-slate-400 italic">
-            Failure analysis: not measured
-          </div>
+        {rows.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-400">Tool comparison not measured</p>
         ) : (
-          <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
-            {sortedFailures.map((item, idx) => (
-              <div
-                key={idx}
-                className={`p-3 text-xs flex items-start gap-3 ${
-                  item.category.toLowerCase().includes('idor')
-                    ? 'bg-purple-50/40 border-l-4 border-l-purple-500'
-                    : 'bg-white'
-                }`}
-              >
-                <div className="font-mono font-bold uppercase text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 flex-shrink-0">
-                  {item.category}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-slate-800 font-medium">{item.reason}</div>
-                </div>
-                {item.count !== undefined && (
-                  <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                    {item.count} cases
-                  </span>
-                )}
-              </div>
-            ))}
+          <div className="border border-slate-200 rounded-lg overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-xs text-slate-500">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2.5">Tool</th>
+                  <th className="text-right font-medium px-4 py-2.5">Flaws found</th>
+                  <th className="text-right font-medium px-4 py-2.5" title="Verified patches applied across all findings">
+                    Patches applied
+                  </th>
+                  <th className="text-right font-medium px-4 py-2.5">Alarms on clean apps</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {rows.map((r, i) => (
+                  <tr key={r.tool} className={cx(i === 0 && 'font-medium')}>
+                    <td className="px-4 py-3 whitespace-nowrap">{r.tool}</td>
+                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">
+                      {isNum(r.detected) && isNum(r.total) ? `${r.detected} / ${r.total}` : cell(r.detected)}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">{cell(r.fixed)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{cell(r.findingsOnCleanApps)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
+      </div>
+    </Card>
+  );
+};
+
+const Bar: React.FC<{ label: string; value?: number; max?: number; color: string }> = ({ label, value, max, color }) => {
+  const pct = isNum(value) && isNum(max) && max > 0 ? Math.max(1, Math.min(100, (value / max) * 100)) : 0;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between text-sm mb-2">
+        <span className="text-slate-700">{label}</span>
+        <span className="font-medium tabular-nums">{isNum(value) ? value : '—'}</span>
+      </div>
+      <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
+        <div className={cx('h-full rounded-full transition-[width] duration-700', color)} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
