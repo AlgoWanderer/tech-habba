@@ -111,7 +111,12 @@ export function loadModelEval(file = MODEL_EVAL_PATH) {
     method ??= r.method;
     for (const [model, { rows, ...s }] of Object.entries(r.models)) byModel.set(model, { model, ...s });
   }
-  return byModel.size ? { method, models: [...byModel.values()] } : null;
+  if (!byModel.size) return null;
+  // `method` is a sentence (the dashboard renders it as text; an object crashed the Scorecard).
+  // The structured details stay available as methodDetails.
+  const sets = Array.isArray(method?.sets) ? method.sets.join(' + ') : 'corpus';
+  const text = `${method?.snippets ?? '?'} labelled snippets from ${sets} apps that no model was trained on; task: vulnerable? + category. Invalid answers are never dropped: a miss on vulnerable snippets, wrong in accuracy.`;
+  return { method: text, methodDetails: method, models: [...byModel.values()] };
 }
 
 /** GET /api/experiment: role C's three-way experiment, without the bulky per-app rows. Null if missing. */

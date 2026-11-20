@@ -75,7 +75,11 @@ describe('loadBenchmark', () => {
   });
   it('model eval: summary rows only, null when missing', () => {
     writeFileSync(path.join(dir, 'me.json'), JSON.stringify({ method: { snippets: 2 }, models: { rules: { precision: 1, recall: 0.5, rows: [{}, {}] }, 'gemini (x)': { precision: 0.8, recall: 0.9, rows: [] } } }));
-    expect(loadModelEval(path.join(dir, 'me.json'))).toEqual({ method: { snippets: 2 }, models: [{ model: 'rules', precision: 1, recall: 0.5 }, { model: 'gemini (x)', precision: 0.8, recall: 0.9 }] });
+    const r = loadModelEval(path.join(dir, 'me.json'));
+    expect(r.models).toEqual([{ model: 'rules', precision: 1, recall: 0.5 }, { model: 'gemini (x)', precision: 0.8, recall: 0.9 }]);
+    // method must be plain text: the Scorecard renders it directly (an object crashed the page)
+    expect(typeof r.method).toBe('string');
+    expect(r.methodDetails).toEqual({ snippets: 2 });
     expect(loadModelEval(path.join(dir, 'missing.json'))).toBeNull();
   });
   it('model eval: merges model-eval-*.json files (e.g. a Qwen run from another laptop)', () => {
