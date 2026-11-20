@@ -90,6 +90,15 @@ const readJson = (file) => {
 };
 
 export const BASELINES_PATH = path.resolve(here, '../corpus/baselines/results.json');
+export const EXPERIMENT_PATH = path.resolve(here, '../corpus/experiment/results.json');
+
+/** GET /api/experiment: role C's three-way experiment, without the bulky per-app rows. Null if missing. */
+export function loadExperiment(file = EXPERIMENT_PATH) {
+  const r = readJson(file);
+  if (!r || typeof r !== 'object' || !r.summary) return null;
+  const { perApp, ...rest } = r;
+  return rest;
+}
 
 export function loadBenchmark(file = RESULTS_PATH, baselinesFile = BASELINES_PATH) {
   const metric = toBenchmarkMetric(readJson(file));

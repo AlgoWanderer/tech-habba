@@ -2,6 +2,7 @@
 // the CLI and the benchmark (role C) can all reuse them.
 import { performance } from 'node:perf_hooks';
 import { verify } from './verify.js';
+import { httpCheck } from './exploit/httpTest.js';
 
 /**
  * Keeps variable names, drops values: `STRIPE_KEY=sk_live_...` -> `STRIPE_KEY=`.
@@ -22,7 +23,12 @@ export async function runScan(core, files) {
   return { findings, score: await core.computeScore(findings) };
 }
 
-export async function runFix(core, files, findingIds) {
+/**
+ * runFix(core, files, findingIds, { httpTest })
+ * httpTest (opt-in; the API turns it on): run the two-mode HTTP test for every applied fix and add the
+ * outcome to its reason. Rule fixes are not rejected by it (they are already verified); a failure is reported.
+ */
+export async function runFix(core, files, findingIds, { httpTest = false } = {}) {
   if (core.isMock) return core.sampleFix();
   const t0 = performance.now();
 
@@ -70,6 +76,15 @@ export async function runFix(core, files, findingIds) {
     return p ? { path: f.path, content: p.patched } : f;
   });
   for (const p of accepted) if (!files.some((f) => f.path === p.path)) merged.push({ path: p.path, content: p.patched });
+
+  if (httpTest) {
+    for (const f of toFix) {
+      const r = results.get(f.id);
+      if (r?.status !== 'applied') continue;
+      const h = await httpCheck(files, merged, f);
+      if (h.testable) r.reason = `${r.reason} ${h.summary}.`.trim();
+    }
+  }
 
   const rescan = await runScan(core, merged);
   return {

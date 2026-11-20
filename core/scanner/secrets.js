@@ -86,7 +86,11 @@ function context(node, ancestors) {
       if (parent.right === node && isProcessEnv(parent.left)) {
         out.envHint = propName(parent.left.property);
         out.range = parent; // replace the whole `process.env.X || 'literal'` fallback
-        Object.assign(out, { name: context(parent, ancestors.slice(0, -1)).name ?? out.envHint });
+        // A literal fallback for a secret-named env var is a hard-coded secret, whatever the
+        // variable it is assigned to is called (`const a = process.env.JWT_SECRET || 'x'`).
+        const bound = context(parent, ancestors.slice(0, -1)).name;
+        const envIsSecret = out.envHint && (STRONG_NAME.test(out.envHint) || WEAK_NAME.test(out.envHint));
+        out.name = envIsSecret ? out.envHint : (bound ?? out.envHint);
       }
       break;
     case 'ImportDeclaration':
@@ -155,7 +159,7 @@ export function scanSecrets(file, code, parsed) {
     if (!cls) return;
     const envName = envNameFor(cls, ctx);
     const r = ctx.range ?? node;
-    findings.push(make(file, code, node, cls.msg, { type: 'secret', start: r.start, end: r.end, envName, value, jwt: ctx.jwt }, value));
+    findings.push(make(file, code, node, cls.msg, { type: 'secret', start: r.start, end: r.end, litStart: node.start, litEnd: node.end, envName, value, jwt: ctx.jwt }, value));
   });
   return findings;
 }

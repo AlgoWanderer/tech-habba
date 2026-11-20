@@ -1,0 +1,1396 @@
+{
+  "method": {
+    "hypothesis": "An LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship: rules + LLM + verifier (hybrid) finds more flaws than rules alone and breaks no apps, while the LLM alone breaks some.",
+    "generatedAt": "2026-11-20T19:07:21.166Z",
+    "runs": 3,
+    "sets": [
+      "corpus",
+      "raw",
+      "hardened"
+    ],
+    "arms": [
+      "rules",
+      "ai",
+      "hybrid"
+    ],
+    "model": "gemini-2.5-flash",
+    "totalApps": 50
+  },
+  "summary": {
+    "rules": {
+      "status": "completed",
+      "totalApps": 50,
+      "totalFindings": 149,
+      "criticalHighBefore": 121,
+      "criticalHighAfter": 11,
+      "criticalHighReductionPercent": 90.9,
+      "syntaxPassRate": 1,
+      "routesDeletedTotal": 0,
+      "brokenAppsCount": 0,
+      "groundTruthFlawsDetected": 56,
+      "groundTruthRecall": 1,
+      "meanDurationMsPerApp": 114.78,
+      "totalModelCalls": 0
+    },
+    "ai": {
+      "status": "skipped",
+      "reason": "no GEMINI_API_KEY"
+    },
+    "hybrid": {
+      "status": "skipped",
+      "reason": "no GEMINI_API_KEY"
+    }
+  },
+  "perApp": [
+    {
+      "set": "corpus",
+      "app": "app01",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 176,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app02",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 76,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app03",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 76,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app04",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 149,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app05",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 144,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app06",
+      "rules": {
+        "findingsCount": 5,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 154,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app07",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 139,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app08",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 141,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app09",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 144,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app10",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 137,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app11",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 145,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app12",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 140,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app13",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 64,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app14",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 140,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app15",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 133,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app16",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 146,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app17",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 150,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app18",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 140,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app19",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 143,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app20",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 134,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app21",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 69,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app22",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 161,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app23",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 160,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app24",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": 3,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 136,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app25",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": 2,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 2,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app26",
+      "rules": {
+        "findingsCount": 0,
+        "groundTruthFound": 0,
+        "criticalHighBefore": 0,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 4,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app27",
+      "rules": {
+        "findingsCount": 0,
+        "groundTruthFound": 0,
+        "criticalHighBefore": 0,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 2,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app28",
+      "rules": {
+        "findingsCount": 0,
+        "groundTruthFound": 0,
+        "criticalHighBefore": 0,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 3,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app29",
+      "rules": {
+        "findingsCount": 0,
+        "groundTruthFound": 0,
+        "criticalHighBefore": 0,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 3,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "corpus",
+      "app": "app30",
+      "rules": {
+        "findingsCount": 0,
+        "groundTruthFound": 0,
+        "criticalHighBefore": 0,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 1,
+        "routesAfter": 1,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 2,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app01",
+      "rules": {
+        "findingsCount": 7,
+        "groundTruthFound": null,
+        "criticalHighBefore": 6,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 5,
+        "routesAfter": 5,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 143,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app02",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 5,
+        "routesAfter": 5,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 143,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app03",
+      "rules": {
+        "findingsCount": 6,
+        "groundTruthFound": null,
+        "criticalHighBefore": 5,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 4,
+        "routesAfter": 4,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 141,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app04",
+      "rules": {
+        "findingsCount": 9,
+        "groundTruthFound": null,
+        "criticalHighBefore": 6,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 5,
+        "routesAfter": 5,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 162,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app05",
+      "rules": {
+        "findingsCount": 6,
+        "groundTruthFound": null,
+        "criticalHighBefore": 5,
+        "criticalHighAfter": 1,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 140,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app06",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 134,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app07",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 4,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 140,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app08",
+      "rules": {
+        "findingsCount": 6,
+        "groundTruthFound": null,
+        "criticalHighBefore": 5,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 4,
+        "routesAfter": 4,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 139,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app09",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 136,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "raw",
+      "app": "app10",
+      "rules": {
+        "findingsCount": 3,
+        "groundTruthFound": null,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 136,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app01",
+      "rules": {
+        "findingsCount": 1,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 6,
+        "routesAfter": 6,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 111,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app02",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 3,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 6,
+        "routesAfter": 6,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 155,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app03",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": null,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 155,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app04",
+      "rules": {
+        "findingsCount": 4,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 5,
+        "routesAfter": 5,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 79,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app05",
+      "rules": {
+        "findingsCount": 1,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 5,
+        "routesAfter": 5,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 85,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app06",
+      "rules": {
+        "findingsCount": 1,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 77,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app07",
+      "rules": {
+        "findingsCount": 1,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 83,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app08",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": null,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 147,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app09",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": null,
+        "criticalHighBefore": 2,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 3,
+        "routesAfter": 3,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 146,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    },
+    {
+      "set": "hardened",
+      "app": "app10",
+      "rules": {
+        "findingsCount": 2,
+        "groundTruthFound": null,
+        "criticalHighBefore": 1,
+        "criticalHighAfter": 0,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 2,
+        "routesAfter": 2,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 74,
+        "modelCalls": 0
+      },
+      "ai": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      },
+      "hybrid": {
+        "status": "skipped",
+        "reason": "no GEMINI_API_KEY"
+      }
+    }
+  ]
+}

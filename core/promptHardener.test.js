@@ -42,6 +42,30 @@ describe('promptHardener', () => {
     expect(result.hardened).toContain('Write an express route to fetch all users by id');
   });
 
+  it('redacts short Stripe keys (16 chars) discovered during wild corpus evaluation', () => {
+    // Wild corpus prompt app03: sk_live_51PqR7sKx9TmW2vYc has only 16 chars after sk_live_
+    const input = 'Integrate Stripe payments. My Stripe key is sk_live_51PqR7sKx9TmW2vYc.';
+    const result = harden(input);
+
+    expect(result.redactions.length).toBe(1);
+    expect(result.redactions[0].type).toBe('api_key_stripe');
+    expect(result.redactions[0].original).toBe('sk_live_51PqR7sKx9TmW2vYc');
+    expect(result.hardened).not.toContain('sk_live_51PqR7sKx9TmW2vYc');
+    expect(result.hardened).toContain('<API_KEY_1>');
+  });
+
+  it('redacts short OpenAI keys (16 chars) discovered during wild corpus evaluation', () => {
+    // Wild corpus prompt app09: sk-proj-a8F3kL0pQ2wE9rT6yU1iO4 has 16 chars after sk-proj-
+    const input = 'Use the OpenAI API to suggest short names, my key is sk-proj-a8F3kL0pQ2wE9rT6yU1iO4.';
+    const result = harden(input);
+
+    expect(result.redactions.length).toBe(1);
+    expect(result.redactions[0].type).toBe('api_key_openai');
+    expect(result.redactions[0].original).toBe('sk-proj-a8F3kL0pQ2wE9rT6yU1iO4');
+    expect(result.hardened).not.toContain('sk-proj-a8F3kL0pQ2wE9rT6yU1iO4');
+    expect(result.hardened).toContain('<API_KEY_1>');
+  });
+
   it('handles empty or non-string input safely', () => {
     const result = harden('');
     expect(result.redactions).toEqual([]);

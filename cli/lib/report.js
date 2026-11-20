@@ -12,7 +12,7 @@ export function summarize(findings, fileCount) {
 
   const rows = [...findings]
     .sort((a, b) => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity) || a.file.localeCompare(b.file) || a.line - b.line)
-    .map((f) => `  ${f.severity.toUpperCase().padEnd(8)}  ${`${f.file}:${f.line}`.padEnd(28)}  ${f.message}${f.fixable === 'auto' ? '  [auto-fixable]' : '  [needs review]'}`);
+    .map((f) => `  ${f.severity.toUpperCase().padEnd(8)}  ${`${f.file}:${f.line}`.padEnd(28)}  ${f.message}${f.fixable === 'auto' ? '  [auto-fixable]' : '  [needs review]'}${f.source === 'ai' ? `  [AI ${Math.round((f.confidence ?? 0) * 100)}%]` : ''}`);
   return [head, ...rows].join('\n');
 }
 

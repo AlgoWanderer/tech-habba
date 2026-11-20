@@ -11,6 +11,8 @@ interface FindingsListProps {
   onSelect?: (f: Finding) => void;
   /** Round-trip time of the scan request, measured in the browser. */
   scanMs?: number | null;
+  /** Whether scan was run in hybrid mode (rules + AI). */
+  isHybrid?: boolean;
 }
 
 const CATEGORY: Record<FindingCategory, { label: string; icon: React.ReactNode }> = {
@@ -30,9 +32,10 @@ const REVIEW_NOTE: Partial<Record<FindingCategory, string>> = {
 
 const ORDER: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
 
-export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs }) => {
+export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs, isHybrid = false }) => {
   const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id ?? null);
   const autoCount = findings.filter((f) => f.fixable === 'auto').length;
+  const aiCount = findings.filter((f) => f.source === 'ai').length;
   const reviewCount = findings.length - autoCount;
   const groups = ORDER.map((sev) => ({ sev, items: findings.filter((f) => f.severity === sev) })).filter((g) => g.items.length);
 
@@ -46,9 +49,15 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
         }
         subtitle={`${autoCount} auto-fixable · ${reviewCount} need review${typeof scanMs === 'number' ? ` · scanned in ${scanMs} ms` : ''}`}
         action={
-          onFixAll && autoCount > 0 ? (
+          onFixAll && (autoCount > 0 || aiCount > 0 || (isHybrid && findings.length > 0)) ? (
             <Button onClick={onFixAll} disabled={isFixing} icon={isFixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}>
-              {isFixing ? 'Verifying patches…' : `Fix ${autoCount} automatically`}
+              {isFixing
+                ? 'Verifying patches…'
+                : isHybrid
+                  ? 'Fix all (rules + AI, verified)'
+                  : autoCount > 0
+                    ? `Fix ${autoCount} automatically`
+                    : `Fix ${aiCount} with AI`}
             </Button>
           ) : undefined
         }
@@ -98,6 +107,11 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
                           </span>
                         </span>
                         <span className="flex items-center gap-2 flex-shrink-0">
+                          {f.source === 'ai' && (
+                            <Badge tone="violet">
+                              AI{typeof f.confidence === 'number' ? ` ${Math.round(f.confidence * 100)}%` : ''}
+                            </Badge>
+                          )}
                           <SeverityBadge severity={f.severity} />
                           {f.fixable === 'auto' ? <Badge tone="success">Auto-fix</Badge> : <Badge tone="warning">Review</Badge>}
                           <ChevronDown className={cx('w-4 h-4 text-slate-400 transition-transform', open && 'rotate-180')} />
@@ -112,7 +126,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
                           </div>
                           {f.fixPreview && (
                             <div>
-                              <Label className="mb-1.5">{f.fixable === 'auto' ? 'After the fix' : 'Suggested action'}</Label>
+                              <Label className="mb-1.5">{f.fixable === 'auto' ? 'After the fix' : 'Suggested fix (apply by hand)'}</Label>
                               <CodeBlock tone={f.fixable === 'auto' ? 'good' : 'plain'}>{f.fixPreview}</CodeBlock>
                             </div>
                           )}
@@ -129,6 +143,16 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
               </ul>
             </div>
           ))
+        )}
+
+        {findings.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 pt-3 border-t border-slate-100">
+            <span className="font-medium text-slate-700">Source:</span>
+            <span>Rules (deterministic AST)</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Badge tone="violet">AI xx%</Badge> Gemini 2.5 Flash model detection
+            </span>
+          </div>
         )}
       </div>
     </Card>

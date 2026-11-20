@@ -9,3 +9,5 @@ export { parseAudit } from './scanner/deps.js';
 export { computeScore } from './score.js';
 
 export { applyFixes } from './fixer/index.js';
+export { maskSecrets } from './maskSecrets.js';
+export { mergeFindings } from './merge.js';

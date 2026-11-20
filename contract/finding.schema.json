@@ -17,7 +17,9 @@
         "snippet": { "type": "string" },
         "message": { "type": "string" },
         "fixable": { "enum": ["auto", "review"] },
-        "fixPreview": { "type": "string" }
+        "fixPreview": { "type": "string" },
+        "source": { "enum": ["rule", "ai"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
       }
     },
     "Score": {
@@ -68,7 +70,8 @@
             "properties": {
               "findingId": { "type": "string" },
               "status": { "enum": ["applied", "rejected", "review"] },
-              "reason": { "type": "string" }
+              "reason": { "type": "string" },
+              "source": { "enum": ["rule", "ai"] }
             }
           }
         },

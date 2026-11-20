@@ -1,10 +1,14 @@
+import './env.js';
 import express from 'express';
 import cors from 'cors';
 import { pathToFileURL } from 'node:url';
 import { loadCore, loadHardener } from './coreAdapter.js';
 import { runFix, runScan } from './pipeline.js';
 import { runExploit } from './exploit/sandbox.js';
-import { loadBenchmark } from './benchmark.js';
+import { loadBenchmark, loadExperiment } from './benchmark.js';
+import { getAiClient } from './ai/client.js';
+import { FIX_MODES, SCAN_MODES, fixHybrid, scanWithMode } from './ai/hybrid.js';
+import { httpTestEnabled } from './exploit/httpTest.js';
 
 const MAX_FILES = 50;
 const MAX_PROMPT = 20000;
@@ -27,29 +31,50 @@ function parseFiles(body) {
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
-export async function createApp({ core, hardener } = {}) {
+function parseMode(body, allowed) {
+  const mode = body?.mode ?? 'rules';
+  if (!allowed.includes(mode)) throw badRequest(`mode must be one of: ${allowed.join(', ')}.`);
+  return mode;
+}
+
+export async function createApp({ core, hardener, ai } = {}) {
   core ??= await loadCore();
   hardener ??= await loadHardener();
+  if (ai === undefined) ai = getAiClient();
+  const needAi = (mode) => {
+    if (mode !== 'rules' && !ai) throw badRequest('AI not configured: add GEMINI_API_KEY to server/.env');
+    if (mode !== 'rules' && core.isMock) throw badRequest('AI modes need the real core/ engine.');
+  };
 
   const app = express();
   app.locals.mockCore = core.isMock;
   app.locals.mockHardener = hardener.isMock;
+  app.locals.aiName = ai?.name ?? null;
   const origins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://127.0.0.1:5173').split(',');
   app.use(cors({ origin: origins }));
   app.use(express.json({ limit: '5mb' }));
 
-  app.get('/api/health', (req, res) => res.json({ ok: true, mockCore: core.isMock, mockHardener: hardener.isMock }));
+  app.get('/api/health', (req, res) => res.json({ ok: true, mockCore: core.isMock, mockHardener: hardener.isMock, ai: Boolean(ai) && !core.isMock, aiModel: ai?.name ?? null }));
 
   // The API is a local-only dev tool (bound to 127.0.0.1) that processes code the user pastes in.
   // slopstop-ignore route-no-auth: local-only, see above
-  app.post('/api/scan', wrap(async (req, res) => res.json(await runScan(core, parseFiles(req.body)))));
+  app.post('/api/scan', wrap(async (req, res) => {
+    const files = parseFiles(req.body);
+    const mode = parseMode(req.body, SCAN_MODES);
+    needAi(mode);
+    res.json(mode === 'rules' ? await runScan(core, files) : await scanWithMode(core, files, mode, ai));
+  }));
 
   // slopstop-ignore route-no-auth: local-only
   app.post('/api/fix', wrap(async (req, res) => {
     const files = parseFiles(req.body);
     const ids = req.body.findingIds;
     if (!Array.isArray(ids) || !ids.every((id) => typeof id === 'string')) throw badRequest('findingIds must be an array of strings.');
-    res.json(await runFix(core, files, ids));
+    const mode = parseMode(req.body, FIX_MODES);
+    needAi(mode);
+    // Two-mode HTTP test on every fix (attack blocked + legitimate user still works); body.httpTest:false skips it.
+    const httpTest = httpTestEnabled() && req.body.httpTest !== false && !core.isMock;
+    res.json(mode === 'rules' ? await runFix(core, files, ids, { httpTest }) : await fixHybrid(core, files, ids, ai, { aiFindings: req.body.aiFindings, httpTest }));
   }));
 
   // slopstop-ignore route-no-auth: local-only
@@ -71,6 +96,13 @@ export async function createApp({ core, hardener } = {}) {
     res.json(metric);
   });
 
+  // slopstop-ignore route-no-auth: local-only, public experiment numbers
+  app.get('/api/experiment', (req, res) => {
+    const exp = loadExperiment();
+    if (!exp) return res.status(404).json({ error: 'No experiment results yet (corpus/experiment/results.json).' });
+    res.json(exp);
+  });
+
   app.use((req, res) => res.status(404).json({ error: `No route ${req.method} ${req.path}` }));
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
@@ -89,5 +121,6 @@ if (isMain) {
   app.listen(port, '127.0.0.1', () => {
     console.log(`SlopStop API on http://localhost:${port}`);
     console.log(`core: ${mockCore ? 'MOCK (contract samples)' : 'real core/'} | prompt hardener: ${mockHardener ? 'MOCK' : 'real'}`);
+    console.log(`AI: ${app.locals.aiName ?? 'off (add GEMINI_API_KEY to server/.env to enable ai/hybrid modes)'}`);
   });
 }

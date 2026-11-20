@@ -55,13 +55,13 @@ export function harden(prompt) {
   });
 
   // 3. Known API Key shapes (Stripe, OpenAI, AWS, GitHub)
-  const stripeRegex = /\b(?:sk|pk|rk)_(?:live|test)_[a-zA-Z0-9]{20,}\b/g;
+  const stripeRegex = /\b(?:sk|pk|rk)_(?:live|test)_[a-zA-Z0-9]{10,}\b/g;
   redactedPrompt = redactedPrompt.replace(stripeRegex, (match) => {
     redactions.push({ type: 'api_key_stripe', original: match });
     return `<API_KEY_${secretIndex++}>`;
   });
 
-  const openaiRegex = /\bsk-(?:proj-)?[a-zA-Z0-9_-]{24,}\b/g;
+  const openaiRegex = /\bsk-(?:proj-)?[a-zA-Z0-9_-]{16,}\b/g;
   redactedPrompt = redactedPrompt.replace(openaiRegex, (match) => {
     redactions.push({ type: 'api_key_openai', original: match });
     return `<API_KEY_${secretIndex++}>`;

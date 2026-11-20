@@ -7,7 +7,8 @@ describe('idor-suspect', () => {
   it('flags lookups by req.params.id without ownership check, always review', () => {
     const [f] = idor('app.get("/api/orders/:id", requireAuth, async (req, res) => {\n  res.json(await Order.findById(req.params.id));\n});');
     expect(f).toMatchObject({ id: 'idor-suspect:app.js:1', severity: 'medium', fixable: 'review', endLine: 3 });
-    expect(f.fixPreview).toBeUndefined();
+    // A suggestion only (defaults: ownerId, req.user); never auto-applied.
+    expect(f.fixPreview).toBe('res.json(await Order.findOne({ _id: req.params.id, ownerId: req.user.id }));');
   });
 
   it('tracks destructured params', () => {
