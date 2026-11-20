@@ -1,0 +1,66 @@
+{
+  "model": "gemini:gemini-3.1-flash-lite>gemini-3.5-flash-lite>gemini-3.5-flash (last answered: gemini-3.5-flash-lite)",
+  "generatedAt": "2026-11-20T21:51:27.612Z",
+  "findings": [
+    {
+      "set": "raw",
+      "app": "app03",
+      "findingId": "ai-secret:index.js:38",
+      "category": "secret",
+      "severity": "high",
+      "confidence": 0.99,
+      "file": "index.js",
+      "line": 38,
+      "code": "res.status(201).json({ success: true, orderId: order._id, stripeKey: STRIPE_KEY });",
+      "message": "Exposure of Stripe Secret Key in Response: The checkout endpoint exposes the STRIPE_KEY variable directly in the JSON response to the client."
+    },
+    {
+      "set": "dvna",
+      "app": "dvna",
+      "findingId": "ai-injection:core/appHandler.js:39",
+      "category": "injection",
+      "severity": "critical",
+      "confidence": 0.99,
+      "file": "core/appHandler.js",
+      "line": 39,
+      "code": "exec('ping -c 2 ' + req.body.address, function (err, stdout, stderr) {",
+      "message": "Command Injection: User input `req.body.address` is concatenated directly into `exec()`, allowing arbitrary command execution on the underlying operating system."
+    },
+    {
+      "set": "dvna",
+      "app": "dvna",
+      "findingId": "ai-idor:core/appHandler.js:147",
+      "category": "idor",
+      "severity": "high",
+      "confidence": 0.95,
+      "file": "core/appHandler.js",
+      "line": 147,
+      "code": "'id': req.body.id",
+      "message": "Insecure Direct Object Reference (IDOR): User record is loaded and updated using `req.body.id` without checking if the currently authenticated user owns or is authorized to modify that user account."
+    },
+    {
+      "set": "dvna",
+      "app": "dvna",
+      "findingId": "ai-injection:core/appHandler.js:197",
+      "category": "injection",
+      "severity": "high",
+      "confidence": 0.9,
+      "file": "core/appHandler.js",
+      "line": 197,
+      "code": "output: mathjs.eval(req.body.eqn)",
+      "message": "Remote Code Execution via mathjs eval: User input `req.body.eqn` is passed to `mathjs.eval()`, which can lead to arbitrary JavaScript execution depending on the mathjs version and configuration."
+    },
+    {
+      "set": "dvna",
+      "app": "dvna",
+      "findingId": "ai-injection:core/appHandler.js:218",
+      "category": "injection",
+      "severity": "critical",
+      "confidence": 0.99,
+      "file": "core/appHandler.js",
+      "line": 218,
+      "code": "var products = serialize.unserialize(req.files.products.data.toString('utf8'))",
+      "message": "Insecure Deserialization: Untrusted file data from `req.files.products` is passed to `node-serialize.unserialize()`, which executes arbitrary JavaScript code contained in the serialized payload."
+    }
+  ]
+}
