@@ -3,6 +3,20 @@
 import { performance } from 'node:perf_hooks';
 import { verify } from './verify.js';
 
+/**
+ * Keeps variable names, drops values: `STRIPE_KEY=sk_live_...` -> `STRIPE_KEY=`.
+ * The secrets the fixer just removed from the code must never travel back to the browser.
+ */
+export function blankEnvValues(envFile) {
+  return String(envFile ?? '')
+    .split('\n')
+    .map((line) => {
+      const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/);
+      return m ? `${m[1]}=` : line;
+    })
+    .join('\n');
+}
+
 export async function runScan(core, files) {
   const findings = await core.scan(files);
   return { findings, score: await core.computeScore(findings) };
@@ -60,7 +74,7 @@ export async function runFix(core, files, findingIds) {
   const rescan = await runScan(core, merged);
   return {
     patched: accepted,
-    envFile: accepted.length ? envFile : '',
+    envFile: accepted.length ? blankEnvValues(envFile) : '',
     results: ids.map((id) => results.get(id)),
     rescan,
     timingMs: Math.round(performance.now() - t0),

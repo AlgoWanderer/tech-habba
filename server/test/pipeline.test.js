@@ -50,6 +50,18 @@ describe('runFix', () => {
     expect(statusOf(out, 'nosql-injection').reason).toMatch(/introduced/);
   });
 
+  it('never returns secret values in envFile, even if the core includes them', async () => {
+    const base = makeFakeCore();
+    const leaky = {
+      ...base,
+      applyFixes: async (files, findings) => ({ ...(await base.applyFixes(files, findings)), envFile: 'STRIPE_KEY=sk_live_ABCDEF123456\nexport DB_URI = mongodb://u:p@h/db\n# comment\n' }),
+    };
+    const { findings } = await runScan(leaky, SAMPLE_FILES);
+    const out = await runFix(leaky, SAMPLE_FILES, findings.map((f) => f.id));
+    expect(out.envFile).toBe('STRIPE_KEY=\nDB_URI=\n# comment\n');
+    out.patched.forEach((p) => expect(p.patched).not.toContain('sk_live_ABCDEF123456'));
+  });
+
   it('marks unknown ids as rejected and dedupes ids', async () => {
     const out = await runFix(makeFakeCore(), SAMPLE_FILES, ['nope:x.js:1', 'nope:x.js:1']);
     expect(out.results).toEqual([{ findingId: 'nope:x.js:1', status: 'rejected', reason: 'Finding not present in a fresh scan of these files.' }]);
