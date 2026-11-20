@@ -10,7 +10,8 @@ import {
   HealthResponse,
   ExperimentSummary,
   Finding,
-  FixRequest
+  FixRequest,
+  ModelEvalResponse
 } from './types';
 import {
   mockScanResponse,
@@ -202,6 +203,45 @@ export const apiClient = {
       }
     } catch {
       // Endpoint not yet implemented or offline
+    }
+
+    return {};
+  },
+
+  async getModelEval(): Promise<ModelEvalResponse> {
+    if (isMock) {
+      return {
+        method: "Evaluated across precision, recall, F1, and mean latency on unseen code samples.",
+        models: [
+          {
+            model: "Rules (deterministic AST)",
+            precision: 0.74,
+            recall: 1.0,
+            f1: 0.85,
+            accuracy: 0.82,
+            categoryAccuracy: { secret: 1.0, auth: 1.0, injection: 0.92, idor: 0.73, dependency: 0.86 },
+            meanMs: 140
+          },
+          {
+            model: "Gemini 2.5 Flash (hybrid)",
+            precision: 0.68,
+            recall: 0.92,
+            f1: 0.78,
+            accuracy: 0.76,
+            categoryAccuracy: { secret: 0.93, auth: 0.88, injection: 0.85, idor: 0.82, dependency: 0.71 },
+            meanMs: 1250
+          }
+        ]
+      };
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/model-eval`);
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch {
+      // Endpoint not yet online
     }
 
     return {};

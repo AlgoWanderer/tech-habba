@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../api';
-import { BenchmarkMetric } from '../types';
-import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target } from 'lucide-react';
+import { BenchmarkMetric, ModelEvalResponse } from '../types';
+import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target, Cpu } from 'lucide-react';
 import { Badge, Button, Card, CardHeader, cx } from './ui';
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
@@ -10,12 +10,18 @@ const NotMeasured = () => <span className="text-base font-normal text-slate-400"
 
 export const ScorecardView: React.FC = () => {
   const [data, setData] = useState<BenchmarkMetric | null>(null);
+  const [evalData, setEvalData] = useState<ModelEvalResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
     try {
-      setData(await apiClient.getBenchmarkResults());
+      const [bench, ev] = await Promise.all([
+        apiClient.getBenchmarkResults(),
+        apiClient.getModelEval()
+      ]);
+      setData(bench);
+      setEvalData(ev);
     } catch (err) {
       console.error('Failed loading benchmark data', err);
     } finally {
@@ -96,6 +102,8 @@ export const ScorecardView: React.FC = () => {
       </div>
 
       <DetectionCard data={data} />
+
+      <ModelComparisonCard evalData={evalData} />
 
       <Card>
         <CardHeader title="Before and after" subtitle="Critical and high findings across the whole corpus" />
@@ -216,5 +224,62 @@ const Bar: React.FC<{ label: string; value?: number; max?: number; color: string
         <div className={cx('h-full rounded-full transition-[width] duration-700', color)} style={{ width: `${pct}%` }} />
       </div>
     </div>
+  );
+};
+
+const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({ evalData }) => {
+  const models = evalData?.models ?? [];
+  const pct = (v?: number) => (isNum(v) ? `${(v * 100).toFixed(1)}%` : <span className="text-slate-400">not measured</span>);
+  const ms = (v?: number) => (isNum(v) ? `${Math.round(v)} ms` : <span className="text-slate-400">not measured</span>);
+
+  return (
+    <Card>
+      <CardHeader
+        icon={<Cpu className="w-5 h-5" />}
+        title="Model comparison"
+        subtitle={evalData?.method || 'Evaluating precision, recall, F1, accuracy, and mean latency across models on unseen applications.'}
+      />
+      <div className="p-5">
+        {models.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-400">Model evaluation not measured</p>
+        ) : (
+          <div className="border border-slate-200 rounded-lg overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-xs text-slate-500">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2.5">Model</th>
+                  <th className="text-right font-medium px-4 py-2.5">Precision</th>
+                  <th className="text-right font-medium px-4 py-2.5">Recall</th>
+                  <th className="text-right font-medium px-4 py-2.5">F1</th>
+                  <th className="text-right font-medium px-4 py-2.5">Accuracy</th>
+                  <th className="text-right font-medium px-4 py-2.5">Mean latency</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {models.map((m, i) => (
+                  <tr key={m.model} className={cx(i === 0 && 'bg-slate-50/50')}>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="font-medium text-slate-900">{m.model}</div>
+                      {m.categoryAccuracy && (
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          {Object.entries(m.categoryAccuracy)
+                            .map(([cat, score]) => `${cat}: ${(score * 100).toFixed(0)}%`)
+                            .join(' · ')}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">{pct(m.precision)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{pct(m.recall)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{pct(m.f1)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{pct(m.accuracy)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{ms(m.meanMs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 };
