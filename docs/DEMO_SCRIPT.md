@@ -33,7 +33,7 @@
 * **Spoken Pitch:**
   > "Before touching the code, let's verify if these flaws are exploitable. We click **Run Exploit Simulation**.
   > 
-  > On the left: Our probe hits the unauthenticated `/api/users` endpoint. Result? HTTP 200 OK—names, emails, internal roles, and customer balances are exfiltrated.
+  > On the left: Our probe hits the unauthenticated `/api/users` endpoint. Result? HTTP 200 OKâ€”names, emails, internal roles, and customer balances are exfiltrated.
   > 
   > On the right: SlopStop tests the hardened route with the injected authentication barrier. The attack is terminated with an HTTP 401 Unauthorized."
 
@@ -49,7 +49,7 @@
   > 
   > Here is our side-by-side diff: Stripe keys and database URIs are extracted to environment variables, MongoDB queries cast inputs to strings to prevent operator injection, and route handlers are wrapped with auth middleware.
   > 
-  > Below, an automated `.env` template is generated—with a strict guarantee: **secret values are never included on disk**. Look at our rescan gauge: risk plummeted from 88% down to 8%."
+  > Below, an automated `.env` template is generatedâ€”with a strict guarantee: **secret values are never included on disk**. Look at our rescan gauge: risk plummeted from 88% down to 8%."
 
 ---
 
@@ -67,7 +67,7 @@
 * **Screen:** Click **Scorecard** tab.
 * **Action:** Highlight KPI numbers and the Failure Analysis list.
 * **Spoken Pitch:**
-  > "Finally, our benchmark scorecard. On our 30-app vibe-coded test corpus, SlopStop found all 56 planted flaws with zero false alarms on the 5 clean apps, and cut critical and high findings from 65 to 9, an **86% reduction**, in about 130 milliseconds per app. Every applied fix passed the syntax check and re-scan.
+  > "Finally, our benchmark scorecard. On our 30-app vibe-coded test corpus, SlopStop found all 56 planted flaws with zero false alarms on the 5 clean apps, and cut critical and high findings from 65 to 9, an **86% reduction**, in about 140 milliseconds per app. Every applied fix passed the syntax check and re-scan.
   > 
   > And we are honest about limitations: BOLA and IDOR logic flaws cannot be deterministically guessed because they require domain business knowledge. SlopStop flags them transparently for human review rather than pretending to fix them.
   > 

@@ -39,7 +39,8 @@ export function toBenchmarkMetric(results) {
     detectedVulnerabilities: num(s.detectedGroundTruthFlaws),
     cleanApps: num(s.cleanApps),
     falsePositivesOnCleanApps: num(s.falsePositivesOnCleanApps),
-    fixesApplied,
+    fixesApplied, // verified patches applied across ALL findings, not planted flaws fixed
+    plantedFlawsFixed: num(s.fixedGroundTruthFlaws), // planted flaws whose finding got an applied patch
   };
   for (const k of Object.keys(metric)) if (metric[k] === undefined) delete metric[k];
   return Object.keys(metric).length ? metric : null;
@@ -48,7 +49,9 @@ export function toBenchmarkMetric(results) {
 /**
  * Tool comparison rows from corpus/baselines/results.json, only for tools that actually ran.
  * Gitleaks is left out: the corpus keys are fake-format, so its 0 is not a fair comparison.
- * Row: {tool, detected, total, fixed, findingsOnCleanApps}
+ * Row: {tool, detected, total, fixed, plantedFixed, findingsOnCleanApps}
+ *   fixed        = verified patches applied (all findings)
+ *   plantedFixed = planted flaws auto-fixed (out of `total`)
  */
 export function toComparison(metric, baselines) {
   const rows = [];
@@ -58,8 +61,10 @@ export function toComparison(metric, baselines) {
       detected: metric.detectedVulnerabilities,
       total: metric.totalVulnerabilities,
       fixed: metric.fixesApplied,
+      plantedFixed: metric.plantedFlawsFixed,
       findingsOnCleanApps: metric.falsePositivesOnCleanApps,
     });
+    for (const k of Object.keys(rows[0])) if (rows[0][k] === undefined) delete rows[0][k];
   }
   const sg = baselines?.semgrep;
   if (sg?.status === 'run' && num(sg.detectedGroundTruthFlaws) !== undefined) {
@@ -68,6 +73,7 @@ export function toComparison(metric, baselines) {
       detected: sg.detectedGroundTruthFlaws,
       total: sg.totalGroundTruthFlaws,
       fixed: 0,
+      plantedFixed: 0,
       findingsOnCleanApps: num(sg.findingsOnCleanApps),
     });
   }
