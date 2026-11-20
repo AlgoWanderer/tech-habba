@@ -31,6 +31,15 @@ describe('built-in advisory fallback (dep-vuln)', () => {
     expect(stuckBelow(parseRange('^0.21.1'), [0, 21, 2])).toBe(false);
   });
 
+  it('flags nodemailer below 6.6.1', () => {
+    const [f] = scanPackageJson('package.json', pkg({ nodemailer: '6.4.10' }));
+    expect(f).toMatchObject({ severity: 'high', fixPreview: 'npm install nodemailer@^6.6.1' });
+    expect(f.message).toContain('CVE-2020-7769');
+    expect(f.message).toContain('CVE-2021-23400');
+    expect(scanPackageJson('package.json', pkg({ nodemailer: '^6.4.10' }))).toEqual([]);
+    expect(scanPackageJson('package.json', pkg({ nodemailer: '6.6.1' }))).toEqual([]);
+  });
+
   it('npm audit output takes precedence over the built-in list', () => {
     const audit = JSON.stringify({ auditReportVersion: 2, vulnerabilities: {} });
     expect(scan([{ path: 'package.json', content: pkg({ jsonwebtoken: '8.5.1' }) }, { path: 'npm-audit.json', content: audit }])).toEqual([]);

@@ -76,10 +76,6 @@ export default function App() {
       ta.scrollTop = top;
       if (gutterRef.current) gutterRef.current.scrollTop = top;
       setEditorScroll(top);
-      const lines = files[idx].content.split('\n');
-      const start = lines.slice(0, f.line - 1).reduce((n, l) => n + l.length + 1, 0);
-      ta.focus({ preventScroll: true });
-      ta.setSelectionRange(start, start + (lines[f.line - 1]?.length ?? 0));
     });
   };
 
