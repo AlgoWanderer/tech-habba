@@ -4,7 +4,9 @@ You own the dashboard and the pitch. D1 can start now with mock data.
 STEP D1 (Wave 1, about 1.5 hours). Branch: feat/d-ai
 1. web/src/types.ts: add to Finding  source?: "rule" | "ai";  confidence?: number;
    to the fix result type  source?: "rule" | "ai".  Add mode types "rules" | "ai" | "hybrid".
-2. web/src/api.ts: scan(files, mode) and fix(files, ids, mode) send the mode in the body.
+2. web/src/api.ts: scan(files, mode) and fix(files, ids, mode, aiFindings) send the mode in the
+   body; in hybrid mode fix() must also send aiFindings = the findings with source "ai" from the
+   last hybrid scan response (otherwise the server rejects AI ids as "not provided").
    In mock mode, add 2 sample AI findings to the mock scan for mode ai/hybrid (e.g. an XSS line
    and a public-route check, confidence 0.8 and 0.6).
 3. Security Gate: a 3-way switch above "Scan code": Rules | AI only | Hybrid (default Rules).
