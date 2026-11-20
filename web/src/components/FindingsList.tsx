@@ -11,6 +11,8 @@ interface FindingsListProps {
   onSelect?: (f: Finding) => void;
   /** Round-trip time of the scan request, measured in the browser. */
   scanMs?: number | null;
+  /** Whether scan was run in hybrid mode (rules + AI). */
+  isHybrid?: boolean;
 }
 
 const CATEGORY: Record<FindingCategory, { label: string; icon: React.ReactNode }> = {
@@ -30,7 +32,7 @@ const REVIEW_NOTE: Partial<Record<FindingCategory, string>> = {
 
 const ORDER: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
 
-export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs }) => {
+export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs, isHybrid = false }) => {
   const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id ?? null);
   const autoCount = findings.filter((f) => f.fixable === 'auto').length;
   const aiCount = findings.filter((f) => f.source === 'ai').length;
@@ -47,12 +49,12 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
         }
         subtitle={`${autoCount} auto-fixable · ${reviewCount} need review${typeof scanMs === 'number' ? ` · scanned in ${scanMs} ms` : ''}`}
         action={
-          onFixAll && (autoCount > 0 || aiCount > 0) ? (
+          onFixAll && (autoCount > 0 || aiCount > 0 || (isHybrid && findings.length > 0)) ? (
             <Button onClick={onFixAll} disabled={isFixing} icon={isFixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}>
               {isFixing
                 ? 'Verifying patches…'
-                : autoCount > 0 && aiCount > 0
-                  ? `Fix ${autoCount + aiCount} (rules + AI)`
+                : isHybrid
+                  ? 'Fix all (rules + AI, verified)'
                   : autoCount > 0
                     ? `Fix ${autoCount} automatically`
                     : `Fix ${aiCount} with AI`}

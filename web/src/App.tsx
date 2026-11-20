@@ -9,7 +9,7 @@ import { ExploitSimulator } from './components/ExploitSimulator';
 import { PromptHardenerView } from './components/PromptHardenerView';
 import { ScorecardView } from './components/ScorecardView';
 import { Button, Callout, cx } from './components/ui';
-import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle } from 'lucide-react';
+import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 type TabType = 'gate' | 'hardener' | 'scorecard';
 
@@ -44,6 +44,7 @@ export default function App() {
   const [scanMs, setScanMs] = useState<number | null>(null);
   const [focus, setFocus] = useState<{ path: string; line: number } | null>(null);
   const [editorScroll, setEditorScroll] = useState(0);
+  const [editorNotice, setEditorNotice] = useState<string | null>(null);
 
   // Phase 2: Mode switch (Rules | AI only | Hybrid)
   const [mode, setMode] = useState<ScanMode>('rules');
@@ -157,12 +158,13 @@ export default function App() {
     if (!scanResponse) return;
     setIsFixing(true);
     setError(null);
+    setEditorNotice(null);
     try {
       const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
       const aiFindings = scanResponse.findings.filter((f) => f.source === 'ai');
-      // In hybrid mode, include auto-fixable rule findings plus AI findings for the AI patcher
+      // In hybrid mode send ALL finding ids so the AI patcher attempts to fix review findings
       const ids = fixMode === 'hybrid'
-        ? scanResponse.findings.filter((f) => f.fixable === 'auto' || f.source === 'ai').map((f) => f.id)
+        ? scanResponse.findings.map((f) => f.id)
         : scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
       setFixResponse(await apiClient.fix(files, ids, fixMode, aiFindings));
     } catch (err: any) {
@@ -172,15 +174,41 @@ export default function App() {
     }
   };
 
-  const handleApplyToEditor = () => {
+  const handleApplyToEditor = async () => {
     if (!fixResponse) return;
-    setFiles((prev) =>
-      prev.map((f) => {
-        const p = fixResponse.patched.find((x) => x.path === f.path);
-        return p ? { ...f, content: p.patched } : f;
-      })
-    );
+    
+    // 1. Replace content of existing tabs with patched
+    const updatedFiles = files.map((f) => {
+      const p = fixResponse.patched.find((x) => x.path === f.path);
+      return p ? { ...f, content: p.patched } : f;
+    });
+
+    // 2. Add new files from fixResponse.patched as new tabs (e.g. middleware/requireAuth.js), but NEVER .env.example
+    const existingPaths = new Set(files.map((f) => f.path));
+    const newFiles: FileInput[] = fixResponse.patched
+      .filter((p) => !existingPaths.has(p.path) && p.path !== '.env.example' && !p.path.endsWith('.env.example'))
+      .map((p) => ({ path: p.path, content: p.patched }));
+
+    const nextFiles = [...updatedFiles, ...newFiles];
+    setFiles(nextFiles);
     setFixResponse(null);
+    setEditorNotice('Patched code applied to the editor (not saved to disk).');
+
+    // 3. Automatically re-run the scan on the updated files (same mode)
+    setIsScanning(true);
+    setError(null);
+    try {
+      const snapshot = Object.fromEntries(nextFiles.map((f) => [f.path, f.content]));
+      const t0 = performance.now();
+      const res = await apiClient.scan(nextFiles, mode);
+      setScanMs(Math.round(performance.now() - t0));
+      setScanResponse(res);
+      setScannedFiles(snapshot);
+    } catch (err: any) {
+      setError(err?.message || 'Re-scan request failed');
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   return (
@@ -289,15 +317,29 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Warning when tab is not named .js */}
-              {!currentFile?.path.endsWith('.js') && (
-                <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-600" />
-                  <span>
-                    Warning: <strong>{currentFile.path}</strong> is not named <code className="font-mono font-semibold">.js</code>. SlopStop AST rules and syntax checks target JavaScript.
-                  </span>
-                </div>
-              )}
+              {/* Warning when tab is not a supported file type */}
+              {(() => {
+                const path = currentFile?.path || '';
+                const isSupported =
+                  path.endsWith('.js') ||
+                  path.endsWith('.mjs') ||
+                  path.endsWith('.cjs') ||
+                  path.endsWith('.ts') ||
+                  path.endsWith('.tsx') ||
+                  path.endsWith('.jsx') ||
+                  path === 'package.json' ||
+                  path.endsWith('/package.json') ||
+                  path.endsWith('\\package.json');
+                if (isSupported) return null;
+                return (
+                  <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-600" />
+                    <span>
+                      Warning: <strong>{currentFile?.path}</strong> is not a supported file type (.js, .mjs, .cjs, .ts, .tsx, .jsx, package.json).
+                    </span>
+                  </div>
+                );
+              })()}
 
               {/* Editor: no soft-wrap, gutter scroll synced with the textarea */}
               <div className="flex-1 min-h-0 flex bg-slate-950 font-mono text-[13px]">
@@ -408,6 +450,12 @@ export default function App() {
 
             {/* Results */}
             <div className="flex flex-col gap-6 min-w-0">
+              {editorNotice && (
+                <Callout tone="success" icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}>
+                  {editorNotice}
+                </Callout>
+              )}
+
               {error && (
                 <Callout tone="danger" icon={<AlertCircle className="w-4 h-4" />}>
                   {error}
@@ -418,13 +466,21 @@ export default function App() {
                 <DiffViewer
                   fixResponse={fixResponse}
                   originalScore={scanResponse.score}
+                  originalFindings={scanResponse.findings}
                   onReset={() => setFixResponse(null)}
                   onApplyToEditor={handleApplyToEditor}
                 />
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />
-                  <FindingsList findings={scanResponse.findings} onFixAll={handleFixAll} isFixing={isFixing} onSelect={jumpTo} scanMs={scanMs} />
+                  <FindingsList
+                    findings={scanResponse.findings}
+                    onFixAll={handleFixAll}
+                    isFixing={isFixing}
+                    onSelect={jumpTo}
+                    scanMs={scanMs}
+                    isHybrid={mode === 'hybrid'}
+                  />
                   <ExploitSimulator />
                 </>
               ) : (
