@@ -2,13 +2,9 @@
 //   scan(files) -> Finding[]
 //   computeScore(findings) -> Score
 //   applyFixes(files, findings) -> { patched, envFile, results }
-// STEP 1 STUBS: contract-shaped, so roles B/C/D can import immediately.
-
-/** @param {{path:string, content:string}[]} files */
-export function scan(files) {
-  void files;
-  return [];
-}
+// scan(files, { audit }) also accepts npm audit JSON via options or as a submitted *.json file.
+export { scan, analyze } from './scanner/index.js';
+export { parseAudit } from './scanner/deps.js';
 
 const WEIGHTS = { critical: 25, high: 15, medium: 8, low: 3 };
 
