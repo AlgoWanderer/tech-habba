@@ -12,7 +12,7 @@
   - Hardcoded live credentials (Stripe keys, DB connection strings with cleartext passwords).
   - Unauthenticated Express endpoints exposing entire databases.
   - NoSQL injection sinks passing raw query objects into MongoDB.
-* **The Trap:** Existing "AI fixers" hallucinate code, delete existing routes, or introduce syntax errors that break production.
+* **The Trap:** Existing "AI fixers" rewrite code with **no verification**: nothing guarantees the fix actually blocks the attack or that nothing else broke.
 * **Our Core Thesis:** **AI proposes, deterministic code proves.**
 
 ---
@@ -59,8 +59,8 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 
 #### Key Findings & Negative Result (Honest AI Research):
 - **AI-only's real weakness is low fix efficacy, not app breakage:** The experiment showed 0 broken apps across all arms (the LLM did not fail syntax or delete routes), but **AI-only fixes far less (54.6% vs 99.2% for Hybrid)** and leaves changes completely unverified.
-- **LLMs find semantic flaws rules miss:** On DVNA, AI caught 4/6 vs rules' 1/6 (including command injection and exposed Stripe keys).
-- **Hybrid wins:** Combines deterministic rule precision with model reasoning, achieving a **99.2% flaw reduction** with verified safety.
+- **LLMs find semantic flaws rules miss:** On DVNA, AI caught 4/6 vs rules' 1/6 (including the command injection), and in a Gemini-written app it caught a Stripe secret key returned in an API response, which no rule flags.
+- **Hybrid wins:** Combines deterministic rule precision with model reasoning, removing **99.2% of critical/high findings** on the corpus, with every AI fix verified.
 
 ---
 
