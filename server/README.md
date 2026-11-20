@@ -84,6 +84,14 @@ AI findings carry `source:"ai"`, `confidence` (0-1) and `fixable:"review"`, with
 - **Detector output is untrusted:** unknown files, out-of-range lines and confidence below 0.5 are dropped, and snippets come from the real file.
 - **Every AI patch must pass:** no masked placeholder in the output, no deleted route, `node --check`, a rule re-scan (target gone, nothing new critical/high), and for AI-found flaws an independent re-check by the model. Anything else is reported as `rejected` with the reason and never applied. At most 10 AI patches per request.
 
+**HTTP test, two modes** (`server/exploit/httpTest.js`), run by `POST /api/fix` on every applied fix (send `httpTest:false` to skip; `SLOPSTOP_HTTP_TEST=0` disables it):
+- The original and the patched app each run in a throwaway child process on a random `127.0.0.1` port, with in-memory stand-ins for mongoose, jsonwebtoken, bcrypt and network SDKs (`server/exploit/stubs`). Every model is seeded with a record owned by user A (`a1`) and one by user B, and the test token carries only the keys the app itself signs.
+- **Attack mode:** the exploit must work on the original and be blocked after the fix (no login on `auth`; user B asking for A's record on `idor`; `{"$ne": null}` on NoSQL login/queries).
+- **Normal mode:** a legitimate user must still get through after the fix (the owner gets their record; valid credentials still log in).
+- Reasons read like `HTTP test passed on GET /api/loans/:id: before the fix another user got the owner's record (200); after it another user was refused (404), and the owner got their record (200)`. The dashboard shows a fix as "Proven" when its reason contains `HTTP test passed`.
+- **AI patches that fail either mode are rejected.** Rule fixes are annotated only. Anything the sandbox cannot run is reported as not testable, never as a failure.
+- **It executes the submitted code** (child process with a timeout), which is fine for this local-only tool but not for a public server.
+
 CLI: `npx slopstop scan <files> --ai` runs hybrid detection and marks AI findings `[AI 82%]`; `--fix` stays rules-only.
 
 ## Tests

@@ -51,13 +51,13 @@ export function sanitizeAiFindings(list, files) {
  * 1. rule fixes exactly as in rules mode (verified);  2. the model patches every requested finding the
  * rules left for review, one at a time on top of the result, each verified;  3. rescan.
  */
-export async function fixHybrid(core, files, ids, client, { aiFindings } = {}) {
+export async function fixHybrid(core, files, ids, client, { aiFindings, httpTest = false } = {}) {
   const t0 = performance.now();
   const ai = sanitizeAiFindings(aiFindings, files);
   const aiById = new Map(ai.map((f) => [f.id, f]));
   const ruleIds = ids.filter((id) => !id.startsWith('ai-'));
 
-  const base = await runFix(core, files, ruleIds);
+  const base = await runFix(core, files, ruleIds, { httpTest });
   const results = new Map(base.results.map((r) => [r.findingId, { ...r, source: 'rule' }]));
   let current = files.map((f) => ({ ...f }));
   for (const p of base.patched) {
@@ -86,7 +86,7 @@ export async function fixHybrid(core, files, ids, client, { aiFindings } = {}) {
     }
     const ruleFindings = await core.scan(current);
     const live = f.source === 'ai' ? target : ruleFindings.find((r) => r.ruleId === f.ruleId && r.file === f.file && r.snippet.trim() === f.snippet.trim()) ?? target;
-    const r = await aiPatch(core, current, live, client, { ruleFindings });
+    const r = await aiPatch(core, current, live, client, { ruleFindings, httpTest });
     results.set(f.id, { ...r.result, findingId: f.id });
     if (r.patched) current = current.map((c) => (c.path === r.patched.path ? { path: c.path, content: r.patched.patched } : c));
     else if (f.source === 'ai') leftAi.push(f);
