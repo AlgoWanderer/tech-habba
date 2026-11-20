@@ -3,3 +3,9 @@ node_modules/
 dist/
 *.log
 .DS_Store
+
+# Phase 2 training (role A): never commit data, weights or adapters
+training/data/
+training/out/*
+!training/out/metrics.json
+training/.venv/

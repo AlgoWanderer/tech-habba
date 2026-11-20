@@ -1,0 +1,38 @@
+# slopstop-qwen: Qwen2.5-Coder-1.5B-Instruct + SlopStop LoRA (merged), imported into Ollama.
+#   python train.py --merge
+#   python <llama.cpp>/convert_hf_to_gguf.py out/merged --outfile out/gguf/slopstop-qwen-q8_0.gguf --outtype q8_0
+#   ollama create slopstop-qwen -f Modelfile
+# (Ollama 0.40 cannot import Qwen2 safetensors directly, hence the GGUF step.)
+# For a like-for-like baseline, the base model is converted the same way and imported as
+# qwen-base-q8 with this file's FROM line pointed at out/gguf/qwen-base-q8_0.gguf.
+FROM ./out/gguf/slopstop-qwen-q8_0.gguf
+
+PARAMETER temperature 0.1
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "<|endoftext|>"
+
+SYSTEM """You are a security reviewer for Node.js/Express code. Answer with JSON only: {"vulnerable": bool, "category": "secret|injection|auth|idor|dependency|none", "reason": string}."""
+
+# Chat template copied from `ollama show qwen2.5-coder:1.5b --modelfile` (tool-calling part removed).
+TEMPLATE """{{- if .Messages }}
+{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "assistant" }}<|im_start|>assistant
+{{ .Content }}{{ if not $last }}<|im_end|>
+{{ end }}
+{{- end }}
+{{- if and (ne .Role "assistant") $last }}<|im_start|>assistant
+{{ end }}
+{{- end }}
+{{- else }}
+{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ end }}{{ .Response }}{{ if .Response }}<|im_end|>{{ end }}"""
