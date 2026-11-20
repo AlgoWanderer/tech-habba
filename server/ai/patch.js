@@ -2,6 +2,10 @@
 // Every candidate then goes through the deterministic gate: no masked secret in the output, no
 // deleted route, node --check, a rule re-scan (target gone, nothing new critical/high), and for
 // AI-found flaws an independent re-check. Anything that fails is rejected, never applied.
+// Semantic gate (found in live testing: a model wrote `findOne({ _id, userId: req.user.id })` in an
+// app whose schema field is memberId and whose middleware sets req.member; it passed node --check
+// and the rule re-scan but would crash every request): the patch may only use req.<x> that the file
+// sets and schema fields that exist.
 import { parse, walk, isFunction } from '../../core/lib/ast.js';
 import { verify } from '../verify.js';
 import { containsPlaceholder, maskForModel } from './mask.js';
@@ -52,6 +56,79 @@ const RECHECK_SCHEMA = {
   required: ['fixed', 'reason'],
 };
 
+// --- File facts: what the code actually defines, so the model is told and the patch is checked ---
+const REQ_BUILTIN = new Set(['params', 'query', 'body', 'headers', 'cookies', 'signedCookies', 'method', 'path', 'url', 'originalUrl', 'baseUrl', 'ip', 'ips', 'hostname', 'protocol', 'secure', 'get', 'header', 'is', 'accepts', 'app', 'res', 'route', 'files', 'file', 'session']);
+const QUERY_CALL = /\b([A-Z]\w*)\.(?:find|findOne|findOneAndUpdate|findOneAndDelete|findOneAndRemove|updateOne|updateMany|deleteOne|deleteMany|countDocuments|exists)\(\s*\{([^{}]*)\}/g;
+
+function schemaFields(body) {
+  const fields = new Set();
+  let depth = 0;
+  let token = '';
+  for (const ch of body) {
+    if (ch === '{' || ch === '[' || ch === '(') depth++;
+    else if (ch === '}' || ch === ']' || ch === ')') depth--;
+    if (depth === 0 && ch === ',') token = '';
+    else if (depth === 0) {
+      token += ch;
+      const m = token.match(/^\s*["']?(\w+)["']?\s*:$/);
+      if (m) fields.add(m[1]);
+    }
+  }
+  return fields;
+}
+
+/** {reqProps: what middleware assigns to req, models: Map<ModelName, Set<field>>} for simple mongoose code. */
+export function fileFacts(content) {
+  const reqProps = new Set([...content.matchAll(/\breq\.(\w+)\s*=(?!=)/g)].map((m) => m[1]));
+  const schemas = new Map();
+  for (const m of content.matchAll(/\b(\w+)\s*=\s*new\s+(?:mongoose\.)?Schema\(\s*\{/g)) schemas.set(m[1], balanced(content, m.index + m[0].length - 1));
+  const models = new Map();
+  for (const m of content.matchAll(/\b(?:mongoose\.)?model\(\s*["'](\w+)["']\s*,\s*/g)) {
+    const rest = content.slice(m.index + m[0].length);
+    const inline = rest.match(/^new\s+(?:mongoose\.)?Schema\(\s*\{/);
+    const body = inline ? balanced(content, m.index + m[0].length + inline[0].length - 1) : schemas.get(rest.match(/^(\w+)/)?.[1]);
+    const name = content.slice(0, m.index).match(/(?:const|let|var)\s+(\w+)\s*=\s*$/)?.[1] ?? m[1];
+    if (body !== undefined) models.set(name, schemaFields(body));
+  }
+  return { reqProps, models };
+}
+
+function balanced(text, openIdx) {
+  let depth = 0;
+  for (let i = openIdx; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}' && --depth === 0) return text.slice(openIdx + 1, i);
+  }
+  return undefined;
+}
+
+function factsText({ reqProps, models }) {
+  const lines = [];
+  lines.push(`Authenticated data on req (set by this file's middleware): ${reqProps.size ? [...reqProps].map((p) => `req.${p}`).join(', ') : 'none found'}`);
+  for (const [name, fields] of models) lines.push(`Model ${name} fields: _id, ${[...fields].join(', ')}`);
+  return lines.join('\n');
+}
+
+/** Problems that pass node --check but would break the app: unknown req.X, unknown schema fields. */
+export function semanticProblems(original, replacement, targetText) {
+  const facts = fileFacts(original);
+  const problems = [];
+  for (const m of replacement.matchAll(/\breq\.(\w+)/g)) {
+    const p = m[1];
+    if (!REQ_BUILTIN.has(p) && !facts.reqProps.has(p) && !new RegExp(`\\breq\\.${p}\\b`).test(targetText)) {
+      problems.push(`it uses req.${p}, which nothing in this file sets`);
+    }
+  }
+  for (const m of replacement.matchAll(QUERY_CALL)) {
+    const fields = facts.models.get(m[1]);
+    if (!fields) continue;
+    for (const k of m[2].matchAll(/(?:^|,)\s*["']?(\w+)["']?\s*:/g)) {
+      if (k[1] !== '_id' && !fields.has(k[1])) problems.push(`it filters ${m[1]} by "${k[1]}", which is not a field of its schema`);
+    }
+  }
+  return [...new Set(problems)];
+}
+
 const stripFences = (s) => String(s ?? '').replace(/^\s*```[a-z]*\n?/i, '').replace(/\n?```\s*$/, '');
 const slice = (lines, a, b) => lines.slice(a - 1, b).map((l, i) => `${String(a + i).padStart(4)}| ${l}`).join('\n');
 
@@ -72,6 +149,7 @@ export async function aiPatch(core, files, finding, client, { ruleFindings } = {
   const user = [
     `FLAW (${finding.category}, line ${finding.line}): ${finding.message}`,
     `FILE: ${file.path}`,
+    `FACTS ABOUT THIS FILE (use these exact names):\n${factsText(fileFacts(file.content))}`,
     `CONTEXT before:\n${slice(mlines, Math.max(1, start - CONTEXT), start - 1) || '(none)'}`,
     `TARGET lines ${start}-${end}:\n${slice(mlines, start, end)}`,
     `CONTEXT after:\n${slice(mlines, end + 1, Math.min(mlines.length, end + CONTEXT)) || '(none)'}`,
@@ -90,6 +168,8 @@ export async function aiPatch(core, files, finding, client, { ruleFindings } = {
   const patchedText = [...lines.slice(0, start - 1), ...replacement.split('\n'), ...lines.slice(end)].join('\n');
   if (patchedText === file.content) return reject('it changed nothing.');
   if (countRoutes(patchedText) < countRoutes(file.content)) return reject('it deleted a route.');
+  const problems = semanticProblems(file.content, replacement, lines.slice(start - 1, end).join('\n'));
+  if (problems.length) return reject(`${problems.join('; ')}.`);
 
   const isRuleTarget = finding.source !== 'ai';
   const [check] = await verify([{ path: file.path, original: file.content, patched: patchedText }], {
