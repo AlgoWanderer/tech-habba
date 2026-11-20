@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Corpus of vibe-coded apps and benchmark suite for SlopStop",
   "scripts": {
-    "benchmark": "node benchmark/run.js"
+    "benchmark": "node benchmark/run.js",
+    "experiment": "node experiment/run.js"
   }
 }
