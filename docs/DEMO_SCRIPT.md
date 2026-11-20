@@ -49,11 +49,30 @@
   > 
   > Here is our side-by-side diff: Stripe keys and database URIs are extracted to environment variables, MongoDB queries cast inputs to strings to prevent operator injection, and route handlers are wrapped with auth middleware.
   > 
-  > Below, an automated `.env` template is generatedâ€”with a strict guarantee: **secret values are never included on disk**. Look at our rescan gauge: risk plummeted from 88% down to 8%."
+  > Below, an automated `.env` template is generated—with a strict guarantee: **secret values are never included on disk**. Look at our rescan gauge: risk plummeted from 88% down to 8%."
 
 ---
 
-### [2:20 - 2:45] Screen 5: Prompt Hardener (Privacy Gate)
+### [2:20 - 2:50] Screen 4b: The 30-Second Hybrid Step (Verifier Catches AI Mistakes)
+* **Screen:** Return to **Security Gate** -> Select **Hybrid** mode -> Click **Scan code**.
+* **Action:** 
+  1. Point at the violet **AI 82%** finding (e.g. `ai-xss` reflected query injection).
+  2. Click **Fix all (rules + AI, verified)**.
+  3. In the Patch Results list, point directly at the **RED "Rejected"** AI patch.
+* **Spoken Pitch:**
+  > "Now let's switch from pure deterministic Rules to **Hybrid Mode** (Rules + Gemini 2.5 Flash + Verifier).
+  > 
+  > Watch the scanner: in addition to deterministic rules, Gemini surfaces deep flaws the rules missed, tagged with a violet **AI 82%** badge and confidence score.
+  > 
+  > When we click **Fix all (rules + AI, verified)**, the model proposes patches for complex review findings. But look at this red **Rejected** row: the LLM proposed a patch that broke syntax.
+  > 
+  > In any other tool, that broken code ships to production. In SlopStop, our 6-stage verifier caught the AI's mistake instantly and blocked it.
+  > 
+  > **AI proposes, deterministic code proves.**"
+
+---
+
+### [2:50 - 3:15] Screen 5: Prompt Hardener (Privacy Gate)
 * **Screen:** Click **Prompt Hardener** tab.
 * **Action:** Load sample prompt -> click **Harden Prompt & Redact Secrets**.
 * **Spoken Pitch:**
@@ -63,7 +82,7 @@
 
 ---
 
-### [2:45 - 3:00] Screen 6: Scorecard & Honest Limitations
+### [3:15 - 3:30] Screen 6: Scorecard & Honest Limitations
 * **Screen:** Click **Scorecard** tab.
 * **Action:** Highlight KPI numbers and the Failure Analysis list.
 * **Spoken Pitch:**

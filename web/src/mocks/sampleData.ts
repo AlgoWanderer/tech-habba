@@ -1,4 +1,36 @@
-import { ScanResponse, FixResponse, ExploitResponse, HardenPromptResponse } from '../types';
+import { ScanResponse, FixResponse, ExploitResponse, HardenPromptResponse, Finding } from '../types';
+
+export const mockAiFindings: Finding[] = [
+  {
+    id: "ai-injection:index.js:30",
+    ruleId: "ai-xss",
+    category: "injection",
+    severity: "high",
+    file: "index.js",
+    line: 30,
+    endLine: 30,
+    snippet: 'res.send(`<h1>Hello ${req.query.name}</h1>`);',
+    message: "Reflected cross-site scripting (XSS): unescaped query parameter rendered in HTML response.",
+    fixable: "review",
+    fixPreview: 'res.send(`<h1>Hello ${escapeHtml(req.query.name)}</h1>`);',
+    source: "ai",
+    confidence: 0.82
+  },
+  {
+    id: "ai-auth:index.js:12",
+    ruleId: "ai-public-route-check",
+    category: "auth",
+    severity: "medium",
+    file: "index.js",
+    line: 12,
+    endLine: 15,
+    snippet: 'app.get("/api/config", (req, res) => res.json(systemConfig));',
+    message: "Route /api/config exposes system configuration without auth; verify if intentional.",
+    fixable: "review",
+    source: "ai",
+    confidence: 0.64
+  }
+];
 
 export const mockScanResponse: ScanResponse = {
   findings: [
@@ -140,17 +172,20 @@ app.get("/api/orders/:id", requireAuth, async (req, res) => {
     {
       findingId: "secret-hardcoded:index.js:5",
       status: "applied",
-      reason: "Replaced with process.env.STRIPE_KEY; passed node --check and re-scan."
+      reason: "Replaced with process.env.STRIPE_KEY; passed node --check and re-scan.",
+      source: "rule"
     },
     {
       findingId: "nosql-injection:index.js:14",
       status: "rejected",
-      reason: "Patched file failed node --check; patch discarded."
+      reason: "Patched file failed node --check; patch discarded.",
+      source: "rule"
     },
     {
       findingId: "idor-suspect:index.js:28",
       status: "review",
-      reason: "Ownership checks are business logic; flagged for human review."
+      reason: "Ownership checks are business logic; flagged for human review.",
+      source: "rule"
     }
   ],
   rescan: {

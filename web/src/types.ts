@@ -3,6 +3,9 @@
 export type FindingCategory = "secret" | "injection" | "auth" | "dependency" | "idor";
 export type FindingSeverity = "critical" | "high" | "medium" | "low";
 export type FixableStatus = "auto" | "review";
+export type FindingSource = "rule" | "ai";
+export type ScanMode = "rules" | "ai" | "hybrid";
+export type FixMode = "rules" | "hybrid";
 
 export interface Finding {
   id: string;            // stable: `${ruleId}:${file}:${line}`
@@ -16,6 +19,8 @@ export interface Finding {
   message: string;
   fixable: FixableStatus;
   fixPreview?: string;
+  source?: FindingSource;   // Phase 2: "rule" | "ai" (missing = "rule")
+  confidence?: number;     // Phase 2: 0..1 confidence for AI findings
 }
 
 export interface ScoreCounts {
@@ -37,6 +42,7 @@ export interface FileInput {
 
 export interface ScanRequest {
   files: FileInput[];
+  mode?: ScanMode;
 }
 
 export interface ScanResponse {
@@ -47,6 +53,8 @@ export interface ScanResponse {
 export interface FixRequest {
   files: FileInput[];
   findingIds: string[];
+  mode?: FixMode;
+  aiFindings?: Finding[];
 }
 
 export interface PatchedFile {
@@ -61,6 +69,7 @@ export interface FixResult {
   findingId: string;
   status: FixResultStatus;
   reason: string;
+  source?: FindingSource; // Phase 2: "rule" | "ai"
 }
 
 export interface FixResponse {
@@ -123,4 +132,27 @@ export interface BenchmarkMetric {
     fixed?: number;
     findingsOnCleanApps?: number;
   }>;
+}
+
+// Health check response
+export interface HealthResponse {
+  ok: boolean;
+  ai?: boolean;
+  version?: string;
+}
+
+// Phase 2 Experiment summary (GET /api/experiment)
+export interface ExperimentArmSummary {
+  arm: "rules" | "ai" | "hybrid";
+  flawsFound: number;
+  criticalHighLeft: number;
+  appsBroken: number;
+  aiPatchesRejected: number;
+  msPerApp: number;
+}
+
+export interface ExperimentSummary {
+  arms?: ExperimentArmSummary[];
+  hypothesis?: string;
+  timestamp?: string;
 }

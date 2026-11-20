@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity } from './types';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
+import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity, ScanMode, FixMode } from './types';
 import { apiClient } from './api';
 import { SAMPLE_APPS } from './mocks/sampleData';
 import { RiskMeter } from './components/RiskMeter';
@@ -9,7 +9,7 @@ import { ExploitSimulator } from './components/ExploitSimulator';
 import { PromptHardenerView } from './components/PromptHardenerView';
 import { ScorecardView } from './components/ScorecardView';
 import { Button, Callout, cx } from './components/ui';
-import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle } from 'lucide-react';
+import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 type TabType = 'gate' | 'hardener' | 'scorecard';
 
@@ -44,12 +44,27 @@ export default function App() {
   const [scanMs, setScanMs] = useState<number | null>(null);
   const [focus, setFocus] = useState<{ path: string; line: number } | null>(null);
   const [editorScroll, setEditorScroll] = useState(0);
+  const [editorNotice, setEditorNotice] = useState<string | null>(null);
+
+  // Phase 2: Mode switch (Rules | AI only | Hybrid)
+  const [mode, setMode] = useState<ScanMode>('rules');
+  const [aiAvailable, setAiAvailable] = useState<boolean>(true);
 
   const gutterRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const currentFile = files[activeFileIndex] || files[0];
   const lineCount = (currentFile?.content || '').split('\n').length;
   const mock = apiClient.isMockMode();
+
+  useEffect(() => {
+    apiClient.getHealth().then((h) => {
+      const avail = Boolean(h.ai);
+      setAiAvailable(avail);
+      if (!avail && (mode === 'ai' || mode === 'hybrid')) {
+        setMode('rules');
+      }
+    });
+  }, []);
 
   // Worst severity per line for the open file, only while it still matches what was scanned.
   const markers = useMemo(() => {
@@ -128,7 +143,7 @@ export default function App() {
     try {
       const snapshot = Object.fromEntries(files.map((f) => [f.path, f.content]));
       const t0 = performance.now();
-      const res = await apiClient.scan(files);
+      const res = await apiClient.scan(files, mode);
       setScanMs(Math.round(performance.now() - t0));
       setScanResponse(res);
       setScannedFiles(snapshot);
@@ -143,13 +158,56 @@ export default function App() {
     if (!scanResponse) return;
     setIsFixing(true);
     setError(null);
+    setEditorNotice(null);
     try {
-      const ids = scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
-      setFixResponse(await apiClient.fix(files, ids));
+      const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
+      const aiFindings = scanResponse.findings.filter((f) => f.source === 'ai');
+      // In hybrid mode send ALL finding ids so the AI patcher attempts to fix review findings
+      const ids = fixMode === 'hybrid'
+        ? scanResponse.findings.map((f) => f.id)
+        : scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
+      setFixResponse(await apiClient.fix(files, ids, fixMode, aiFindings));
     } catch (err: any) {
       setError(err?.message || 'Fix request failed');
     } finally {
       setIsFixing(false);
+    }
+  };
+
+  const handleApplyToEditor = async () => {
+    if (!fixResponse) return;
+    
+    // 1. Replace content of existing tabs with patched
+    const updatedFiles = files.map((f) => {
+      const p = fixResponse.patched.find((x) => x.path === f.path);
+      return p ? { ...f, content: p.patched } : f;
+    });
+
+    // 2. Add new files from fixResponse.patched as new tabs (e.g. middleware/requireAuth.js), but NEVER .env.example
+    const existingPaths = new Set(files.map((f) => f.path));
+    const newFiles: FileInput[] = fixResponse.patched
+      .filter((p) => !existingPaths.has(p.path) && p.path !== '.env.example' && !p.path.endsWith('.env.example'))
+      .map((p) => ({ path: p.path, content: p.patched }));
+
+    const nextFiles = [...updatedFiles, ...newFiles];
+    setFiles(nextFiles);
+    setFixResponse(null);
+    setEditorNotice('Patched code applied to the editor (not saved to disk).');
+
+    // 3. Automatically re-run the scan on the updated files (same mode)
+    setIsScanning(true);
+    setError(null);
+    try {
+      const snapshot = Object.fromEntries(nextFiles.map((f) => [f.path, f.content]));
+      const t0 = performance.now();
+      const res = await apiClient.scan(nextFiles, mode);
+      setScanMs(Math.round(performance.now() - t0));
+      setScanResponse(res);
+      setScannedFiles(snapshot);
+    } catch (err: any) {
+      setError(err?.message || 'Re-scan request failed');
+    } finally {
+      setIsScanning(false);
     }
   };
 
@@ -259,6 +317,30 @@ export default function App() {
                 </button>
               </div>
 
+              {/* Warning when tab is not a supported file type */}
+              {(() => {
+                const path = currentFile?.path || '';
+                const isSupported =
+                  path.endsWith('.js') ||
+                  path.endsWith('.mjs') ||
+                  path.endsWith('.cjs') ||
+                  path.endsWith('.ts') ||
+                  path.endsWith('.tsx') ||
+                  path.endsWith('.jsx') ||
+                  path === 'package.json' ||
+                  path.endsWith('/package.json') ||
+                  path.endsWith('\\package.json');
+                if (isSupported) return null;
+                return (
+                  <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-600" />
+                    <span>
+                      Warning: <strong>{currentFile?.path}</strong> is not a supported file type (.js, .mjs, .cjs, .ts, .tsx, .jsx, package.json).
+                    </span>
+                  </div>
+                );
+              })()}
+
               {/* Editor: no soft-wrap, gutter scroll synced with the textarea */}
               <div className="flex-1 min-h-0 flex bg-slate-950 font-mono text-[13px]">
                 <div
@@ -305,22 +387,75 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between gap-3">
-                <span className="text-xs text-slate-500">
-                  {lineCount} lines · {files.length} {files.length === 1 ? 'file' : 'files'}
-                </span>
-                <Button
-                  onClick={handleScan}
-                  disabled={isScanning || !currentFile?.content.trim()}
-                  icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                >
-                  {isScanning ? 'Scanning…' : 'Scan code'}
-                </Button>
+              <div className="px-5 py-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg text-xs font-medium border border-slate-200 w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setMode('rules')}
+                      title="Rules: deterministic, verified"
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer',
+                        mode === 'rules' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      Rules
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!aiAvailable}
+                      onClick={() => setMode('ai')}
+                      title={aiAvailable ? 'AI only: LLM, unverified' : 'AI not configured'}
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
+                        mode === 'ai' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      AI only
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!aiAvailable}
+                      onClick={() => setMode('hybrid')}
+                      title={aiAvailable ? 'Hybrid: rules + LLM, every AI patch verified' : 'AI not configured'}
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
+                        mode === 'hybrid' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      Hybrid
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {mode === 'rules' && 'Rules: deterministic, verified'}
+                    {mode === 'ai' && (aiAvailable ? 'AI only: LLM, unverified' : 'AI not configured')}
+                    {mode === 'hybrid' && (aiAvailable ? 'Hybrid: rules + LLM, every AI patch verified' : 'AI not configured')}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-3">
+                  <span className="text-xs text-slate-500 hidden xl:inline">
+                    {lineCount} lines · {files.length} {files.length === 1 ? 'file' : 'files'}
+                  </span>
+                  <Button
+                    onClick={handleScan}
+                    disabled={isScanning || !currentFile?.content.trim()}
+                    icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                  >
+                    {isScanning ? 'Scanning…' : 'Scan code'}
+                  </Button>
+                </div>
               </div>
             </section>
 
             {/* Results */}
             <div className="flex flex-col gap-6 min-w-0">
+              {editorNotice && (
+                <Callout tone="success" icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}>
+                  {editorNotice}
+                </Callout>
+              )}
+
               {error && (
                 <Callout tone="danger" icon={<AlertCircle className="w-4 h-4" />}>
                   {error}
@@ -328,11 +463,24 @@ export default function App() {
               )}
 
               {fixResponse && scanResponse ? (
-                <DiffViewer fixResponse={fixResponse} originalScore={scanResponse.score} onReset={() => setFixResponse(null)} />
+                <DiffViewer
+                  fixResponse={fixResponse}
+                  originalScore={scanResponse.score}
+                  originalFindings={scanResponse.findings}
+                  onReset={() => setFixResponse(null)}
+                  onApplyToEditor={handleApplyToEditor}
+                />
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />
-                  <FindingsList findings={scanResponse.findings} onFixAll={handleFixAll} isFixing={isFixing} onSelect={jumpTo} scanMs={scanMs} />
+                  <FindingsList
+                    findings={scanResponse.findings}
+                    onFixAll={handleFixAll}
+                    isFixing={isFixing}
+                    onSelect={jumpTo}
+                    scanMs={scanMs}
+                    isHybrid={mode === 'hybrid'}
+                  />
                   <ExploitSimulator />
                 </>
               ) : (
