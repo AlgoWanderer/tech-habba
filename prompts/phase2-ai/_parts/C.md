@@ -22,7 +22,11 @@ STEP C1 (Wave 1, start now, about 1.5 hours). Branch: feat/c-ai
    - write corpus/experiment/results.json { method, summary per arm, perApp }
    - flags: --sets corpus,raw,hardened  --runs 3  --arms rules,ai,hybrid ; skip AI arms with a
      clear message when there is no GEMINI_API_KEY
-   Until B2 is merged, make the AI arms print "not available yet" and still run RULES end to end.
+   B2 is already done: use scanWithMode / fixHybrid / getAiClient from server/ai/ (see STATUS in
+   the shared context). For the AI arm's whole-file rewrite, call client.generateJson with the
+   prompt from corpus/baselines/run-all.js and a schema {type:'OBJECT', properties:{code:{type:'STRING'}}}.
+   Mask secrets first with maskForModel from server/ai/mask.js; never send real secret values.
+   Without a key, the AI arms print "skipped: no GEMINI_API_KEY" and RULES still runs end to end.
 3. PR into dev: "corpus: raw wild apps + experiment harness".
 
 STEP C2 (Wave 2, after B2 is merged, about 1 hour)

@@ -43,6 +43,8 @@ CONTRACT ADDITIONS (additive only; nothing existing is renamed or removed):
   Fix result items get one OPTIONAL field:  source?: "rule" | "ai"
   POST /api/scan  body may add  mode?: "rules" | "ai" | "hybrid"   (default "rules")
   POST /api/fix   body may add  mode?: "rules" | "hybrid"          (default "rules")
+                  and, in hybrid mode,  aiFindings?: Finding[]  = the AI findings from the hybrid
+                  scan response (model output varies per call, so the client sends them back)
   GET  /api/health adds  ai: boolean   (true when a key is configured)
   GET  /api/experiment  (new, read-only) -> corpus/experiment/results.json summary, 404 if missing
 
@@ -51,6 +53,16 @@ OWNERSHIP (unchanged; edit ONLY your own folders):
   C: corpus/                                            D: web/, docs/, core/promptHardener.js
 Git: branch feat/<role>-ai from dev, PR into dev, CI must be green. One PR per wave step is fine.
 Stack: Node 20+, ESM, no new npm dependencies (use fetch). Keep files under ~300 lines. Tests: vitest.
+FAKE KEYS: GitHub push protection blocks pushes that contain real-looking provider keys, even fake
+ones (e.g. a long "sk_live_..."). In committed tests and samples use named secrets such as
+const JWT_SECRET = "library-jwt-secret-do-not-share", or short dummies like "sk_live_ABCDEF123456".
+
+STATUS: B1 and B2 are DONE (server/ai/: client, mask, detect, patch, hybrid; PR "feat/b-ai").
+Server functions you can call directly (C's experiment):
+  import { scanWithMode, fixHybrid } from './server/ai/hybrid.js'
+  scanWithMode(core, files, "rules"|"ai"|"hybrid", client) -> { findings, score }
+  fixHybrid(core, files, findingIds, client, { aiFindings }) -> FixResponse (+ source on results)
+  import { getAiClient, createFakeClient } from './server/ai/client.js'   (null client = no key)
 
 ORDER OF WORK (so nobody waits long):
   Step 0  Arnav: get a free key at aistudio.google.com, put GEMINI_API_KEY=... in server/.env.
@@ -87,7 +99,11 @@ STEP C1 (Wave 1, start now, about 1.5 hours). Branch: feat/c-ai
    - write corpus/experiment/results.json { method, summary per arm, perApp }
    - flags: --sets corpus,raw,hardened  --runs 3  --arms rules,ai,hybrid ; skip AI arms with a
      clear message when there is no GEMINI_API_KEY
-   Until B2 is merged, make the AI arms print "not available yet" and still run RULES end to end.
+   B2 is already done: use scanWithMode / fixHybrid / getAiClient from server/ai/ (see STATUS in
+   the shared context). For the AI arm's whole-file rewrite, call client.generateJson with the
+   prompt from corpus/baselines/run-all.js and a schema {type:'OBJECT', properties:{code:{type:'STRING'}}}.
+   Mask secrets first with maskForModel from server/ai/mask.js; never send real secret values.
+   Without a key, the AI arms print "skipped: no GEMINI_API_KEY" and RULES still runs end to end.
 3. PR into dev: "corpus: raw wild apps + experiment harness".
 
 STEP C2 (Wave 2, after B2 is merged, about 1 hour)
