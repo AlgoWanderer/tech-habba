@@ -1,0 +1,864 @@
+{
+  "summary": {
+    "totalApps": 30,
+    "cleanApps": 5,
+    "flawedApps": 25,
+    "totalGroundTruthFlaws": 56,
+    "detectedGroundTruthFlaws": 56,
+    "recall": 1,
+    "precision": 0.933,
+    "falsePositivesOnCleanApps": 4,
+    "totalCriticalHighBefore": 53,
+    "totalCriticalHighAfter": 37,
+    "criticalHighReductionPercent": 30,
+    "meanDurationMsPerFile": 103.69,
+    "p95DurationMsPerFile": 131.58,
+    "verifierRejections": 0,
+    "rejectionRate": 0,
+    "flawsLeftAsReviewCount": 12
+  },
+  "reviewFlaws": [
+    {
+      "app": "app02",
+      "findingId": "idor-suspect:index.js:29",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app04",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app06",
+      "findingId": "idor-suspect:index.js:30",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app09",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app11",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app13",
+      "findingId": "idor-suspect:index.js:22",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app16",
+      "findingId": "idor-suspect:index.js:27",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app18",
+      "findingId": "idor-suspect:index.js:26",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app21",
+      "findingId": "idor-suspect:index.js:23",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app23",
+      "findingId": "idor-suspect:index.js:26",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app25",
+      "findingId": "idor-suspect:index.js:20",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    },
+    {
+      "app": "app26",
+      "findingId": "idor-suspect:index.js:30",
+      "reason": "BOLA/IDOR business logic requires human developer review."
+    }
+  ],
+  "perApp": [
+    {
+      "app": "app01",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 20,
+        "counts": {
+          "critical": 2,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 25,
+      "durationMs": 151.86
+    },
+    {
+      "app": "app02",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 27,
+        "counts": {
+          "critical": 2,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 101.96
+    },
+    {
+      "app": "app03",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 92.86
+    },
+    {
+      "app": "app04",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 90.6
+    },
+    {
+      "app": "app05",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 75,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 99.09
+    },
+    {
+      "app": "app06",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 37,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 3,
+        "safety": 62,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 25,
+      "durationMs": 111.41
+    },
+    {
+      "app": "app07",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 123.97
+    },
+    {
+      "app": "app08",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 131.58
+    },
+    {
+      "app": "app09",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 109.29
+    },
+    {
+      "app": "app10",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 96.71
+    },
+    {
+      "app": "app11",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 37,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 4,
+        "safety": 37,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 105.03
+    },
+    {
+      "app": "app12",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 104.76
+    },
+    {
+      "app": "app13",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 107.7
+    },
+    {
+      "app": "app14",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 94.81
+    },
+    {
+      "app": "app15",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 67,
+      "durationMs": 97.24
+    },
+    {
+      "app": "app16",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 90.98
+    },
+    {
+      "app": "app17",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 90.8
+    },
+    {
+      "app": "app18",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 96.73
+    },
+    {
+      "app": "app19",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 104.67
+    },
+    {
+      "app": "app20",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 70,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 101.57
+    },
+    {
+      "app": "app21",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 97.36
+    },
+    {
+      "app": "app22",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 99.95
+    },
+    {
+      "app": "app23",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 95.34
+    },
+    {
+      "app": "app24",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 128.02
+    },
+    {
+      "app": "app25",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 93.39
+    },
+    {
+      "app": "app26",
+      "isClean": true,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 50,
+      "durationMs": 99.23
+    },
+    {
+      "app": "app27",
+      "isClean": true,
+      "before": {
+        "findingsCount": 1,
+        "safety": 75,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 104.79
+    },
+    {
+      "app": "app28",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 105.32
+    },
+    {
+      "app": "app29",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 92.88
+    },
+    {
+      "app": "app30",
+      "isClean": true,
+      "before": {
+        "findingsCount": 1,
+        "safety": 75,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 90.91
+    }
+  ]
+}
