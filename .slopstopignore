@@ -1,0 +1,7 @@
+# Paths SlopStop's gate skips in this repo. Everything here is intentionally vulnerable demo data.
+# (corpus/ is skipped by the GitHub Action's `exclude` input, so the CLI demo can still scan it.)
+web/src/mocks/
+# Sample prompt with fake keys that demonstrates the Prompt Hardener's redaction.
+web/src/components/PromptHardenerView.tsx
+# The exploit sandbox deliberately serves one unprotected route to show the 200 vs 401.
+server/exploit/sandbox.js

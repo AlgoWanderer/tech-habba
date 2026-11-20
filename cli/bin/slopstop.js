@@ -3,11 +3,14 @@
 //   slopstop scan --staged [--fix]     scan staged files (what the pre-commit hook runs)
 //   slopstop scan <file...> [--fix]    scan files on disk
 // --fix prints proposed, verified patches. It never writes to your files.
+// Suppressions: .slopstopignore paths and `// slopstop-ignore <ruleId>: reason` comments (see lib/ignore.js).
+// --no-ignore reports everything.
 // Exit code 1 when critical/high findings exist (blocks the commit), 2 on usage errors.
 import { existsSync, readFileSync } from 'node:fs';
 import { loadCore } from '../../server/coreAdapter.js';
 import { runFix } from '../../server/pipeline.js';
 import { stagedFiles } from '../lib/git.js';
+import { applyIgnores, loadIgnoreFile } from '../lib/ignore.js';
 import { BLOCKING, lineDiff, summarize } from '../lib/report.js';
 
 const args = process.argv.slice(2);
@@ -48,8 +51,13 @@ if (!files.length) {
   process.exit(0);
 }
 
-const findings = await core.scan(files);
+const raw = await core.scan(files);
+const { kept: findings, suppressed } = flags.has('--no-ignore') ? { kept: raw, suppressed: [] } : applyIgnores(raw, files, loadIgnoreFile());
 console.log(summarize(findings, files.length));
+if (suppressed.length) {
+  console.log(`\n  ${suppressed.length} suppressed (not blocking):`);
+  for (const f of suppressed) console.log(`    ${f.severity.toUpperCase().padEnd(8)}  ${f.file}:${f.line}  ${f.ruleId}  [${f.suppressedBy}]`);
+}
 
 if (flags.has('--fix')) {
   const auto = findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
