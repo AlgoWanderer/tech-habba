@@ -11,8 +11,8 @@
     "totalCriticalHighBefore": 53,
     "totalCriticalHighAfter": 37,
     "criticalHighReductionPercent": 30,
-    "meanDurationMsPerFile": 166.94,
-    "p95DurationMsPerFile": 202.59,
+    "meanDurationMsPerFile": 163.95,
+    "p95DurationMsPerFile": 222.01,
     "verifierRejections": 0,
     "rejectionRate": 0,
     "flawsLeftAsReviewCount": 12
@@ -104,7 +104,7 @@
         }
       },
       "reductionPercent": 25,
-      "durationMs": 165
+      "durationMs": 242.55
     },
     {
       "app": "app02",
@@ -130,7 +130,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 147.5
+      "durationMs": 222.01
     },
     {
       "app": "app03",
@@ -156,7 +156,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 152.33
+      "durationMs": 171.04
     },
     {
       "app": "app04",
@@ -182,7 +182,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 169.9
+      "durationMs": 156.88
     },
     {
       "app": "app05",
@@ -208,7 +208,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 150.35
+      "durationMs": 169.51
     },
     {
       "app": "app06",
@@ -234,7 +234,7 @@
         }
       },
       "reductionPercent": 25,
-      "durationMs": 151.11
+      "durationMs": 144.08
     },
     {
       "app": "app07",
@@ -260,7 +260,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 174.57
+      "durationMs": 153.55
     },
     {
       "app": "app08",
@@ -286,7 +286,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 166.02
+      "durationMs": 166.87
     },
     {
       "app": "app09",
@@ -312,7 +312,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 164.94
+      "durationMs": 159.22
     },
     {
       "app": "app10",
@@ -338,7 +338,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 154.95
+      "durationMs": 159.42
     },
     {
       "app": "app11",
@@ -364,7 +364,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 148.95
+      "durationMs": 171.02
     },
     {
       "app": "app12",
@@ -390,7 +390,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 202.59
+      "durationMs": 160.29
     },
     {
       "app": "app13",
@@ -416,7 +416,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 238.88
+      "durationMs": 184.9
     },
     {
       "app": "app14",
@@ -442,7 +442,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 151.29
+      "durationMs": 155.59
     },
     {
       "app": "app15",
@@ -468,7 +468,7 @@
         }
       },
       "reductionPercent": 67,
-      "durationMs": 179.43
+      "durationMs": 163.74
     },
     {
       "app": "app16",
@@ -494,7 +494,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 155.38
+      "durationMs": 153.19
     },
     {
       "app": "app17",
@@ -520,7 +520,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 148.65
+      "durationMs": 153.72
     },
     {
       "app": "app18",
@@ -546,7 +546,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 181.72
+      "durationMs": 148.86
     },
     {
       "app": "app19",
@@ -572,7 +572,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 165.45
+      "durationMs": 178.3
     },
     {
       "app": "app20",
@@ -598,7 +598,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 176
+      "durationMs": 169.4
     },
     {
       "app": "app21",
@@ -624,7 +624,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 155.29
+      "durationMs": 143.01
     },
     {
       "app": "app22",
@@ -650,7 +650,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 174.9
+      "durationMs": 163.42
     },
     {
       "app": "app23",
@@ -676,7 +676,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 157.93
+      "durationMs": 163.42
     },
     {
       "app": "app24",
@@ -702,7 +702,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 155.09
+      "durationMs": 151.39
     },
     {
       "app": "app25",
@@ -728,7 +728,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 172.01
+      "durationMs": 154.42
     },
     {
       "app": "app26",
@@ -754,7 +754,7 @@
         }
       },
       "reductionPercent": 50,
-      "durationMs": 154.04
+      "durationMs": 151.51
     },
     {
       "app": "app27",
@@ -780,7 +780,7 @@
         }
       },
       "reductionPercent": 100,
-      "durationMs": 169.07
+      "durationMs": 150.22
     },
     {
       "app": "app28",
@@ -806,7 +806,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 170.01
+      "durationMs": 149.69
     },
     {
       "app": "app29",
@@ -832,7 +832,7 @@
         }
       },
       "reductionPercent": 0,
-      "durationMs": 176.82
+      "durationMs": 150.65
     },
     {
       "app": "app30",
@@ -858,7 +858,7 @@
         }
       },
       "reductionPercent": 100,
-      "durationMs": 178.08
+      "durationMs": 156.7
     }
   ]
 }
