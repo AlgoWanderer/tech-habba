@@ -103,15 +103,17 @@ export function modelPredictor(client) {
   return async (snip) => client.generateJson(CLASSIFY_SYSTEM, snip.code, CLASSIFY_SCHEMA);
 }
 
-// An invalid or failed answer counts as WRONG: a miss on a vulnerable snippet (fn), a false alarm on a
-// safe one (fp). Excluding them (the first version did) flattered models that often answer garbage;
-// role A caught this in #46.
+// Invalid or failed answers are never dropped (the first version did, which flattered models that often
+// answer garbage; role A caught this in #46). An invalid answer is "no vulnerable call":
+//   on a vulnerable snippet -> a false negative (a miss)
+//   on a safe snippet       -> neither TP nor FP (it made no call), but still WRONG in accuracy
+// Accuracy and the invalid count are always reported next to precision/recall/F1.
 export function score(rows) {
   const isValid = (r) => r.pred && typeof r.pred.vulnerable === 'boolean';
   const valid = rows.filter(isValid);
   const invalid = rows.filter((r) => !isValid(r));
   const tp = valid.filter((r) => r.truth.vulnerable && r.pred.vulnerable).length;
-  const fp = valid.filter((r) => !r.truth.vulnerable && r.pred.vulnerable).length + invalid.filter((r) => !r.truth.vulnerable).length;
+  const fp = valid.filter((r) => !r.truth.vulnerable && r.pred.vulnerable).length;
   const fn = valid.filter((r) => r.truth.vulnerable && !r.pred.vulnerable).length + invalid.filter((r) => r.truth.vulnerable).length;
   const tn = valid.filter((r) => !r.truth.vulnerable && !r.pred.vulnerable).length;
   const catOk = valid.filter((r) => r.truth.vulnerable && r.pred.vulnerable && r.truth.categories.includes(r.pred.category)).length;
