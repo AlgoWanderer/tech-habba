@@ -49,6 +49,9 @@ export async function loadCore({ forceMock = process.env.SLOPSTOP_MOCK_CORE === 
     scan: async (files) => m.scan(files),
     computeScore: async (findings) => m.computeScore(findings),
     applyFixes: async (files, findings) => m.applyFixes(files, findings),
+    // Phase 2 (role A): passed through when core exports them; server/ai uses its fallbacks otherwise.
+    ...(typeof m.maskSecrets === 'function' ? { maskSecrets: async (files) => m.maskSecrets(files) } : {}),
+    ...(typeof m.mergeFindings === 'function' ? { mergeFindings: (rules, ai) => m.mergeFindings(rules, ai) } : {}),
   };
 }
 

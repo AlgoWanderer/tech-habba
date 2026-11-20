@@ -2,28 +2,57 @@
   "method": {
     "task": "snippet classification: vulnerable? + category",
     "system": "You are a security reviewer for Node.js/Express code. Answer with JSON only: {\"vulnerable\": bool, \"category\": \"secret|injection|auth|idor|dependency|none\", \"reason\": string}.",
-    "snippets": 110,
+    "snippets": 122,
     "sets": [
-      "corpus"
+      "corpus",
+      "dvna"
     ],
     "note": "Test apps are never in the training data. Rules = deterministic engine on the same snippets.",
-    "generatedAt": "2026-11-20T21:02:08.494Z"
+    "generatedAt": "2026-11-20T22:50:35.890Z"
   },
   "models": {
     "rules": {
-      "snippets": 110,
+      "snippets": 122,
       "invalidOrError": 0,
-      "tp": 55,
-      "fp": 3,
-      "fn": 0,
-      "tn": 52,
-      "precision": 0.948,
-      "recall": 1,
-      "f1": 0.973,
-      "accuracy": 0.973,
-      "categoryAccuracy": 0.818,
+      "tp": 59,
+      "fp": 4,
+      "fn": 2,
+      "tn": 57,
+      "precision": 0.937,
+      "recall": 0.967,
+      "f1": 0.952,
+      "accuracy": 0.951,
+      "categoryAccuracy": 0.814,
       "meanMs": 0,
       "rows": [
+        {
+          "id": "dvna/dvna/server.js:14-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/authHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
         {
           "id": "corpus/app06/index.js:18-21",
           "truth": {
@@ -42,6 +71,20 @@
         },
         {
           "id": "corpus/app04/index.js:34-34",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:32-32",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -169,6 +212,20 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/models/product.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app28/package.json:1-10",
           "truth": {
             "vulnerable": false,
@@ -212,6 +269,34 @@
         },
         {
           "id": "corpus/app24/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:5-5",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -269,6 +354,20 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/server.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app08/index.js:19-22",
           "truth": {
             "vulnerable": false,
@@ -297,6 +396,34 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/config/server.js:1-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:76-101",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "nosql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app03/index.js:7-7",
           "truth": {
             "vulnerable": true,
@@ -308,6 +435,20 @@
             "vulnerable": true,
             "category": "secret",
             "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
           },
           "error": null,
           "ms": 0
@@ -383,6 +524,20 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/models/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app10/index.js:5-5",
           "truth": {
             "vulnerable": false,
@@ -428,6 +583,20 @@
         },
         {
           "id": "corpus/app20/index.js:19-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/index.js:27-33",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -498,6 +667,20 @@
         },
         {
           "id": "corpus/app11/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:12-12",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -681,6 +864,20 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/core/appHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app05/index.js:11-16",
           "truth": {
             "vulnerable": false,
@@ -723,6 +920,34 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/models/user.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:16-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app30/package.json:1-11",
           "truth": {
             "vulnerable": false,
@@ -737,7 +962,7 @@
           "ms": 0
         },
         {
-          "id": "corpus/app28/index.js:4-4",
+          "id": "dvna/dvna/config/vulns.js:1-14",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -767,20 +992,6 @@
           "ms": 0
         },
         {
-          "id": "corpus/app14/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
           "id": "corpus/app20/package.json:1-12",
           "truth": {
             "vulnerable": true,
@@ -797,90 +1008,6 @@
           "ms": 0
         },
         {
-          "id": "corpus/app19/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app13/index.js:27-27",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app22/index.js:20-20",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app17/package.json:1-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app12/index.js:7-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app26/package.json:1-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
           "id": "corpus/app02/index.js:8-8",
           "truth": {
             "vulnerable": true,
@@ -892,48 +1019,6 @@
             "vulnerable": true,
             "category": "secret",
             "reason": "secret-hardcoded"
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app08/index.js:4-4",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app30/index.js:26-26",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
-          },
-          "error": null,
-          "ms": 0
-        },
-        {
-          "id": "corpus/app26/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": ""
           },
           "error": null,
           "ms": 0
@@ -966,6 +1051,38 @@
             "vulnerable": true,
             "category": "idor",
             "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:38-45",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:9-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "sql-injection"
           },
           "error": null,
           "ms": 0
@@ -1015,6 +1132,22 @@
             "vulnerable": true,
             "category": "secret",
             "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/routes/app.js:5-67",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
           },
           "error": null,
           "ms": 0
@@ -1436,6 +1569,22 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/package.json:1-37",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app13/index.js:7-7",
           "truth": {
             "vulnerable": true,
@@ -1532,6 +1681,22 @@
           "ms": 0
         },
         {
+          "id": "dvna/dvna/core/appHandler.js:144-184",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "nosql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
           "id": "corpus/app07/index.js:7-7",
           "truth": {
             "vulnerable": true,
@@ -1543,6 +1708,22 @@
             "vulnerable": true,
             "category": "secret",
             "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:23-28",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
           },
           "error": null,
           "ms": 0
@@ -1678,19 +1859,47 @@
       ]
     },
     "gemini (gemini-3.1-flash-lite)": {
-      "snippets": 110,
+      "snippets": 122,
       "invalidOrError": 0,
-      "tp": 45,
-      "fp": 12,
-      "fn": 10,
-      "tn": 43,
-      "precision": 0.789,
-      "recall": 0.818,
-      "f1": 0.804,
-      "accuracy": 0.8,
-      "categoryAccuracy": 0.889,
-      "meanMs": 2646,
+      "tp": 48,
+      "fp": 4,
+      "fn": 13,
+      "tn": 57,
+      "precision": 0.923,
+      "recall": 0.787,
+      "f1": 0.85,
+      "accuracy": 0.861,
+      "categoryAccuracy": 0.875,
+      "meanMs": 4949,
       "rows": [
+        {
+          "id": "dvna/dvna/server.js:14-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Setting the view engine to EJS in Express is a standard configuration and is not inherently vulnerable."
+          },
+          "error": null,
+          "ms": 5053
+        },
+        {
+          "id": "dvna/dvna/core/authHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Simply importing the bcrypt library does not introduce a security vulnerability."
+          },
+          "error": null,
+          "ms": 4690
+        },
         {
           "id": "corpus/app06/index.js:18-21",
           "truth": {
@@ -1702,10 +1911,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The code retrieves all projects without user-supplied input affecting the query, posing no injection or IDOR risk."
+            "reason": "The endpoint retrieves all projects without taking any user-supplied input, preventing injection or IDOR vulnerabilities."
           },
           "error": null,
-          "ms": 3225
+          "ms": 4778
         },
         {
           "id": "corpus/app04/index.js:34-34",
@@ -1716,10 +1925,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only exports the app object and does not contain any functional logic or security vulnerabilities."
+            "reason": "The provided snippet simply exports an Express application instance and contains no vulnerable logic."
           },
           "error": null,
-          "ms": 3607
+          "ms": 4883
+        },
+        {
+          "id": "dvna/dvna/server.js:32-32",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Enabling passport session middleware is a standard and safe configuration for managing user sessions in Express applications, provided the session store is properly secured."
+          },
+          "error": null,
+          "ms": 4743
         },
         {
           "id": "corpus/app03/index.js:9-13",
@@ -1730,10 +1953,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The code only defines a Mongoose model schema and contains no executable logic, insecure queries, or exposed secrets."
+            "reason": "The provided Mongoose schema definition contains no vulnerabilities."
           },
           "error": null,
-          "ms": 28059
+          "ms": 4725
         },
         {
           "id": "corpus/app11/index.js:22-25",
@@ -1744,12 +1967,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code performs a simple database query to fetch all patients without user-supplied input influencing the query criteria."
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "The endpoint returns all patients without checking if the user is authenticated or authorized to access sensitive medical data."
           },
           "error": null,
-          "ms": 2671
+          "ms": 4392
         },
         {
           "id": "corpus/app05/index.js:5-5",
@@ -1760,10 +1983,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "Standard middleware configuration for parsing JSON bodies in Express without any inherent vulnerabilities."
           },
           "error": null,
-          "ms": 1541
+          "ms": 4508
         },
         {
           "id": "corpus/app19/index.js:9-13",
@@ -1774,10 +1997,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only defines a Mongoose schema and model, which does not contain any logic or vulnerabilities."
+            "reason": "The provided code snippet only defines a Mongoose model and schema without any exposed routes or query logic that could introduce vulnerabilities."
           },
           "error": null,
-          "ms": 1274
+          "ms": 4615
         },
         {
           "id": "corpus/app24/package.json:1-11",
@@ -1788,10 +2011,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The package.json file only lists standard dependencies and does not contain any vulnerabilities or secrets."
+            "reason": "The provided package.json file contains standard, common dependencies without any apparent known vulnerabilities or issues in this configuration."
           },
           "error": null,
-          "ms": 5757
+          "ms": 4804
         },
         {
           "id": "corpus/app29/package.json:1-10",
@@ -1802,10 +2025,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The package.json file contains standard dependencies and does not exhibit any security vulnerabilities."
+            "reason": "The provided package.json file only contains a standard dependency on express and does not exhibit any vulnerabilities, secrets, or insecure configurations."
           },
           "error": null,
-          "ms": 2467
+          "ms": 4772
         },
         {
           "id": "corpus/app20/index.js:6-6",
@@ -1816,10 +2039,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "The provided code snippet simply enables the built-in JSON body parser middleware in Express, which is standard and safe on its own."
           },
           "error": null,
-          "ms": 1406
+          "ms": 4533
         },
         {
           "id": "corpus/app22/package.json:1-11",
@@ -1830,10 +2053,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided package.json file lists standard dependencies and does not contain any inherently vulnerable code or malicious configurations."
+            "reason": "The provided package.json file only lists standard dependencies (express and mongoose) with normal version ranges and does not contain any vulnerable code, malicious packages, or security issues."
           },
           "error": null,
-          "ms": 1125
+          "ms": 4676
+        },
+        {
+          "id": "dvna/dvna/models/product.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided code snippet only contains the strict mode directive and does not introduce any security vulnerabilities."
+          },
+          "error": null,
+          "ms": 4872
         },
         {
           "id": "corpus/app28/package.json:1-10",
@@ -1844,10 +2081,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The package.json file contains standard dependencies and does not exhibit any security vulnerabilities."
+            "reason": "The provided package.json file only contains a standard dependency on express with no obvious malicious configurations or known severe vulnerabilities based solely on this declaration."
           },
           "error": null,
-          "ms": 962
+          "ms": 4837
         },
         {
           "id": "corpus/app05/index.js:4-4",
@@ -1858,10 +2095,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security vulnerabilities."
+            "reason": "The code snippet only initializes the Express application and contains no vulnerable logic."
           },
           "error": null,
-          "ms": 2378
+          "ms": 4722
         },
         {
           "id": "corpus/app01/index.js:35-35",
@@ -1872,10 +2109,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only contains an export statement and does not contain any functional logic or security vulnerabilities."
+            "reason": "The provided snippet simply exports an Express application instance without any vulnerable logic."
           },
           "error": null,
-          "ms": 1134
+          "ms": 4870
         },
         {
           "id": "corpus/app24/index.js:4-4",
@@ -1886,10 +2123,38 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security flaws."
+            "reason": "The code snippet only initializes an Express application and contains no security flaws on its own."
           },
           "error": null,
-          "ms": 1753
+          "ms": 4644
+        },
+        {
+          "id": "dvna/dvna/models/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Requiring a local configuration file does not inherently introduce security vulnerabilities."
+          },
+          "error": null,
+          "ms": 4490
+        },
+        {
+          "id": "dvna/dvna/server.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Simply importing the 'ejs' module does not introduce a vulnerability by itself."
+          },
+          "error": null,
+          "ms": 4913
         },
         {
           "id": "corpus/app25/index.js:7-11",
@@ -1900,10 +2165,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only defines a Mongoose schema and model, which does not contain any inherent security vulnerabilities."
+            "reason": "The provided Mongoose schema definition is secure and does not contain vulnerabilities by itself."
           },
           "error": null,
-          "ms": 2358
+          "ms": 5003
         },
         {
           "id": "corpus/app16/index.js:27-30",
@@ -1916,10 +2181,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The code updates a ticket based on the ID provided in the URL parameter without verifying if the authenticated user has ownership or authorization to modify that specific ticket."
+            "reason": "The code updates a ticket based solely on the ID provided in the route parameters without verifying if the authenticated user owns the ticket or is authorized to modify it, leading to an IDOR vulnerability."
           },
           "error": null,
-          "ms": 1405
+          "ms": 4981
         },
         {
           "id": "corpus/app26/index.js:41-41",
@@ -1930,10 +2195,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only contains an export statement and does not contain any functional logic or security vulnerabilities."
+            "reason": "The code snippet only exports an Express app instance and contains no implementation or security flaws."
           },
           "error": null,
-          "ms": 1635
+          "ms": 4639
+        },
+        {
+          "id": "dvna/dvna/server.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Simply enabling the fileUpload middleware does not introduce a vulnerability without insecure file handling logic."
+          },
+          "error": null,
+          "ms": 5173
         },
         {
           "id": "corpus/app08/index.js:19-22",
@@ -1944,10 +2223,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code performs mass assignment by passing req.body directly to the database model, allowing an attacker to inject or overwrite unauthorized fields."
+            "reason": "Passing req.body directly to ODM/ORM create method without validation or property restriction can lead to mass assignment vulnerabilities."
           },
           "error": null,
-          "ms": 1522
+          "ms": 4751
         },
         {
           "id": "corpus/app18/package.json:1-11",
@@ -1956,12 +2235,40 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The package.json file specifies outdated versions of express and mongoose which are known to have multiple security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided code is a standard package.json file with no inherent vulnerabilities."
           },
           "error": null,
-          "ms": 3094
+          "ms": 4819
+        },
+        {
+          "id": "dvna/dvna/config/server.js:1-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code simply exports configuration settings derived from environment variables with safe fallback values, containing no security vulnerabilities."
+          },
+          "error": null,
+          "ms": 6412
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:76-101",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "The code uses req.query.id directly in the database query without verifying if the authenticated user has permission to view or modify the product with that specific ID."
+          },
+          "error": null,
+          "ms": 4927
         },
         {
           "id": "corpus/app03/index.js:7-7",
@@ -1974,10 +2281,24 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded sensitive cryptographic secret found in source code."
+            "reason": "Hardcoded JWT secret key found in the source code."
           },
           "error": null,
-          "ms": 1551
+          "ms": 6361
+        },
+        {
+          "id": "dvna/dvna/server.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Simply requiring the morgan logging middleware does not introduce any vulnerabilities."
+          },
+          "error": null,
+          "ms": 4581
         },
         {
           "id": "corpus/app09/package.json:1-11",
@@ -1986,12 +2307,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The package.json file uses outdated versions of express and mongoose which are known to have multiple security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json file only contains standard dependencies and no known vulnerabilities."
           },
           "error": null,
-          "ms": 5733
+          "ms": 5256
         },
         {
           "id": "corpus/app23/index.js:13-17",
@@ -2000,12 +2321,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "auth",
-            "reason": "The authentication middleware checks for the existence of an authorization header but does not validate its content, allowing any arbitrary string to bypass authentication."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The middleware checks for the presence of the authorization header and assigns a static user object. While simplistic, it does not contain common vulnerabilities such as injection, hardcoded secrets, or insecure direct object references."
           },
           "error": null,
-          "ms": 28455
+          "ms": 4906
         },
         {
           "id": "corpus/app04/index.js:14-19",
@@ -2014,12 +2335,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "auth",
-            "reason": "The authentication middleware checks for the presence of an authorization header but does not validate its content, allowing any request with a header to bypass authentication."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The middleware checks for the presence of the authorization header and properly proceeds to the next handler without introducing common security flaws like insecure token validation or injection."
           },
           "error": null,
-          "ms": 1785
+          "ms": 4731
         },
         {
           "id": "corpus/app27/index.js:5-5",
@@ -2030,10 +2351,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "The code simply registers the standard built-in express.json() middleware to parse incoming JSON request bodies, which is a safe and standard practice."
           },
           "error": null,
-          "ms": 688
+          "ms": 4585
         },
         {
           "id": "corpus/app10/index.js:7-11",
@@ -2044,10 +2365,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only defines a Mongoose schema and does not contain any logic, routes, or database operations that would introduce a security vulnerability."
+            "reason": "The provided code is only a Mongoose model schema definition and does not contain any execution logic, request handling, or security flaws."
           },
           "error": null,
-          "ms": 741
+          "ms": 4892
+        },
+        {
+          "id": "dvna/dvna/models/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Declaring an empty object poses no security risk."
+          },
+          "error": null,
+          "ms": 4818
         },
         {
           "id": "corpus/app10/index.js:5-5",
@@ -2058,10 +2393,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "Standard middleware configuration for parsing JSON bodies in Express without any inherent vulnerabilities."
           },
           "error": null,
-          "ms": 840
+          "ms": 4557
         },
         {
           "id": "corpus/app11/index.js:4-4",
@@ -2072,10 +2407,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security flaws."
+            "reason": "The provided code is just the initialization of an Express application and does not contain any vulnerabilities."
           },
           "error": null,
-          "ms": 4740
+          "ms": 4684
         },
         {
           "id": "corpus/app25/package.json:1-12",
@@ -2086,12 +2421,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The project uses jsonwebtoken version 8.5.1, which is outdated and contains known security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json file defines standard Node.js dependencies without any explicitly malicious or outdated vulnerable packages that indicate an inherent code vulnerability."
           },
           "error": null,
-          "ms": 1386
+          "ms": 4997
         },
         {
           "id": "corpus/app20/index.js:19-19",
@@ -2102,10 +2437,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is empty and does not contain any logic or security vulnerabilities."
+            "reason": "The provided code snippet only exports an Express app instance and contains no vulnerable logic."
           },
           "error": null,
-          "ms": 756
+          "ms": 4285
+        },
+        {
+          "id": "dvna/dvna/models/index.js:27-33",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code simply synchronizes Sequelize models with the database, and the force: true option is commented out, presenting no security vulnerability."
+          },
+          "error": null,
+          "ms": 4539
         },
         {
           "id": "corpus/app29/index.js:4-4",
@@ -2116,10 +2465,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "Standard middleware configuration for parsing JSON bodies in Express without any direct security issues."
           },
           "error": null,
-          "ms": 1803
+          "ms": 4582
         },
         {
           "id": "corpus/app05/index.js:9-9",
@@ -2130,10 +2479,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only initializes an empty Map and does not contain any logic, user input handling, or security-sensitive operations."
+            "reason": "The provided code snippet merely initializes an in-memory JavaScript Map for storing carts and does not contain any security vulnerabilities."
           },
           "error": null,
-          "ms": 1241
+          "ms": 4646
         },
         {
           "id": "corpus/app12/index.js:4-4",
@@ -2144,10 +2493,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an express application instance and does not contain any functional code or security flaws."
+            "reason": "The provided code snippet only initializes an Express application and does not contain any logic, endpoints, or vulnerabilities."
           },
           "error": null,
-          "ms": 710
+          "ms": 4313
         },
         {
           "id": "corpus/app07/package.json:1-11",
@@ -2156,12 +2505,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The package.json file uses outdated versions of express and mongoose which are known to have multiple high-severity security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json file only contains standard dependencies (express and mongoose) with no known vulnerabilities or malicious indicators."
           },
           "error": null,
-          "ms": 1400
+          "ms": 4666
         },
         {
           "id": "corpus/app11/package.json:1-11",
@@ -2170,12 +2519,26 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The project uses outdated versions of express and mongoose which are known to have multiple security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json file simply lists standard dependencies (express and mongoose) without any apparent insecure versions, embedded secrets, or malicious code patterns."
           },
           "error": null,
-          "ms": 854
+          "ms": 4769
+        },
+        {
+          "id": "dvna/dvna/server.js:12-12",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Requiring a passport configuration file is standard practice and does not introduce security vulnerabilities by itself."
+          },
+          "error": null,
+          "ms": 4500
         },
         {
           "id": "corpus/app18/index.js:31-31",
@@ -2186,10 +2549,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only exports the app instance and contains no logic, vulnerabilities, or security-sensitive operations."
+            "reason": "The provided code snippet only exports the app instance without any observable logic or security flaws."
           },
           "error": null,
-          "ms": 1404
+          "ms": 4557
         },
         {
           "id": "corpus/app06/index.js:7-7",
@@ -2198,12 +2561,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "secret",
-            "reason": "Hardcoded default connection string for MongoDB may expose internal infrastructure details or facilitate unauthorized access if the environment variable is not set."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code uses a standard MongoDB client connection string with a fallback to localhost and utilizes environment variables for configuration, which is a safe practice."
           },
           "error": null,
-          "ms": 2177
+          "ms": 4859
         },
         {
           "id": "corpus/app19/index.js:4-4",
@@ -2214,10 +2577,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security vulnerabilities."
+            "reason": "The provided code snippet only initializes an Express application and does not contain any insecure patterns, secrets, injections, or authentication flaws."
           },
           "error": null,
-          "ms": 1659
+          "ms": 4501
         },
         {
           "id": "corpus/app04/index.js:4-4",
@@ -2228,10 +2591,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security vulnerabilities."
+            "reason": "The provided code snippet only initializes an Express application and does not contain any logic, endpoints, or patterns that introduce security vulnerabilities."
           },
           "error": null,
-          "ms": 2809
+          "ms": 4518
         },
         {
           "id": "corpus/app09/index.js:10-14",
@@ -2242,10 +2605,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only defines a Mongoose schema and model, which does not contain any logic or vulnerabilities on its own."
+            "reason": "The provided snippet only defines a Mongoose model schema and contains no executable logic, routing, or handling of user input to introduce vulnerabilities."
           },
           "error": null,
-          "ms": 1149
+          "ms": 4723
         },
         {
           "id": "corpus/app30/index.js:21-24",
@@ -2256,10 +2619,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The code uses authenticated user context (req.user.id) securely to query the database without introducing injection or IDOR vulnerabilities."
+            "reason": "The code correctly authenticates the user via the requireAuth middleware and scopes the database query to the authenticated user's ID, preventing IDOR and injection vulnerabilities."
           },
           "error": null,
-          "ms": 4707
+          "ms": 4728
         },
         {
           "id": "corpus/app02/package.json:1-12",
@@ -2272,10 +2635,10 @@
           "pred": {
             "vulnerable": true,
             "category": "dependency",
-            "reason": "The dependency jsonwebtoken version 8.5.1 has known vulnerabilities."
+            "reason": "The version of jsonwebtoken (8.5.1) has known vulnerabilities, specifically related to secret verification issues if misused, though primarily this flags a dependency security review. More critically, jsonwebtoken below 9.0.0 has CVEs such as CVE-2022-23540."
           },
           "error": null,
-          "ms": 4776
+          "ms": 4549
         },
         {
           "id": "corpus/app30/index.js:7-7",
@@ -2286,10 +2649,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The code uses an environment variable for the connection string with a safe local fallback, which is a standard and secure practice."
+            "reason": "The code safely retrieves the MongoDB URI from environment variables with a secure local fallback and does not introduce any security vulnerabilities."
           },
           "error": null,
-          "ms": 3235
+          "ms": 4712
         },
         {
           "id": "corpus/app06/package.json:1-11",
@@ -2300,10 +2663,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The package.json file only lists dependencies and does not contain any vulnerable code or hardcoded secrets."
+            "reason": "The provided package.json file only contains standard dependencies and does not exhibit any security vulnerabilities."
           },
           "error": null,
-          "ms": 1146
+          "ms": 6607
         },
         {
           "id": "corpus/app01/index.js:9-9",
@@ -2312,12 +2675,12 @@
             "categories": []
           },
           "pred": {
-            "vulnerable": true,
-            "category": "secret",
-            "reason": "Hardcoded or environment-injected credentials like MONGODB_URI should be handled carefully, but if the URI contains credentials directly in the string, it is a security risk."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Connecting to MongoDB using Mongoose with a URI variable is safe as long as the URI is properly configured and does not contain hardcoded credentials."
           },
           "error": null,
-          "ms": 1442
+          "ms": 4418
         },
         {
           "id": "corpus/app05/index.js:18-21",
@@ -2328,10 +2691,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint retrieves cart data based on a user-provided ID without verifying if the authenticated user has authorization to access that specific cart."
+            "reason": "The endpoint retrieves cart data based on a user-supplied cartId without verifying if the authenticated user has permission to access that specific cart."
           },
           "error": null,
-          "ms": 1029
+          "ms": 4728
         },
         {
           "id": "corpus/app07/index.js:5-5",
@@ -2342,10 +2705,24 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "The code simply mounts the built-in express.json() middleware, which is safe and standard practice for parsing incoming JSON payloads."
           },
           "error": null,
-          "ms": 2063
+          "ms": 4502
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Importing the bcrypt library is a standard cryptographic practice and is not vulnerable on its own."
+          },
+          "error": null,
+          "ms": 4769
         },
         {
           "id": "corpus/app05/index.js:11-16",
@@ -2356,10 +2733,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The use of lodash's _.merge function on user-provided input allows for prototype pollution, which can lead to remote code execution or denial of service."
+            "reason": "Using lodash merge with user-controlled input allows prototype pollution which can lead to remote code execution or unexpected state manipulation."
           },
           "error": null,
-          "ms": 1724
+          "ms": 6188
         },
         {
           "id": "corpus/app15/index.js:4-4",
@@ -2370,10 +2747,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided snippet only initializes an Express application instance and does not contain any functional code or security flaws."
+            "reason": "The code snippet only initializes an Express application and contains no vulnerable logic."
           },
           "error": null,
-          "ms": 1804
+          "ms": 6436
         },
         {
           "id": "corpus/app29/index.js:17-17",
@@ -2384,10 +2761,38 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet only exports an application instance and does not contain any logic, routes, or configurations that could be considered vulnerable."
+            "reason": "The provided snippet simply exports an Express application instance and contains no vulnerable logic."
           },
           "error": null,
-          "ms": 1959
+          "ms": 6295
+        },
+        {
+          "id": "dvna/dvna/models/user.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided code snippet is only a strict mode directive and contains no functional code or vulnerabilities."
+          },
+          "error": null,
+          "ms": 4574
+        },
+        {
+          "id": "dvna/dvna/server.js:16-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Standard BodyParser middleware configuration without any inherent security vulnerabilities."
+          },
+          "error": null,
+          "ms": 4560
         },
         {
           "id": "corpus/app30/package.json:1-11",
@@ -2398,13 +2803,13 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The package.json file lists standard dependencies and does not contain any inherently vulnerable code or configurations."
+            "reason": "The package.json file only contains standard dependency definitions for express and mongoose without any known vulnerable versions or malicious scripts."
           },
           "error": null,
-          "ms": 1418
+          "ms": 6136
         },
         {
-          "id": "corpus/app28/index.js:4-4",
+          "id": "dvna/dvna/config/vulns.js:1-14",
           "truth": {
             "vulnerable": false,
             "categories": []
@@ -2412,10 +2817,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The provided code snippet is a standard middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
+            "reason": "The provided code is merely a static configuration map defining categories of security vulnerabilities (OWASP Top 10) and does not contain any executable logic or security flaws."
           },
           "error": null,
-          "ms": 2245
+          "ms": 4982
         },
         {
           "id": "corpus/app16/index.js:21-24",
@@ -2428,24 +2833,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes user-controlled input from req.query.tag directly into a Mongoose query object without sanitization, allowing an attacker to inject query operators like $gt or $ne."
+            "reason": "User-supplied input from req.query.tag is passed directly into the Mongoose find method without sanitization, which can lead to NoSQL injection if an object is passed instead of a string."
           },
           "error": null,
-          "ms": 1383
-        },
-        {
-          "id": "corpus/app14/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
-          },
-          "error": null,
-          "ms": 1257
+          "ms": 4702
         },
         {
           "id": "corpus/app20/package.json:1-12",
@@ -2458,94 +2849,10 @@
           "pred": {
             "vulnerable": true,
             "category": "dependency",
-            "reason": "The package lodash version 4.17.15 is vulnerable to multiple security issues, including prototype pollution."
+            "reason": "The package.json uses lodash version 4.17.15 which contains known security vulnerabilities such as prototype pollution."
           },
           "error": null,
-          "ms": 1016
-        },
-        {
-          "id": "corpus/app19/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code snippet is a standard Express middleware configuration for parsing JSON request bodies and does not contain any security vulnerabilities."
-          },
-          "error": null,
-          "ms": 3596
-        },
-        {
-          "id": "corpus/app13/index.js:27-27",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code only exports an Express application instance and contains no functional implementation or security vulnerabilities."
-          },
-          "error": null,
-          "ms": 4954
-        },
-        {
-          "id": "corpus/app22/index.js:20-20",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code snippet only exports the Express app instance and contains no vulnerable logic."
-          },
-          "error": null,
-          "ms": 4984
-        },
-        {
-          "id": "corpus/app17/package.json:1-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The file is a standard package.json with common dependencies and no obvious vulnerabilities."
-          },
-          "error": null,
-          "ms": 4883
-        },
-        {
-          "id": "corpus/app12/index.js:7-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code snippet only defines a Mongoose schema and model, which does not contain any logic or security vulnerabilities on its own."
-          },
-          "error": null,
-          "ms": 5035
-        },
-        {
-          "id": "corpus/app26/package.json:1-11",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The package.json file specifies outdated versions of express and mongoose which are known to have multiple high-severity vulnerabilities."
-          },
-          "error": null,
-          "ms": 1413
+          "ms": 4803
         },
         {
           "id": "corpus/app02/index.js:8-8",
@@ -2558,52 +2865,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded database credentials found in the source code."
+            "reason": "Hardcoded database credentials (username and password) found in the connection string."
           },
           "error": null,
-          "ms": 2242
-        },
-        {
-          "id": "corpus/app08/index.js:4-4",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided snippet only initializes the express application and does not contain any functional code or security flaws."
-          },
-          "error": null,
-          "ms": 1730
-        },
-        {
-          "id": "corpus/app30/index.js:26-26",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The provided code snippet is empty and does not contain any logic or security vulnerabilities."
-          },
-          "error": null,
-          "ms": 1149
-        },
-        {
-          "id": "corpus/app26/index.js:5-5",
-          "truth": {
-            "vulnerable": false,
-            "categories": []
-          },
-          "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code snippet only configures the express middleware to parse JSON request bodies, which is a standard and secure practice."
-          },
-          "error": null,
-          "ms": 1625
+          "ms": 6411
         },
         {
           "id": "corpus/app23/index.js:26-29",
@@ -2614,12 +2879,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "idor",
-            "reason": "The endpoint deletes an RSVP by ID without verifying if the authenticated user owns the RSVP resource, allowing any authenticated user to delete others' RSVPs."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The route is protected by the requireAuth middleware and uses Mongoose's parameterized findByIdAndDelete method, which prevents NoSQL injection."
           },
           "error": null,
-          "ms": 2485
+          "ms": 4549
         },
         {
           "id": "corpus/app18/index.js:26-29",
@@ -2632,10 +2897,42 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint deletes a comment by ID without verifying if the authenticated user owns the comment, allowing any authenticated user to delete any comment."
+            "reason": "The endpoint deletes a comment by its ID without checking if the currently authenticated user owns the comment, allowing any authenticated user to delete any other user's comment."
           },
           "error": null,
-          "ms": 1908
+          "ms": 4549
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:38-45",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "The code directly concatenates user input from req.body.address into a shell execution function (exec), leading to a Remote Code Execution vulnerability."
+          },
+          "error": null,
+          "ms": 4924
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:9-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "The code constructs a raw SQL query by directly concatenating user input from req.body.login, which leads to a SQL Injection vulnerability."
+          },
+          "error": null,
+          "ms": 4566
         },
         {
           "id": "corpus/app01/index.js:23-27",
@@ -2649,10 +2946,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "Passing req.query directly to a Mongoose find method allows NoSQL injection, enabling attackers to manipulate query operators like $gt or $ne to bypass filters or access unauthorized data."
+            "reason": "Passing req.query directly into Mongoose find allows NoSQL injection if an attacker supplies malicious operators like $ne."
           },
           "error": null,
-          "ms": 866
+          "ms": 4577
         },
         {
           "id": "corpus/app01/index.js:7-7",
@@ -2665,10 +2962,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded Stripe secret key detected in source code."
+            "reason": "Hardcoded Stripe secret key detected in the source code."
           },
           "error": null,
-          "ms": 1896
+          "ms": 4567
         },
         {
           "id": "corpus/app05/index.js:7-7",
@@ -2681,10 +2978,26 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded API key detected in source code."
+            "reason": "Hardcoded API key detected in the source code."
           },
           "error": null,
-          "ms": 1154
+          "ms": 5005
+        },
+        {
+          "id": "dvna/dvna/routes/app.js:5-67",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The routes properly utilize authentication middleware ('authHandler.isAuthenticated') for protected endpoints, and rely on external handlers for request processing, showing no direct vulnerability in the routing definitions themselves."
+          },
+          "error": null,
+          "ms": 4785
         },
         {
           "id": "corpus/app20/index.js:14-17",
@@ -2695,12 +3008,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes the user-controlled req.body.title object directly into the Mongoose findOne query, allowing an attacker to inject query operators like $gt or $ne."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "Mongoose's findOne method automatically casts parameters to expected types (or treats them as strings/objects) preventing standard NoSQL injection if proper schemas are used, and no sensitive data or dangerous methods are exposed."
           },
           "error": null,
-          "ms": 1974
+          "ms": 4832
         },
         {
           "id": "corpus/app17/index.js:16-19",
@@ -2713,10 +3026,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint returns all grades from the database without filtering by the authenticated user's identity, allowing any user to access grades belonging to others."
+            "reason": "The endpoint retrieves all grades using Grade.find() without filtering by the authenticated user's ID or permissions, allowing any user to access all grades."
           },
           "error": null,
-          "ms": 1566
+          "ms": 4738
         },
         {
           "id": "corpus/app08/index.js:14-17",
@@ -2729,10 +3042,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes user-controlled input from req.query.category directly into the Mongoose find query without validation or sanitization, allowing an attacker to pass an object instead of a string to manipulate query logic."
+            "reason": "The code uses req.query.category directly in a Mongoose query without sanitization. If an attacker passes a malicious object like {$ne: null}, it can lead to NoSQL injection."
           },
           "error": null,
-          "ms": 1702
+          "ms": 4787
         },
         {
           "id": "corpus/app25/index.js:20-23",
@@ -2744,11 +3057,11 @@
           },
           "pred": {
             "vulnerable": true,
-            "category": "injection",
-            "reason": "The code passes the entire req.body object directly into Mongoose's findByIdAndUpdate method, which allows for Mass Assignment vulnerabilities where an attacker can overwrite sensitive fields in the database."
+            "category": "idor",
+            "reason": "The endpoint updates an episode by ID using req.params.id and passes req.body directly without verifying if the authenticated user owns or has permission to modify this specific episode."
           },
           "error": null,
-          "ms": 1784
+          "ms": 4624
         },
         {
           "id": "corpus/app21/index.js:7-7",
@@ -2761,10 +3074,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded credentials found in the source code."
+            "reason": "The code contains a hardcoded MongoDB connection string with sensitive credentials (username and password)."
           },
           "error": null,
-          "ms": 6028
+          "ms": 4793
         },
         {
           "id": "corpus/app12/package.json:1-11",
@@ -2777,10 +3090,10 @@
           "pred": {
             "vulnerable": true,
             "category": "dependency",
-            "reason": "The mongoose version 5.10.0 is outdated and contains known vulnerabilities."
+            "reason": "The dependencies include Mongoose version 5.10.0, which is an outdated version known to have multiple security vulnerabilities."
           },
           "error": null,
-          "ms": 5357
+          "ms": 4797
         },
         {
           "id": "corpus/app10/index.js:14-17",
@@ -2791,12 +3104,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code queries all bookmarks without user input, preventing injection or IDOR vulnerabilities, and does not expose any secrets or auth bypasses."
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "The endpoint returns all bookmarks from the database without checking if the currently authenticated user has permission to view them, leading to an Insecure Direct Object Reference / Missing Function-Level Access Control vulnerability."
           },
           "error": null,
-          "ms": 4967
+          "ms": 4729
         },
         {
           "id": "corpus/app14/index.js:14-17",
@@ -2807,12 +3120,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code performs a generic database query without user-controlled input, posing no immediate injection or authorization risk."
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "The endpoint returns all workout logs from the database without filtering by the authenticated user's ID, potentially exposing sensitive user data to anyone who makes the request."
           },
           "error": null,
-          "ms": 845
+          "ms": 4545
         },
         {
           "id": "corpus/app05/package.json:1-11",
@@ -2825,10 +3138,10 @@
           "pred": {
             "vulnerable": true,
             "category": "dependency",
-            "reason": "The package lodash version 4.17.15 is vulnerable to multiple security issues, including prototype pollution."
+            "reason": "The package uses lodash version 4.17.15, which contains known vulnerabilities such as Prototype Pollution."
           },
           "error": null,
-          "ms": 1313
+          "ms": 8107
         },
         {
           "id": "corpus/app24/index.js:7-7",
@@ -2841,10 +3154,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded sensitive secret key found in source code."
+            "reason": "Hardcoded secret key detected in the source code."
           },
           "error": null,
-          "ms": 1696
+          "ms": 4743
         },
         {
           "id": "corpus/app15/index.js:7-7",
@@ -2857,10 +3170,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded database credentials found in the source code."
+            "reason": "Hardcoded MongoDB connection string containing credentials in plain text."
           },
           "error": null,
-          "ms": 1545
+          "ms": 4382
         },
         {
           "id": "corpus/app17/index.js:7-7",
@@ -2873,10 +3186,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded sensitive cryptographic key found in source code."
+            "reason": "The code contains a hardcoded JWT signing key, which is a security risk as it can be extracted and used to forge valid tokens."
           },
           "error": null,
-          "ms": 1563
+          "ms": 4702
         },
         {
           "id": "corpus/app14/index.js:20-23",
@@ -2889,10 +3202,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes the user-controlled req.body.name directly into the Mongoose find query, allowing an attacker to pass an object with operators like $gt or $ne to bypass filters."
+            "reason": "The code directly uses req.body.name in a Mongoose find query without sanitization, which can lead to NoSQL injection if an attacker passes an object instead of a string."
           },
           "error": null,
-          "ms": 2233
+          "ms": 4668
         },
         {
           "id": "corpus/app23/index.js:20-23",
@@ -2903,12 +3216,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code performs a standard database fetch without user-supplied input influencing the query, posing no immediate security risk."
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "The endpoint returns all RSVP attendee records without verifying if the requesting user has authorization or ownership rights to view this data, potentially exposing sensitive personal information."
           },
           "error": null,
-          "ms": 1262
+          "ms": 4888
         },
         {
           "id": "corpus/app11/index.js:7-7",
@@ -2921,10 +3234,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded API key found in source code."
+            "reason": "Hardcoded API key detected in the source code."
           },
           "error": null,
-          "ms": 1197
+          "ms": 4537
         },
         {
           "id": "corpus/app22/index.js:15-18",
@@ -2937,10 +3250,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes user-controlled input directly into a Mongoose query object without sanitization, allowing an attacker to pass an object instead of a string to manipulate query logic."
+            "reason": "The query parameter req.city is directly passed to the Mongoose find method without sanitization, potentially allowing NoSQL injection if an object is passed instead of a string."
           },
           "error": null,
-          "ms": 1181
+          "ms": 4751
         },
         {
           "id": "corpus/app09/index.js:28-32",
@@ -2953,10 +3266,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint deletes a recipe based on the ID provided in the URL parameter without verifying if the authenticated user owns the recipe."
+            "reason": "The endpoint deletes a recipe based solely on the provided ID parameter without verifying whether the authenticated user owns the recipe."
           },
           "error": null,
-          "ms": 1265
+          "ms": 4863
         },
         {
           "id": "corpus/app09/index.js:7-7",
@@ -2969,10 +3282,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded database credentials found in the source code."
+            "reason": "Hardcoded database credentials including a cleartext password found in the source code."
           },
           "error": null,
-          "ms": 1084
+          "ms": 4577
         },
         {
           "id": "corpus/app19/index.js:16-19",
@@ -2985,10 +3298,10 @@
           "pred": {
             "vulnerable": false,
             "category": "none",
-            "reason": "The code performs a standard database query to retrieve all vehicles without using user-supplied input in the query criteria, thus avoiding injection or IDOR vulnerabilities."
+            "reason": "The code retrieves a list of vehicles from the database using Mongoose without accepting any user input that could lead to injection or IDOR. No sensitive data or secrets are exposed unnecessarily."
           },
           "error": null,
-          "ms": 1105
+          "ms": 4558
         },
         {
           "id": "corpus/app08/package.json:1-11",
@@ -2999,12 +3312,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The express version 4.16.0 is outdated and contains known security vulnerabilities, including potential ReDoS and other issues."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json file does not contain any vulnerable dependencies or insecure configurations."
           },
           "error": null,
-          "ms": 1152
+          "ms": 4784
         },
         {
           "id": "corpus/app04/index.js:28-32",
@@ -3017,10 +3330,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint deletes a post based on the ID provided in the URL parameter without verifying if the authenticated user owns the post."
+            "reason": "The endpoint checks for authentication via requireAuth, but it does not verify whether the authenticated user actually owns the post being deleted by ID, allowing any authenticated user to delete any post."
           },
           "error": null,
-          "ms": 1962
+          "ms": 7274
         },
         {
           "id": "corpus/app12/index.js:14-17",
@@ -3031,12 +3344,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code uses Mongoose's find method with a query object. Since req.query.type is a string, Mongoose treats it as a literal value rather than a MongoDB operator, preventing NoSQL injection."
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "The code directly passes user-controlled query parameters from req.query.type into a Mongoose database query without sanitization, which can lead to NoSQL injection if an attacker supplies a malicious object instead of a primitive string."
           },
           "error": null,
-          "ms": 1713
+          "ms": 4746
         },
         {
           "id": "corpus/app22/index.js:7-7",
@@ -3052,7 +3365,7 @@
             "reason": "Hardcoded API key detected in the source code."
           },
           "error": null,
-          "ms": 3302
+          "ms": 4504
         },
         {
           "id": "corpus/app13/index.js:22-25",
@@ -3065,10 +3378,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint retrieves an invoice by ID without verifying if the authenticated user has permission to access that specific invoice."
+            "reason": "The endpoint fetches an invoice by its ID from the URL parameters without verifying if the authenticated user owns or is authorized to access that specific invoice."
           },
           "error": null,
-          "ms": 1639
+          "ms": 4844
         },
         {
           "id": "corpus/app03/index.js:16-20",
@@ -3079,12 +3392,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes the raw request body directly into the Mongoose query, allowing an attacker to manipulate the query object (e.g., using $gt operators) to bypass authentication."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code uses Mongoose's findOne method with an object mapping, which naturally prevents NoSQL injection unlike raw query parameters. Passwords should ideally be hashed and compared using bcrypt rather than plaintext in production, but the direct query structure itself does not contain a standard critical vulnerability category like injection or secret leakage."
           },
           "error": null,
-          "ms": 2107
+          "ms": 4985
         },
         {
           "id": "corpus/app24/index.js:16-19",
@@ -3095,12 +3408,28 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The endpoint retrieves all application records using Mongoose without taking any user input, preventing injection or IDOR vulnerabilities."
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "The endpoint returns all application records from the database without verifying if the user is authenticated and authorized to access them, potentially leading to unauthorized data exposure."
           },
           "error": null,
-          "ms": 4780
+          "ms": 4464
+        },
+        {
+          "id": "dvna/dvna/package.json:1-37",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "The package.json contains known vulnerable dependencies such as 'node-serialize' 0.0.4 which allows remote code execution via insecure deserialization, and 'mathjs' 3.10.1 which has security issues."
+          },
+          "error": null,
+          "ms": 4906
         },
         {
           "id": "corpus/app13/index.js:7-7",
@@ -3113,10 +3442,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded webhook secret found in the source code."
+            "reason": "The code contains a hardcoded API or webhook secret key which can lead to credential exposure if the source code is compromised."
           },
           "error": null,
-          "ms": 4724
+          "ms": 5267
         },
         {
           "id": "corpus/app07/index.js:16-19",
@@ -3127,12 +3456,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code fetches survey responses using Mongoose without any user-supplied input affecting the query, preventing injection vulnerabilities. Authentication/Authorization is not present in this snippet, but the lack of IDOR or injection makes it safe based on the provided code."
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "The endpoint returns all survey responses from the database without verifying if the user is authenticated or authorized to access this data."
           },
           "error": null,
-          "ms": 5271
+          "ms": 4697
         },
         {
           "id": "corpus/app21/index.js:23-26",
@@ -3143,12 +3472,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "idor",
-            "reason": "The endpoint retrieves file metadata by ID without verifying if the authenticated user has permission to access the specific file associated with that ID."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The endpoint uses authentication via requireAuth middleware and queries MongoDB using Mongoose with the provided id, which does not introduce IDOR or injection vulnerabilities in this context."
           },
           "error": null,
-          "ms": 1561
+          "ms": 4718
         },
         {
           "id": "corpus/app15/package.json:1-12",
@@ -3159,12 +3488,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "dependency",
-            "reason": "The project uses jsonwebtoken version 8.5.1, which is outdated and contains known security vulnerabilities."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided package.json lists standard dependencies without any apparent malicious code or known vulnerable patterns."
           },
           "error": null,
-          "ms": 1299
+          "ms": 4820
         },
         {
           "id": "corpus/app11/index.js:28-31",
@@ -3177,10 +3506,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint retrieves patient records based on the ID provided in the URL parameter without verifying if the authenticated user has authorization to access that specific patient's data."
+            "reason": "The endpoint fetches patient records based solely on the URL parameter 'id' without verifying if the authenticated user has authorization to access this specific patient's data, leading to an Insecure Direct Object Reference (IDOR) vulnerability."
           },
           "error": null,
-          "ms": 984
+          "ms": 5008
         },
         {
           "id": "corpus/app24/index.js:22-25",
@@ -3191,12 +3520,28 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "injection",
-            "reason": "The code is vulnerable to NoSQL injection because it passes the user-controlled req.body.email directly into the Mongoose findOne query, allowing an attacker to pass an object instead of a string to manipulate query logic."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code uses Mongoose's findOne method with an object, which safely constructs a query preventing NoSQL injection. Email parameter is passed as a property value rather than concatenated raw query objects."
           },
           "error": null,
-          "ms": 2048
+          "ms": 5017
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:144-184",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "The code retrieves and updates a user based entirely on req.body.id without checking if the currently authenticated user (e.g., req.user.id) is authorized to edit that specific user account."
+          },
+          "error": null,
+          "ms": 4612
         },
         {
           "id": "corpus/app07/index.js:7-7",
@@ -3209,10 +3554,26 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded AWS secret access key found in source code."
+            "reason": "Hardcoded AWS secret access key found in the source code."
           },
           "error": null,
-          "ms": 2774
+          "ms": 4916
+        },
+        {
+          "id": "dvna/dvna/server.js:23-28",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "The express-session configuration uses cookie.secure: false, which allows session cookies to be transmitted over unencrypted HTTP connections, exposing them to interception."
+          },
+          "error": null,
+          "ms": 4523
         },
         {
           "id": "corpus/app15/index.js:17-20",
@@ -3223,12 +3584,12 @@
             ]
           },
           "pred": {
-            "vulnerable": false,
-            "category": "none",
-            "reason": "The code performs a standard database query without user-controlled input, posing no immediate security risk."
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "The endpoint retrieves all employee names, salaries, and departments without checking if the user is authenticated and authorized to view sensitive financial data."
           },
           "error": null,
-          "ms": 1662
+          "ms": 7580
         },
         {
           "id": "corpus/app06/index.js:30-36",
@@ -3240,11 +3601,11 @@
           },
           "pred": {
             "vulnerable": true,
-            "category": "injection",
-            "reason": "The code passes req.body directly into the $set operator of a MongoDB update query, which allows for NoSQL injection attacks where an attacker can modify arbitrary fields in the document."
+            "category": "idor",
+            "reason": "The code updates a project by ID directly from request parameters without verifying whether the authenticated user owns or has permission to modify the specified project."
           },
           "error": null,
-          "ms": 2306
+          "ms": 4698
         },
         {
           "id": "corpus/app10/index.js:20-23",
@@ -3257,10 +3618,10 @@
           "pred": {
             "vulnerable": true,
             "category": "injection",
-            "reason": "The code passes the user-controlled req.body object directly into a Mongoose query, which is vulnerable to NoSQL injection if the input contains operators like $gt or $ne."
+            "reason": "The code directly passes req.body.code into a Mongoose query without validation or sanitization, potentially leading to a NoSQL Injection vulnerability if req.body.code is an object instead of a primitive string."
           },
           "error": null,
-          "ms": 1921
+          "ms": 5102
         },
         {
           "id": "corpus/app04/index.js:22-25",
@@ -3271,12 +3632,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "idor",
-            "reason": "The endpoint retrieves all draft posts without verifying if the requesting user is the owner of those drafts, potentially exposing private content to unauthorized users."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The endpoint fetches draft posts using a fixed boolean condition without incorporating any user-supplied input into the database query, thus preventing injection and unauthorized access."
           },
           "error": null,
-          "ms": 1532
+          "ms": 9944
         },
         {
           "id": "corpus/app18/index.js:20-23",
@@ -3287,12 +3648,12 @@
             ]
           },
           "pred": {
-            "vulnerable": true,
-            "category": "injection",
-            "reason": "The code passes the user-controlled req.query.postId directly into the Mongoose find method, which is vulnerable to NoSQL injection if an attacker provides an object instead of a string."
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code queries the database using an ODM (Mongoose) with a safely parsed query parameter. Although req.query.postId could potentially be an object in Express, Mongoose handles queries securely in this context without raw string concatenation or NoSQL injection vulnerabilities typical of unescaped query objects."
           },
           "error": null,
-          "ms": 1384
+          "ms": 4896
         },
         {
           "id": "corpus/app19/index.js:7-7",
@@ -3305,10 +3666,10 @@
           "pred": {
             "vulnerable": true,
             "category": "secret",
-            "reason": "Hardcoded API token found in source code."
+            "reason": "Hardcoded API key or access token detected in the source code."
           },
           "error": null,
-          "ms": 3666
+          "ms": 4595
         },
         {
           "id": "corpus/app06/index.js:24-27",
@@ -3321,10 +3682,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint uses the user-provided teamId from the request body to query the database without verifying if the authenticated user has authorization to access projects belonging to that team."
+            "reason": "The endpoint accepts a teamId directly from the request body to fetch projects without validating if the authenticated user has permission to access that specific team's data, leading to an Insecure Direct Object Reference vulnerability."
           },
           "error": null,
-          "ms": 1430
+          "ms": 4615
         },
         {
           "id": "corpus/app02/index.js:29-33",
@@ -3337,10 +3698,10 @@
           "pred": {
             "vulnerable": true,
             "category": "idor",
-            "reason": "The endpoint retrieves a note by ID without verifying if the authenticated user has permission to access that specific note."
+            "reason": "The endpoint retrieves a note by its ID using Note.findById without verifying if the authenticated user owns or has permission to access the note, allowing Insecure Direct Object References."
           },
           "error": null,
-          "ms": 1818
+          "ms": 5018
         }
       ]
     }

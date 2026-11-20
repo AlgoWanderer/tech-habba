@@ -1,0 +1,5556 @@
+{
+  "method": {
+    "task": "snippet classification: vulnerable? + category",
+    "system": "You are a security reviewer for Node.js/Express code. Answer with JSON only: {\"vulnerable\": bool, \"category\": \"secret|injection|auth|idor|dependency|none\", \"reason\": string}.",
+    "snippets": 122,
+    "sets": [
+      "corpus",
+      "dvna"
+    ],
+    "note": "Test apps are never in the training data. Rules = deterministic engine on the same snippets.",
+    "generatedAt": "2026-11-20T22:54:40.004Z"
+  },
+  "models": {
+    "rules": {
+      "snippets": 122,
+      "invalidOrError": 0,
+      "tp": 59,
+      "fp": 4,
+      "fn": 2,
+      "tn": 57,
+      "precision": 0.937,
+      "recall": 0.967,
+      "f1": 0.952,
+      "accuracy": 0.951,
+      "categoryAccuracy": 0.814,
+      "meanMs": 0,
+      "rows": [
+        {
+          "id": "dvna/dvna/server.js:14-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/authHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app06/index.js:18-21",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app04/index.js:34-34",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:32-32",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app03/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app11/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app19/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app24/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app29/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app20/index.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app22/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/product.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app28/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app01/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app24/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app25/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app16/index.js:27-30",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app26/index.js:41-41",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app08/index.js:19-22",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app18/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/config/server.js:1-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:76-101",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "nosql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app03/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app09/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app23/index.js:13-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app04/index.js:14-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app27/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app10/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app10/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app11/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app25/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app20/index.js:19-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/index.js:27-33",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app29/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app12/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app07/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app11/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:12-12",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app18/index.js:31-31",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app06/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app19/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app04/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app09/index.js:10-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app30/index.js:21-24",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app02/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app30/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app06/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app01/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:18-21",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app07/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:11-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app15/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app29/index.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/models/user.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:16-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app30/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/config/vulns.js:1-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app16/index.js:21-24",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app20/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app02/index.js:8-8",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app23/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app18/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:38-45",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:9-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "sql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app01/index.js:23-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection",
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app01/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/routes/app.js:5-67",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app20/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app17/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app08/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app25/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app21/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app12/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app10/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app14/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app05/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app24/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app15/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app17/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app14/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app23/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app11/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app22/index.js:15-18",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app09/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app09/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app19/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app08/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app04/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app12/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app22/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app13/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app03/index.js:16-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "nosql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app24/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/package.json:1-37",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app13/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app07/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app21/index.js:23-26",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app15/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "dependency",
+            "reason": "dep-vuln"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app11/index.js:28-31",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app24/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:144-184",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "injection",
+            "reason": "nosql-injection"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app07/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "dvna/dvna/server.js:23-28",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": ""
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app15/index.js:17-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app06/index.js:30-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app10/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app04/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app18/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app19/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "secret-hardcoded"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app06/index.js:24-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "auth",
+            "reason": "route-no-auth"
+          },
+          "error": null,
+          "ms": 0
+        },
+        {
+          "id": "corpus/app02/index.js:29-33",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "idor",
+            "reason": "idor-suspect"
+          },
+          "error": null,
+          "ms": 0
+        }
+      ]
+    },
+    "ollama:qwen2.5-coder:1.5b": {
+      "snippets": 122,
+      "invalidOrError": 0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 58,
+      "tn": 61,
+      "precision": 1,
+      "recall": 0.049,
+      "f1": 0.094,
+      "accuracy": 0.525,
+      "categoryAccuracy": 0,
+      "meanMs": 380,
+      "rows": [
+        {
+          "id": "dvna/dvna/server.js:14-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 4141
+        },
+        {
+          "id": "dvna/dvna/core/authHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities related to secret, injection, authentication, identity, or dependency injection."
+          },
+          "error": null,
+          "ms": 316
+        },
+        {
+          "id": "corpus/app06/index.js:18-21",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 293
+        },
+        {
+          "id": "corpus/app04/index.js:34-34",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet provided does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 359
+        },
+        {
+          "id": "dvna/dvna/server.js:32-32",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 270
+        },
+        {
+          "id": "corpus/app03/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 352
+        },
+        {
+          "id": "corpus/app11/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 341
+        },
+        {
+          "id": "corpus/app05/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 291
+        },
+        {
+          "id": "corpus/app19/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 328
+        },
+        {
+          "id": "corpus/app24/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The provided `package.json` file does not contain any secrets, injection vulnerabilities, authentication issues, identity theft, dependencies, or other security-related concerns."
+          },
+          "error": null,
+          "ms": 406
+        },
+        {
+          "id": "corpus/app29/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 328
+        },
+        {
+          "id": "corpus/app20/index.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 303
+        },
+        {
+          "id": "corpus/app22/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 346
+        },
+        {
+          "id": "dvna/dvna/models/product.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 350
+        },
+        {
+          "id": "corpus/app28/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injection, authentication, identity, dependency management, or other security-related vulnerabilities."
+          },
+          "error": null,
+          "ms": 376
+        },
+        {
+          "id": "corpus/app05/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 298
+        },
+        {
+          "id": "corpus/app01/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code provided does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 300
+        },
+        {
+          "id": "corpus/app24/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 356
+        },
+        {
+          "id": "dvna/dvna/models/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The 'config/db.js' file is not explicitly vulnerable to injection attacks. It is a simple configuration file that does not contain any user input or dynamic content that could be manipulated by an attacker."
+          },
+          "error": null,
+          "ms": 446
+        },
+        {
+          "id": "dvna/dvna/server.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 257
+        },
+        {
+          "id": "corpus/app25/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 318
+        },
+        {
+          "id": "corpus/app16/index.js:27-30",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 298
+        },
+        {
+          "id": "corpus/app26/index.js:41-41",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code provided does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 287
+        },
+        {
+          "id": "dvna/dvna/server.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet provided does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 264
+        },
+        {
+          "id": "corpus/app08/index.js:19-22",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 284
+        },
+        {
+          "id": "corpus/app18/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 345
+        },
+        {
+          "id": "dvna/dvna/config/server.js:1-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 348
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:76-101",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies it uses. The `db.Product.find` method is used to fetch a product from the database, which is a common practice in Node.js/Express applications. The `req.query.id` is used to filter the product by its ID, which is a common practice in web applications. The code does not use any known vulnerabilities in the dependencies it uses. "
+          },
+          "error": null,
+          "ms": 769
+        },
+        {
+          "id": "corpus/app03/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 338
+        },
+        {
+          "id": "dvna/dvna/server.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 252
+        },
+        {
+          "id": "corpus/app09/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 300
+        },
+        {
+          "id": "corpus/app23/index.js:13-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The function `requireAuth` does not contain any known vulnerabilities. It simply checks for the presence of an authorization header and sets a user object if found. There are no potential security risks associated with this function."
+          },
+          "error": null,
+          "ms": 498
+        },
+        {
+          "id": "corpus/app04/index.js:14-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The function `requireAuth` does not contain any known vulnerabilities. It simply checks for an authorization header and sets a user object in the request if the header is present. There are no potential security risks associated with this function."
+          },
+          "error": null,
+          "ms": 502
+        },
+        {
+          "id": "corpus/app27/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 356
+        },
+        {
+          "id": "corpus/app10/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 320
+        },
+        {
+          "id": "dvna/dvna/models/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 330
+        },
+        {
+          "id": "corpus/app10/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 296
+        },
+        {
+          "id": "corpus/app11/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 290
+        },
+        {
+          "id": "corpus/app25/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injection, authentication, identity, dependency management, or other security-related issues."
+          },
+          "error": null,
+          "ms": 369
+        },
+        {
+          "id": "corpus/app20/index.js:19-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet provided does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 358
+        },
+        {
+          "id": "dvna/dvna/models/index.js:27-33",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code snippet does not contain any known vulnerabilities related to secret, injection, authentication, identity, or dependency injection. It simply initializes a Sequelize database connection."
+          },
+          "error": null,
+          "ms": 416
+        },
+        {
+          "id": "corpus/app29/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 270
+        },
+        {
+          "id": "corpus/app05/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 346
+        },
+        {
+          "id": "corpus/app12/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 251
+        },
+        {
+          "id": "corpus/app07/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 341
+        },
+        {
+          "id": "corpus/app11/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 349
+        },
+        {
+          "id": "dvna/dvna/server.js:12-12",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 280
+        },
+        {
+          "id": "corpus/app18/index.js:31-31",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet provided does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 329
+        },
+        {
+          "id": "corpus/app06/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the MongoDB driver."
+          },
+          "error": null,
+          "ms": 296
+        },
+        {
+          "id": "corpus/app19/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 276
+        },
+        {
+          "id": "corpus/app04/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 294
+        },
+        {
+          "id": "corpus/app09/index.js:10-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 322
+        },
+        {
+          "id": "corpus/app30/index.js:21-24",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 291
+        },
+        {
+          "id": "corpus/app02/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The package.json file does not contain any known vulnerabilities or dependencies that could be exploited. The dependencies listed are all well-maintained and widely used in the Node.js ecosystem."
+          },
+          "error": null,
+          "ms": 442
+        },
+        {
+          "id": "corpus/app30/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The MongoDB URI is hardcoded in the code and does not contain any sensitive information."
+          },
+          "error": null,
+          "ms": 330
+        },
+        {
+          "id": "corpus/app06/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 367
+        },
+        {
+          "id": "corpus/app01/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any secret, injection, authentication, identity theft, dependency injection, or other security vulnerabilities."
+          },
+          "error": null,
+          "ms": 364
+        },
+        {
+          "id": "corpus/app05/index.js:18-21",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 294
+        },
+        {
+          "id": "corpus/app07/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 329
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 305
+        },
+        {
+          "id": "corpus/app05/index.js:11-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies used. The `lodash` library is used for merging arrays, which is a well-tested library with no known vulnerabilities."
+          },
+          "error": null,
+          "ms": 442
+        },
+        {
+          "id": "corpus/app15/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet provided does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 304
+        },
+        {
+          "id": "corpus/app29/index.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code provided does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 320
+        },
+        {
+          "id": "dvna/dvna/models/user.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 347
+        },
+        {
+          "id": "dvna/dvna/server.js:16-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any known vulnerabilities or security risks."
+          },
+          "error": null,
+          "ms": 292
+        },
+        {
+          "id": "corpus/app30/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 352
+        },
+        {
+          "id": "dvna/dvna/config/vulns.js:1-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The file `config/vulns.js` does not contain any known vulnerabilities or security issues. It is a simple object mapping vulnerability names to their descriptions."
+          },
+          "error": null,
+          "ms": 427
+        },
+        {
+          "id": "corpus/app16/index.js:21-24",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The 'Ticket' model is not explicitly defined in the code, and it is assumed that it is a custom model. This could lead to potential security vulnerabilities if the model is not properly sanitized or validated."
+          },
+          "error": null,
+          "ms": 496
+        },
+        {
+          "id": "corpus/app20/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The package.json file does not contain any known vulnerabilities or dependencies that could be exploited."
+          },
+          "error": null,
+          "ms": 349
+        },
+        {
+          "id": "corpus/app02/index.js:8-8",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The DB_URI is hardcoded in the code and does not contain any sensitive information."
+          },
+          "error": null,
+          "ms": 332
+        },
+        {
+          "id": "corpus/app23/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies it imports. The `requireAuth` middleware and the `Rsvp.findByIdAndDelete` function are used to handle authentication and data deletion, respectively. The code does not contain any known injection or authorization issues."
+          },
+          "error": null,
+          "ms": 549
+        },
+        {
+          "id": "corpus/app18/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 303
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:38-45",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "The `ping` command is executed with user-supplied input (`req.body.address`), which can lead to command injection if the input is not properly sanitized."
+          },
+          "error": null,
+          "ms": 468
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:9-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "The query string is directly concatenated into the SQL query without proper sanitization, allowing for SQL injection attacks. The user's login input is used as is in the query, which can be manipulated to execute arbitrary SQL commands."
+          },
+          "error": null,
+          "ms": 549
+        },
+        {
+          "id": "corpus/app01/index.js:23-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection",
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": true,
+            "category": "secret",
+            "reason": "Direct object injection into the `find` query, allowing attackers to manipulate the query parameters."
+          },
+          "error": null,
+          "ms": 371
+        },
+        {
+          "id": "corpus/app01/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The STRIPE_SECRET is not a secret or injection point. It is a constant defined in the code and used for Stripe API operations."
+          },
+          "error": null,
+          "ms": 395
+        },
+        {
+          "id": "corpus/app05/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other security vulnerabilities."
+          },
+          "error": null,
+          "ms": 354
+        },
+        {
+          "id": "dvna/dvna/routes/app.js:5-67",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 336
+        },
+        {
+          "id": "corpus/app20/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 304
+        },
+        {
+          "id": "corpus/app17/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 351
+        },
+        {
+          "id": "corpus/app08/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies used. The `Expense` model is assumed to be a valid and secure model."
+          },
+          "error": null,
+          "ms": 394
+        },
+        {
+          "id": "corpus/app25/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 350
+        },
+        {
+          "id": "corpus/app21/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The storage URI does not contain any sensitive information."
+          },
+          "error": null,
+          "ms": 279
+        },
+        {
+          "id": "corpus/app12/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injection, authentication, identity, dependency management, or other security-related vulnerabilities."
+          },
+          "error": null,
+          "ms": 381
+        },
+        {
+          "id": "corpus/app10/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 293
+        },
+        {
+          "id": "corpus/app14/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 359
+        },
+        {
+          "id": "corpus/app05/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 361
+        },
+        {
+          "id": "corpus/app24/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret keys, injection points, authentication mechanisms, identity management, dependencies, or any other security vulnerabilities."
+          },
+          "error": null,
+          "ms": 379
+        },
+        {
+          "id": "corpus/app15/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The MongoDB URI is not vulnerable to injection attacks. It is a simple string literal and does not contain any user input."
+          },
+          "error": null,
+          "ms": 382
+        },
+        {
+          "id": "corpus/app17/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The JWT_SIGNING_KEY is a hardcoded secret key that should be kept secure and not exposed in the codebase."
+          },
+          "error": null,
+          "ms": 334
+        },
+        {
+          "id": "corpus/app14/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 370
+        },
+        {
+          "id": "corpus/app23/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies. The `Rsvp` model is assumed to be a valid and secure model for handling RSVP data."
+          },
+          "error": null,
+          "ms": 416
+        },
+        {
+          "id": "corpus/app11/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 356
+        },
+        {
+          "id": "corpus/app22/index.js:15-18",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 351
+        },
+        {
+          "id": "corpus/app09/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 296
+        },
+        {
+          "id": "corpus/app09/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The MongoDB URL is hardcoded in the code and does not contain any sensitive information."
+          },
+          "error": null,
+          "ms": 321
+        },
+        {
+          "id": "corpus/app19/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 293
+        },
+        {
+          "id": "corpus/app08/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 344
+        },
+        {
+          "id": "corpus/app04/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 292
+        },
+        {
+          "id": "corpus/app12/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies used, such as Express or Mongoose."
+          },
+          "error": null,
+          "ms": 345
+        },
+        {
+          "id": "corpus/app22/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other security vulnerabilities."
+          },
+          "error": null,
+          "ms": 364
+        },
+        {
+          "id": "corpus/app13/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 299
+        },
+        {
+          "id": "corpus/app03/index.js:16-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 337
+        },
+        {
+          "id": "corpus/app24/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 361
+        },
+        {
+          "id": "dvna/dvna/package.json:1-37",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injection vulnerabilities, authentication issues, identity theft risks, dependencies, or other security-related issues."
+          },
+          "error": null,
+          "ms": 414
+        },
+        {
+          "id": "corpus/app13/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code snippet does not contain any secret, injection, authentication, identity, or dependency issues."
+          },
+          "error": null,
+          "ms": 343
+        },
+        {
+          "id": "corpus/app07/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 357
+        },
+        {
+          "id": "corpus/app21/index.js:23-26",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 337
+        },
+        {
+          "id": "corpus/app15/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The package.json file does not contain any secrets, injections, authentication, identity, dependencies, or vulnerabilities."
+          },
+          "error": null,
+          "ms": 345
+        },
+        {
+          "id": "corpus/app11/index.js:28-31",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities or dependencies that could be exploited."
+          },
+          "error": null,
+          "ms": 318
+        },
+        {
+          "id": "corpus/app24/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 354
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:144-184",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 308
+        },
+        {
+          "id": "corpus/app07/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, dependency, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 339
+        },
+        {
+          "id": "dvna/dvna/server.js:23-28",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The 'secret' option in the session middleware is set to 'keyboard cat', which is a common and insecure secret. It should be replaced with a strong, random secret that is not easily guessable."
+          },
+          "error": null,
+          "ms": 439
+        },
+        {
+          "id": "corpus/app15/index.js:17-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 361
+        },
+        {
+          "id": "corpus/app06/index.js:30-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 298
+        },
+        {
+          "id": "corpus/app10/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 296
+        },
+        {
+          "id": "corpus/app04/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other vulnerabilities."
+          },
+          "error": null,
+          "ms": 359
+        },
+        {
+          "id": "corpus/app18/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "dependency",
+            "reason": "The code does not use any known vulnerabilities in the dependencies it depends on. The `Comment` model is assumed to be a valid and secure model for storing comments, and the `find` method is used safely with the provided query."
+          },
+          "error": null,
+          "ms": 505
+        },
+        {
+          "id": "corpus/app19/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity, or dependency vulnerabilities."
+          },
+          "error": null,
+          "ms": 326
+        },
+        {
+          "id": "corpus/app06/index.js:24-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any secret, injection, authentication, identity theft, dependency injection, or other security vulnerabilities."
+          },
+          "error": null,
+          "ms": 360
+        },
+        {
+          "id": "corpus/app02/index.js:29-33",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "vulnerable": false,
+            "category": "none",
+            "reason": "The code does not contain any known vulnerabilities or security issues."
+          },
+          "error": null,
+          "ms": 292
+        }
+      ]
+    },
+    "ollama:slopstop-qwen": {
+      "snippets": 122,
+      "invalidOrError": 0,
+      "tp": 45,
+      "fp": 14,
+      "fn": 16,
+      "tn": 47,
+      "precision": 0.763,
+      "recall": 0.738,
+      "f1": 0.75,
+      "accuracy": 0.754,
+      "categoryAccuracy": 0.556,
+      "meanMs": 543,
+      "rows": [
+        {
+          "id": "dvna/dvna/server.js:14-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 2276
+        },
+        {
+          "id": "dvna/dvna/core/authHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 359
+        },
+        {
+          "id": "corpus/app06/index.js:18-21",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 495
+        },
+        {
+          "id": "corpus/app04/index.js:34-34",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 526
+        },
+        {
+          "id": "dvna/dvna/server.js:32-32",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 467
+        },
+        {
+          "id": "corpus/app03/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Insecure use of user input in JavaScript can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 687
+        },
+        {
+          "id": "corpus/app11/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript is the lack of input validation and sanitization which can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 648
+        },
+        {
+          "id": "corpus/app05/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 500
+        },
+        {
+          "id": "corpus/app19/index.js:9-13",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Insecure use of JSON.parse() function can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 544
+        },
+        {
+          "id": "corpus/app24/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 506
+        },
+        {
+          "id": "corpus/app29/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 486
+        },
+        {
+          "id": "corpus/app20/index.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 482
+        },
+        {
+          "id": "corpus/app22/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 389
+        },
+        {
+          "id": "dvna/dvna/models/product.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 499
+        },
+        {
+          "id": "corpus/app28/package.json:1-10",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 493
+        },
+        {
+          "id": "corpus/app05/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 495
+        },
+        {
+          "id": "corpus/app01/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 492
+        },
+        {
+          "id": "corpus/app24/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 488
+        },
+        {
+          "id": "dvna/dvna/models/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 449
+        },
+        {
+          "id": "dvna/dvna/server.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 448
+        },
+        {
+          "id": "corpus/app25/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 629
+        },
+        {
+          "id": "corpus/app16/index.js:27-30",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 605
+        },
+        {
+          "id": "corpus/app26/index.js:41-41",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 499
+        },
+        {
+          "id": "dvna/dvna/server.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 488
+        },
+        {
+          "id": "corpus/app08/index.js:19-22",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation and sanitization can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 530
+        },
+        {
+          "id": "corpus/app18/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 490
+        },
+        {
+          "id": "dvna/dvna/config/server.js:1-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 466
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:76-101",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a web application allows users to access and modify data that they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 611
+        },
+        {
+          "id": "corpus/app03/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 549
+        },
+        {
+          "id": "dvna/dvna/server.js:6-6",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 499
+        },
+        {
+          "id": "corpus/app09/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 482
+        },
+        {
+          "id": "corpus/app23/index.js:13-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 552
+        },
+        {
+          "id": "corpus/app04/index.js:14-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 716
+        },
+        {
+          "id": "corpus/app27/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 499
+        },
+        {
+          "id": "corpus/app10/index.js:7-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input, leading to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 620
+        },
+        {
+          "id": "dvna/dvna/models/index.js:35-35",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 497
+        },
+        {
+          "id": "corpus/app10/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 495
+        },
+        {
+          "id": "corpus/app11/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 491
+        },
+        {
+          "id": "corpus/app25/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 376
+        },
+        {
+          "id": "corpus/app20/index.js:19-19",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 482
+        },
+        {
+          "id": "dvna/dvna/models/index.js:27-33",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 380
+        },
+        {
+          "id": "corpus/app29/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 387
+        },
+        {
+          "id": "corpus/app05/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 482
+        },
+        {
+          "id": "corpus/app12/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 481
+        },
+        {
+          "id": "corpus/app07/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 440
+        },
+        {
+          "id": "corpus/app11/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 458
+        },
+        {
+          "id": "dvna/dvna/server.js:12-12",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 442
+        },
+        {
+          "id": "corpus/app18/index.js:31-31",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 490
+        },
+        {
+          "id": "corpus/app06/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Incorrect handling of user input can lead to SQL injection attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 528
+        },
+        {
+          "id": "corpus/app19/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 495
+        },
+        {
+          "id": "corpus/app04/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 477
+        },
+        {
+          "id": "corpus/app09/index.js:10-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a user input is not properly sanitized or validated before being used to access or modify data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 659
+        },
+        {
+          "id": "corpus/app30/index.js:21-24",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript, allowing unauthorized access or modification of sensitive data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 625
+        },
+        {
+          "id": "corpus/app02/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 401
+        },
+        {
+          "id": "corpus/app30/index.js:7-7",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 685
+        },
+        {
+          "id": "corpus/app06/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 390
+        },
+        {
+          "id": "corpus/app01/index.js:9-9",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 503
+        },
+        {
+          "id": "corpus/app05/index.js:18-21",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a web application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 613
+        },
+        {
+          "id": "corpus/app07/index.js:5-5",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 483
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:2-2",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 456
+        },
+        {
+          "id": "corpus/app05/index.js:11-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 648
+        },
+        {
+          "id": "corpus/app15/index.js:4-4",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 496
+        },
+        {
+          "id": "corpus/app29/index.js:17-17",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 487
+        },
+        {
+          "id": "dvna/dvna/models/user.js:1-1",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 485
+        },
+        {
+          "id": "dvna/dvna/server.js:16-16",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 453
+        },
+        {
+          "id": "corpus/app30/package.json:1-11",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 483
+        },
+        {
+          "id": "dvna/dvna/config/vulns.js:1-14",
+          "truth": {
+            "vulnerable": false,
+            "categories": []
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 507
+        },
+        {
+          "id": "corpus/app16/index.js:21-24",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation and sanitization can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 526
+        },
+        {
+          "id": "corpus/app20/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 394
+        },
+        {
+          "id": "corpus/app02/index.js:8-8",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 509
+        },
+        {
+          "id": "corpus/app23/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a user can access and modify data they are not supposed to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 575
+        },
+        {
+          "id": "corpus/app18/index.js:26-29",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access and modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 712
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:38-45",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation or sanitization can lead to command injection attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 454
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:9-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation and sanitization can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 641
+        },
+        {
+          "id": "corpus/app01/index.js:23-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection",
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript is the lack of input validation and sanitization which can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 724
+        },
+        {
+          "id": "corpus/app01/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 397
+        },
+        {
+          "id": "corpus/app05/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 393
+        },
+        {
+          "id": "dvna/dvna/routes/app.js:5-67",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when user input is not properly sanitized or validated before being used to access or modify data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 660
+        },
+        {
+          "id": "corpus/app20/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation and sanitization can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 633
+        },
+        {
+          "id": "corpus/app17/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input or data manipulation leading to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 641
+        },
+        {
+          "id": "corpus/app08/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper handling of user input can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 499
+        },
+        {
+          "id": "corpus/app25/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a user can access and modify data they should not have access to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 572
+        },
+        {
+          "id": "corpus/app21/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "secret",
+            "reason": "Insecure use of hard-coded credentials in MongoDB connection string.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 509
+        },
+        {
+          "id": "corpus/app12/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 377
+        },
+        {
+          "id": "corpus/app10/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Cross-Site Scripting (XSS) vulnerabilities in JavaScript can occur when user input is not properly sanitized before being included in dynamic web pages.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 585
+        },
+        {
+          "id": "corpus/app14/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input leading to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 599
+        },
+        {
+          "id": "corpus/app05/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 425
+        },
+        {
+          "id": "corpus/app24/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 707
+        },
+        {
+          "id": "corpus/app15/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Insecure use of MongoDB credentials in JavaScript code can lead to unauthorized access or data breaches.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 556
+        },
+        {
+          "id": "corpus/app17/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 475
+        },
+        {
+          "id": "corpus/app14/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper input validation and sanitization can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 513
+        },
+        {
+          "id": "corpus/app23/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input which can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 615
+        },
+        {
+          "id": "corpus/app11/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 538
+        },
+        {
+          "id": "corpus/app22/index.js:15-18",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Cross-Site Scripting (XSS) vulnerabilities in JavaScript can occur when user input is not properly sanitized before being included in dynamic web pages.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 631
+        },
+        {
+          "id": "corpus/app09/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a web application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 609
+        },
+        {
+          "id": "corpus/app09/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Insecure use of MongoDB credentials in JavaScript code.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 522
+        },
+        {
+          "id": "corpus/app19/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input leading to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 614
+        },
+        {
+          "id": "corpus/app08/package.json:1-11",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 387
+        },
+        {
+          "id": "corpus/app04/index.js:28-32",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a user-supplied value is used to access or modify data without proper validation.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 600
+        },
+        {
+          "id": "corpus/app12/index.js:14-17",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper handling of user input can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 513
+        },
+        {
+          "id": "corpus/app22/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 424
+        },
+        {
+          "id": "corpus/app13/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 587
+        },
+        {
+          "id": "corpus/app03/index.js:16-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a web application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 715
+        },
+        {
+          "id": "corpus/app24/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input which can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 573
+        },
+        {
+          "id": "dvna/dvna/package.json:1-37",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 412
+        },
+        {
+          "id": "corpus/app13/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "secret",
+            "reason": "A secret key is used for verifying the authenticity of webhook requests.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 523
+        },
+        {
+          "id": "corpus/app07/index.js:16-19",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Cross-Site Scripting (XSS) vulnerabilities in JavaScript can occur when user input is not properly sanitized before being included in web pages.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 634
+        },
+        {
+          "id": "corpus/app21/index.js:23-26",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a user input is not properly sanitized or validated before being used to access data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 614
+        },
+        {
+          "id": "corpus/app15/package.json:1-12",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "dependency"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 389
+        },
+        {
+          "id": "corpus/app11/index.js:28-31",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when a web application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 607
+        },
+        {
+          "id": "corpus/app24/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 616
+        },
+        {
+          "id": "dvna/dvna/core/appHandler.js:144-184",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 614
+        },
+        {
+          "id": "corpus/app07/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "secret",
+            "reason": "Insecure use of hard-coded credentials in JavaScript.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 513
+        },
+        {
+          "id": "dvna/dvna/server.js:23-28",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Insecure use of session cookies can lead to session hijacking and other security issues.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 459
+        },
+        {
+          "id": "corpus/app15/index.js:17-20",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "A possible vulnerability in JavaScript could be due to improper handling of user input leading to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 571
+        },
+        {
+          "id": "corpus/app06/index.js:30-36",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access and modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 685
+        },
+        {
+          "id": "corpus/app10/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 593
+        },
+        {
+          "id": "corpus/app04/index.js:22-25",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "auth"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 611
+        },
+        {
+          "id": "corpus/app18/index.js:20-23",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "injection",
+            "reason": "Improper handling of user input in JavaScript can lead to Cross-Site Scripting (XSS) attacks.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 614
+        },
+        {
+          "id": "corpus/app19/index.js:7-7",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "secret"
+            ]
+          },
+          "pred": {
+            "category": "none",
+            "reason": "No exploitable flaw of the five kinds.",
+            "vulnerable": false
+          },
+          "error": null,
+          "ms": 426
+        },
+        {
+          "id": "corpus/app06/index.js:24-27",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "injection"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows users to access or modify data they are not authorized to.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 602
+        },
+        {
+          "id": "corpus/app02/index.js:29-33",
+          "truth": {
+            "vulnerable": true,
+            "categories": [
+              "idor"
+            ]
+          },
+          "pred": {
+            "category": "idor",
+            "reason": "Insecure Direct Object Reference (IDOR) vulnerability in JavaScript can occur when an application allows unauthorized access or modification of data.",
+            "vulnerable": true
+          },
+          "error": null,
+          "ms": 661
+        }
+      ]
+    }
+  }
+}

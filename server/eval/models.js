@@ -99,7 +99,8 @@ export async function rulesPredictor(core, sets) {
 }
 
 export function modelPredictor(client) {
-  return async (snip) => client.generateJson(CLASSIFY_SYSTEM, `File: ${snip.file}\n\n${snip.code}`, CLASSIFY_SCHEMA);
+  // The user message is the code only, exactly as in role A's training data (training/prepare_data.py).
+  return async (snip) => client.generateJson(CLASSIFY_SYSTEM, snip.code, CLASSIFY_SCHEMA);
 }
 
 export function score(rows) {
