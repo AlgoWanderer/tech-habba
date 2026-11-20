@@ -110,7 +110,8 @@ export function makeFinding({ ruleId, category, severity, file, node, line, endL
     fixable: fix ? 'auto' : 'review',
   };
   if (fixPreview) f.fixPreview = fixPreview;
-  if (fix) Object.defineProperty(f, '_fix', { value: fix, enumerable: false });
+  // writable/configurable so dedupe() can merge fixes of findings that share an id (it redefines _fix).
+  if (fix) Object.defineProperty(f, '_fix', { value: fix, enumerable: false, writable: true, configurable: true });
   return f;
 }
 

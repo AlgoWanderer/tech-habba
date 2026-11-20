@@ -1,0 +1,12 @@
+{
+  "labelledBy": "role B with Claude (not an independent human reviewer), 2026-11-21, from corpus/experiment/ai-findings.json",
+  "rule": "true = the exact line is exploitable and we can say how; false = not exploitable or wrong line; unsure = cannot tell from the code",
+  "labels": [
+    { "set": "raw", "app": "app03", "findingId": "ai-secret:index.js:38", "verdict": "true", "note": "The checkout response returns STRIPE_KEY to the client; any customer can read the secret key from the JSON. The rules flag the hard-coded value, not this leak." },
+    { "set": "dvna", "app": "dvna", "findingId": "ai-injection:core/appHandler.js:39", "verdict": "true", "note": "Documented A1 command injection: exec('ping -c 2 ' + req.body.address). No rule covers exec." },
+    { "set": "dvna", "app": "dvna", "findingId": "ai-idor:core/appHandler.js:147", "verdict": "true", "note": "Documented A5 IDOR: user loaded/updated by req.body.id. Ground truth labels the lookup call on line 145; 147 is outside the +-1 tolerance, so the matcher does not count it (label not moved after seeing results)." },
+    { "set": "dvna", "app": "dvna", "findingId": "ai-injection:core/appHandler.js:197", "verdict": "true", "note": "mathjs.eval(req.body.eqn) with mathjs 3.10.1 is the documented A9 RCE sink (ground truth counts it once, as the dependency; listed in outOfScope)." },
+    { "set": "dvna", "app": "dvna", "findingId": "ai-injection:core/appHandler.js:218", "verdict": "true", "note": "Documented A8 insecure deserialization (node-serialize unserialize of an uploaded file); out of SlopStop's five categories, listed in outOfScope." }
+  ],
+  "summary": { "aiFindingsLabelled": 5, "true": 5, "false": 0, "unsure": 0, "precision": 1.0, "caveat": "Only 5 AI-only findings in hybrid mode across 21 apps (AI findings overlapping a rule finding are merged away), so this precision is a very small sample." }
+}

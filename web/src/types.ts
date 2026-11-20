@@ -134,6 +134,22 @@ export interface BenchmarkMetric {
   }>;
 }
 
+// Phase 2 Model evaluation metrics (GET /api/model-eval)
+export interface ModelMetricRow {
+  model: string;
+  precision?: number;
+  recall?: number;
+  f1?: number;
+  accuracy?: number;
+  categoryAccuracy?: Record<string, number>;
+  meanMs?: number;
+}
+
+export interface ModelEvalResponse {
+  method?: string;
+  models?: ModelMetricRow[];
+}
+
 // Health check response
 export interface HealthResponse {
   ok: boolean;

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { loadBenchmark, toBenchmarkMetric } from '../benchmark.js';
+import { loadBenchmark, loadModelEval, toBenchmarkMetric } from '../benchmark.js';
 
 const RESULTS = {
   summary: {
@@ -72,6 +72,11 @@ describe('loadBenchmark', () => {
     ]);
     expect(loadBenchmark(path.join(dir, 'full.json'), path.join(dir, 'notrun.json')).comparison).toBeUndefined();
     expect(loadBenchmark(path.join(dir, 'full.json'), path.join(dir, 'missing.json')).comparison).toBeUndefined();
+  });
+  it('model eval: summary rows only, null when missing', () => {
+    writeFileSync(path.join(dir, 'me.json'), JSON.stringify({ method: { snippets: 2 }, models: { rules: { precision: 1, recall: 0.5, rows: [{}, {}] }, 'gemini (x)': { precision: 0.8, recall: 0.9, rows: [] } } }));
+    expect(loadModelEval(path.join(dir, 'me.json'))).toEqual({ method: { snippets: 2 }, models: [{ model: 'rules', precision: 1, recall: 0.5 }, { model: 'gemini (x)', precision: 0.8, recall: 0.9 }] });
+    expect(loadModelEval(path.join(dir, 'missing.json'))).toBeNull();
   });
   it('cleans up', () => rmSync(dir, { recursive: true, force: true }));
 });
