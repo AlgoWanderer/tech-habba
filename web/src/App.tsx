@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity } from './types';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
+import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity, ScanMode, FixMode } from './types';
 import { apiClient } from './api';
 import { SAMPLE_APPS } from './mocks/sampleData';
 import { RiskMeter } from './components/RiskMeter';
@@ -45,11 +45,25 @@ export default function App() {
   const [focus, setFocus] = useState<{ path: string; line: number } | null>(null);
   const [editorScroll, setEditorScroll] = useState(0);
 
+  // Phase 2: Mode switch (Rules | AI only | Hybrid)
+  const [mode, setMode] = useState<ScanMode>('rules');
+  const [aiAvailable, setAiAvailable] = useState<boolean>(true);
+
   const gutterRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const currentFile = files[activeFileIndex] || files[0];
   const lineCount = (currentFile?.content || '').split('\n').length;
   const mock = apiClient.isMockMode();
+
+  useEffect(() => {
+    apiClient.getHealth().then((h) => {
+      const avail = Boolean(h.ai);
+      setAiAvailable(avail);
+      if (!avail && (mode === 'ai' || mode === 'hybrid')) {
+        setMode('rules');
+      }
+    });
+  }, []);
 
   // Worst severity per line for the open file, only while it still matches what was scanned.
   const markers = useMemo(() => {
@@ -128,7 +142,7 @@ export default function App() {
     try {
       const snapshot = Object.fromEntries(files.map((f) => [f.path, f.content]));
       const t0 = performance.now();
-      const res = await apiClient.scan(files);
+      const res = await apiClient.scan(files, mode);
       setScanMs(Math.round(performance.now() - t0));
       setScanResponse(res);
       setScannedFiles(snapshot);
@@ -145,12 +159,24 @@ export default function App() {
     setError(null);
     try {
       const ids = scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
-      setFixResponse(await apiClient.fix(files, ids));
+      const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
+      setFixResponse(await apiClient.fix(files, ids, fixMode));
     } catch (err: any) {
       setError(err?.message || 'Fix request failed');
     } finally {
       setIsFixing(false);
     }
+  };
+
+  const handleApplyToEditor = () => {
+    if (!fixResponse) return;
+    setFiles((prev) =>
+      prev.map((f) => {
+        const p = fixResponse.patched.find((x) => x.path === f.path);
+        return p ? { ...f, content: p.patched } : f;
+      })
+    );
+    setFixResponse(null);
   };
 
   return (
@@ -259,6 +285,16 @@ export default function App() {
                 </button>
               </div>
 
+              {/* Warning when tab is not named .js */}
+              {!currentFile?.path.endsWith('.js') && (
+                <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-600" />
+                  <span>
+                    Warning: <strong>{currentFile.path}</strong> is not named <code className="font-mono font-semibold">.js</code>. SlopStop AST rules and syntax checks target JavaScript.
+                  </span>
+                </div>
+              )}
+
               {/* Editor: no soft-wrap, gutter scroll synced with the textarea */}
               <div className="flex-1 min-h-0 flex bg-slate-950 font-mono text-[13px]">
                 <div
@@ -305,17 +341,64 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between gap-3">
-                <span className="text-xs text-slate-500">
-                  {lineCount} lines · {files.length} {files.length === 1 ? 'file' : 'files'}
-                </span>
-                <Button
-                  onClick={handleScan}
-                  disabled={isScanning || !currentFile?.content.trim()}
-                  icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                >
-                  {isScanning ? 'Scanning…' : 'Scan code'}
-                </Button>
+              <div className="px-5 py-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg text-xs font-medium border border-slate-200 w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setMode('rules')}
+                      title="Rules: deterministic, verified"
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer',
+                        mode === 'rules' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      Rules
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!aiAvailable}
+                      onClick={() => setMode('ai')}
+                      title={aiAvailable ? 'AI only: LLM, unverified' : 'AI not configured'}
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
+                        mode === 'ai' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      AI only
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!aiAvailable}
+                      onClick={() => setMode('hybrid')}
+                      title={aiAvailable ? 'Hybrid: rules + LLM, every AI patch verified' : 'AI not configured'}
+                      className={cx(
+                        'px-3 py-1 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
+                        mode === 'hybrid' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      Hybrid
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {mode === 'rules' && 'Rules: deterministic, verified'}
+                    {mode === 'ai' && (aiAvailable ? 'AI only: LLM, unverified' : 'AI not configured')}
+                    {mode === 'hybrid' && (aiAvailable ? 'Hybrid: rules + LLM, every AI patch verified' : 'AI not configured')}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-3">
+                  <span className="text-xs text-slate-500 hidden xl:inline">
+                    {lineCount} lines · {files.length} {files.length === 1 ? 'file' : 'files'}
+                  </span>
+                  <Button
+                    onClick={handleScan}
+                    disabled={isScanning || !currentFile?.content.trim()}
+                    icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                  >
+                    {isScanning ? 'Scanning…' : 'Scan code'}
+                  </Button>
+                </div>
               </div>
             </section>
 
@@ -328,7 +411,12 @@ export default function App() {
               )}
 
               {fixResponse && scanResponse ? (
-                <DiffViewer fixResponse={fixResponse} originalScore={scanResponse.score} onReset={() => setFixResponse(null)} />
+                <DiffViewer
+                  fixResponse={fixResponse}
+                  originalScore={scanResponse.score}
+                  onReset={() => setFixResponse(null)}
+                  onApplyToEditor={handleApplyToEditor}
+                />
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />

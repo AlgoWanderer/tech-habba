@@ -9,6 +9,7 @@ interface DiffViewerProps {
   fixResponse: FixResponse;
   originalScore: Score;
   onReset: () => void;
+  onApplyToEditor?: () => void;
 }
 
 const STATUS: Record<FixResultStatus, { label: string; tone: 'success' | 'danger' | 'warning'; icon: React.ReactNode }> = {
@@ -43,7 +44,7 @@ const DIFF_STYLES = {
   titleBlock: { fontFamily: 'Inter, ui-sans-serif, sans-serif', fontSize: '12px', fontWeight: 500, padding: '8px 12px' },
 };
 
-export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalScore, onReset }) => {
+export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalScore, onReset, onApplyToEditor }) => {
   const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [copiedEnv, setCopiedEnv] = useState(false);
   const active = fixResponse.patched[activeFileIndex] || fixResponse.patched[0];
@@ -74,9 +75,16 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalSco
             </p>
           </div>
         </div>
-        <Button variant="secondary" onClick={onReset} icon={<ArrowLeft className="w-4 h-4" />} className="flex-shrink-0">
-          Back to findings
-        </Button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {onApplyToEditor && (
+            <Button variant="primary" onClick={onApplyToEditor} icon={<Check className="w-4 h-4" />}>
+              Apply to editor
+            </Button>
+          )}
+          <Button variant="secondary" onClick={onReset} icon={<ArrowLeft className="w-4 h-4" />}>
+            Back to findings
+          </Button>
+        </div>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -96,17 +104,32 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalSco
           }
         />
         <ul className="m-5 border border-slate-200 rounded-lg divide-y divide-slate-200">
-          {fixResponse.results.map((r) => (
-            <li key={r.findingId} className="px-4 py-3 flex items-start gap-3">
-              <Badge tone={STATUS[r.status].tone} icon={STATUS[r.status].icon} className="w-[88px] justify-center flex-shrink-0">
-                {STATUS[r.status].label}
-              </Badge>
-              <div className="min-w-0">
-                <div className="font-mono text-[13px] text-slate-800 break-all">{r.findingId}</div>
-                {r.reason && <div className="text-sm text-slate-500 mt-0.5 leading-5">{r.reason}</div>}
-              </div>
-            </li>
-          ))}
+          {fixResponse.results.map((r) => {
+            const isAi = r.source === 'ai';
+            const isRejected = r.status === 'rejected';
+            return (
+              <li key={r.findingId} className="px-4 py-3 flex items-start gap-3">
+                <div className="flex flex-col gap-1.5 flex-shrink-0">
+                  <Badge tone={STATUS[r.status].tone} icon={STATUS[r.status].icon} className="w-[88px] justify-center">
+                    {STATUS[r.status].label}
+                  </Badge>
+                  {isAi && (
+                    <Badge tone="violet" className="w-[88px] justify-center text-[11px]">
+                      AI patch
+                    </Badge>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-mono text-[13px] text-slate-800 break-all">{r.findingId}</div>
+                  {r.reason && (
+                    <div className={cx('text-sm mt-0.5 leading-5', isRejected ? 'text-rose-600 font-medium' : 'text-slate-500')}>
+                      {r.reason}
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </Card>
 

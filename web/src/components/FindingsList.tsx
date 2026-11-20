@@ -98,6 +98,11 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
                           </span>
                         </span>
                         <span className="flex items-center gap-2 flex-shrink-0">
+                          {f.source === 'ai' && (
+                            <Badge tone="violet">
+                              AI{typeof f.confidence === 'number' ? ` ${Math.round(f.confidence * 100)}%` : ''}
+                            </Badge>
+                          )}
                           <SeverityBadge severity={f.severity} />
                           {f.fixable === 'auto' ? <Badge tone="success">Auto-fix</Badge> : <Badge tone="warning">Review</Badge>}
                           <ChevronDown className={cx('w-4 h-4 text-slate-400 transition-transform', open && 'rotate-180')} />
@@ -112,7 +117,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
                           </div>
                           {f.fixPreview && (
                             <div>
-                              <Label className="mb-1.5">{f.fixable === 'auto' ? 'After the fix' : 'Suggested action'}</Label>
+                              <Label className="mb-1.5">{f.fixable === 'auto' ? 'After the fix' : 'Suggested fix (apply by hand)'}</Label>
                               <CodeBlock tone={f.fixable === 'auto' ? 'good' : 'plain'}>{f.fixPreview}</CodeBlock>
                             </div>
                           )}
@@ -129,6 +134,16 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
               </ul>
             </div>
           ))
+        )}
+
+        {findings.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 pt-3 border-t border-slate-100">
+            <span className="font-medium text-slate-700">Source:</span>
+            <span>Rules (deterministic AST)</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Badge tone="violet">AI xx%</Badge> Gemini 2.5 Flash model detection
+            </span>
+          </div>
         )}
       </div>
     </Card>
