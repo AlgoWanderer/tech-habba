@@ -68,7 +68,7 @@ or `SLOPSTOP_SKIP=1`. While core/ is not installed it allows every commit with a
 
 ## AI modes (Phase 2)
 
-Put `GEMINI_API_KEY=...` in `server/.env` (git-ignored; never commit it). Optional: `GEMINI_MODEL` (default `gemini-2.5-flash`). Without a key everything works as before and the AI modes return 400 "AI not configured". `GET /api/health` reports `ai: true|false`.
+Put `GEMINI_API_KEY=...` in `server/.env` (git-ignored; never commit it). Optional: `GEMINI_MODEL` (default `gemini-3.1-flash-lite`) and `GEMINI_FALLBACK_MODELS` (comma-separated, default `gemini-3.5-flash-lite,gemini-3.5-flash`). An unavailable or overloaded model hands the call to the next one. New keys cannot use `gemini-2.5-flash`, and the larger Flash models were often overloaded or slow (35 s+) on the free tier. Without a key everything works as before and the AI modes return 400 "AI not configured". `GET /api/health` reports `ai: true|false`.
 
 | Request | What runs |
 |---|---|

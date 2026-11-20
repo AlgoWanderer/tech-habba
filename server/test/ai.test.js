@@ -51,6 +51,22 @@ describe('gemini client', () => {
     expect(seen[0].init.headers['x-goog-api-key']).toBe('test-key-123');
   });
 
+  it('falls back to the next model when one is unavailable or overloaded, and records which answered', async () => {
+    const urls = [];
+    const fetchImpl = async (url) => {
+      urls.push(url);
+      if (url.includes('/busy:')) return { ok: false, status: 503, json: async () => ({ error: { message: 'high demand' } }) };
+      if (url.includes('/gone:')) return { ok: false, status: 404, json: async () => ({ error: { message: 'not available' } }) };
+      return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{"ok":true}' }] } }] }) };
+    };
+    const c = createGeminiClient({ apiKey: 'k', model: 'gone', fallbacks: ['busy', 'works'], retries: 0, fetchImpl });
+    expect(await c.generateJson('s', 'u')).toEqual({ ok: true });
+    expect(c.lastModel).toBe('works');
+    expect(urls.map((u) => u.split('/models/')[1].split(':')[0])).toEqual(['gone', 'busy', 'works']);
+    const bad = createGeminiClient({ apiKey: 'k', model: 'gone', fallbacks: [], retries: 0, fetchImpl });
+    await expect(bad.generateJson('s', 'u')).rejects.toThrow(/404/);
+  });
+
   it('never leaks the key in errors and is null without a key', async () => {
     const fetchImpl = async () => ({ ok: false, status: 400, json: async () => ({ error: { message: 'bad request' } }) });
     const c = createGeminiClient({ apiKey: 'test-key-123', fetchImpl });
@@ -143,6 +159,36 @@ describe('aiPatch', () => {
     const r = await aiPatch(core, FILES, xss, no);
     expect(r.result.status).toBe('rejected');
     expect(r.result.reason).toMatch(/re-check/);
+  });
+
+  it('rejects a patch that uses req.user / a field the app does not have (live-test regression)', async () => {
+    const LIB = [
+      'import express from "express";',
+      'import mongoose from "mongoose";',
+      'const app = express();',
+      'const Loan = mongoose.model("Loan", new mongoose.Schema({ memberId: String, bookId: String, due: Date }));',
+      'function verifyMember(req, res, next) {',
+      '  if (!req.headers.authorization) return res.status(401).json({ error: "no" });',
+      '  req.member = { id: req.headers.authorization };',
+      '  next();',
+      '}',
+      'app.get("/api/loans/:id", verifyMember, async (req, res) => {',
+      '  const loan = await Loan.findById(req.params.id);',
+      '  res.json(loan);',
+      '});',
+    ].join('\n');
+    const files = [{ path: 'index.js', content: LIB }];
+    const idor = (await core.scan(files)).find((f) => f.ruleId === 'idor-suspect');
+    expect(idor).toBeTruthy();
+    const route = (filter) => `app.get("/api/loans/:id", verifyMember, async (req, res) => {\n  const loan = await Loan.findOne({ _id: req.params.id, ${filter} });\n  if (!loan) return res.status(404).json({ error: "not found" });\n  res.json(loan);\n});`;
+    const wrong = await aiPatch(core, files, idor, createFakeClient(() => ({ replacement: route('userId: req.user.id'), explanation: '' })));
+    expect(wrong.result.status).toBe('rejected');
+    expect(wrong.result.reason).toMatch(/req\.user, which nothing in this file sets/);
+    expect(wrong.result.reason).toMatch(/"userId", which is not a field/);
+    const client = createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: '' }));
+    await aiPatch(core, files, idor, client);
+    expect(client.sent[0].userText).toContain('req.member');
+    expect(client.sent[0].userText).toContain('Model Loan fields: _id, memberId, bookId, due');
   });
 
   it('turns a model error into a rejection, never a crash', async () => {

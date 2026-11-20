@@ -1,7 +1,11 @@
 // Gemini client over plain fetch (no SDK). The key travels only in the x-goog-api-key header and is
 // never logged, put in a URL or returned in an error. Tests use createFakeClient instead.
 const API = 'https://generativelanguage.googleapis.com/v1beta/models';
-export const DEFAULT_MODEL = 'gemini-2.5-flash';
+// gemini-2.5-flash is closed to new keys; on 2026-11-21 the newer Flash models were often
+// overloaded (HTTP 503) or took 35 s+ per call on the free tier, while 3.1-flash-lite answered in
+// about 1.6 s. Override with GEMINI_MODEL / GEMINI_FALLBACK_MODELS (comma-separated).
+export const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+export const DEFAULT_FALLBACKS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash'];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -14,11 +18,13 @@ export class AiError extends Error {
   }
 }
 
-export function createGeminiClient({ apiKey, model = DEFAULT_MODEL, timeoutMs = 30000, retries = 2, fetchImpl = fetch } = {}) {
+export function createGeminiClient({ apiKey, model = DEFAULT_MODEL, fallbacks = [], timeoutMs = 60000, retries = 2, fetchImpl = fetch } = {}) {
   if (!apiKey) throw new AiError('AI not configured: add GEMINI_API_KEY to server/.env');
   let calls = 0;
+  let lastModel = null;
+  const chain = [model, ...fallbacks.filter((m) => m && m !== model)];
 
-  async function once(systemText, userText, responseSchema) {
+  async function once(systemText, userText, responseSchema, model) {
     const body = {
       systemInstruction: { parts: [{ text: systemText }] },
       contents: [{ role: 'user', parts: [{ text: userText }] }],
@@ -57,28 +63,50 @@ export function createGeminiClient({ apiKey, model = DEFAULT_MODEL, timeoutMs = 
     }
   }
 
+  // A model that is unavailable (404) or still overloaded after retries (429/5xx/timeout) hands the
+  // call to the next model in the chain. lastModel records which one actually answered.
+  async function withRetries(systemText, userText, responseSchema, m) {
+    for (let attempt = 0; ; attempt++) {
+      calls++;
+      try {
+        return await once(systemText, userText, responseSchema, m);
+      } catch (e) {
+        if (!(e instanceof AiError) || !e.retryable || attempt >= retries) throw e;
+        await sleep(1000 * 2 ** attempt + Math.floor(Math.random() * 250));
+      }
+    }
+  }
+
   return {
-    name: `gemini:${model}`,
+    name: `gemini:${chain.join('>')}`,
     get calls() {
       return calls;
     },
+    get lastModel() {
+      return lastModel;
+    },
     async generateJson(systemText, userText, responseSchema) {
-      for (let attempt = 0; ; attempt++) {
-        calls++;
+      let lastError;
+      for (const m of chain) {
         try {
-          return await once(systemText, userText, responseSchema);
+          const out = await withRetries(systemText, userText, responseSchema, m);
+          lastModel = m;
+          return out;
         } catch (e) {
-          if (!(e instanceof AiError) || !e.retryable || attempt >= retries) throw e;
-          await sleep(1000 * 2 ** attempt + Math.floor(Math.random() * 250));
+          lastError = e;
+          if (!(e instanceof AiError) || !(e.retryable || e.status === 404)) throw e;
         }
       }
+      throw lastError;
     },
   };
 }
 
 /** The configured client, or null when there is no key (AI features then report "not configured"). */
 export function getAiClient(env = process.env) {
-  return env.GEMINI_API_KEY ? createGeminiClient({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || DEFAULT_MODEL }) : null;
+  if (!env.GEMINI_API_KEY) return null;
+  const fallbacks = env.GEMINI_FALLBACK_MODELS !== undefined ? env.GEMINI_FALLBACK_MODELS.split(',').map((s) => s.trim()).filter(Boolean) : DEFAULT_FALLBACKS;
+  return createGeminiClient({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || DEFAULT_MODEL, fallbacks });
 }
 
 /**
