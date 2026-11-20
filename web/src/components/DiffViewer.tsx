@@ -48,6 +48,9 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalSco
   const [copiedEnv, setCopiedEnv] = useState(false);
   const active = fixResponse.patched[activeFileIndex] || fixResponse.patched[0];
   const counts = fixResponse.results.reduce<Record<string, number>>((m, r) => ({ ...m, [r.status]: (m[r.status] ?? 0) + 1 }), {});
+  // Findings the re-scan still reports as needing a human (e.g. IDOR), not just the ids sent to /api/fix.
+  const stillReview = fixResponse.rescan.findings.filter((f) => f.fixable === 'review').length;
+  const timing = typeof fixResponse.timingMs === 'number' ? Math.round(fixResponse.timingMs) : null;
 
   const handleCopyEnv = () => {
     if (!fixResponse.envFile) return;
@@ -86,7 +89,9 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({ fixResponse, originalSco
           title="Patch results"
           subtitle={
             <span className="tabular-nums">
-              {counts.applied ?? 0} applied · {counts.rejected ?? 0} rejected · {counts.review ?? 0} left for review
+              {counts.applied ?? 0} applied · {counts.rejected ?? 0} rejected · {stillReview}{' '}
+              {stillReview === 1 ? 'still needs' : 'still need'} human review
+              {timing !== null && ` · fixed and verified in ${timing} ms`}
             </span>
           }
         />

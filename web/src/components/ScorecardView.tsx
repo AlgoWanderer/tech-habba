@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../api';
 import { BenchmarkMetric } from '../types';
-import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks } from 'lucide-react';
+import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target } from 'lucide-react';
 import { Badge, Button, Card, CardHeader, cx } from './ui';
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
@@ -38,7 +38,11 @@ export const ScorecardView: React.FC = () => {
       label: 'Critical + high before',
       icon: <ShieldAlert className="w-4 h-4 text-rose-600" />,
       value: isNum(before) ? before : null,
-      hint: isNum(data?.totalApps) ? `Across ${data!.totalApps} AI-generated apps` : 'Unpatched corpus',
+      hint: isNum(data?.totalApps)
+        ? isNum(data?.cleanApps)
+          ? `Across ${data!.totalApps} corpus apps (${data!.totalApps! - data!.cleanApps!} with planted flaws)`
+          : `Across ${data!.totalApps} corpus apps`
+        : 'Unpatched corpus',
     },
     {
       label: 'Critical + high after',
@@ -48,7 +52,7 @@ export const ScorecardView: React.FC = () => {
       accent: 'text-emerald-700',
     },
     {
-      label: 'Time per file',
+      label: 'Time per app',
       icon: <Timer className="w-4 h-4 text-slate-500" />,
       value: isNum(data?.msPerFile) ? `${Math.round(data!.msPerFile!)} ms` : null,
       hint: 'Scan, fix, verify and re-scan',
@@ -91,6 +95,8 @@ export const ScorecardView: React.FC = () => {
         ))}
       </div>
 
+      <DetectionCard data={data} />
+
       <Card>
         <CardHeader title="Before and after" subtitle="Critical and high findings across the whole corpus" />
         <div className="p-5 space-y-5">
@@ -123,6 +129,78 @@ export const ScorecardView: React.FC = () => {
         </div>
       </Card>
     </div>
+  );
+};
+
+const DetectionCard: React.FC<{ data: BenchmarkMetric | null }> = ({ data }) => {
+  const found = data?.detectedVulnerabilities;
+  const total = data?.totalVulnerabilities;
+  const clean = data?.cleanApps;
+  const falseAlarms = data?.falsePositivesOnCleanApps;
+  const rows = data?.comparison ?? [];
+  const cell = (v?: number) => (isNum(v) ? v : <span className="text-slate-400">not measured</span>);
+
+  return (
+    <Card>
+      <CardHeader
+        icon={<Target className="w-5 h-5" />}
+        title="Detection"
+        subtitle="Planted flaws found in the corpus, compared with an existing scanner on the same apps."
+      />
+      <div className="p-5 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 items-start">
+        <div className="space-y-4">
+          <div>
+            <div className="text-[28px] leading-8 font-semibold tabular-nums">
+              {isNum(found) && isNum(total) ? (
+                <>
+                  Found {found} <span className="text-slate-400 font-normal">/ {total}</span>
+                </>
+              ) : (
+                <NotMeasured />
+              )}
+            </div>
+            <div className="mt-1 text-sm text-slate-500">planted flaws detected</div>
+          </div>
+          <div>
+            <div className="text-[28px] leading-8 font-semibold tabular-nums">{isNum(falseAlarms) ? falseAlarms : <NotMeasured />}</div>
+            <div className="mt-1 text-sm text-slate-500">
+              false alarms on {isNum(clean) ? `${clean} clean apps` : 'the clean apps'}
+            </div>
+          </div>
+        </div>
+
+        {rows.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-400">Tool comparison not measured</p>
+        ) : (
+          <div className="border border-slate-200 rounded-lg overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-xs text-slate-500">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2.5">Tool</th>
+                  <th className="text-right font-medium px-4 py-2.5">Flaws found</th>
+                  <th className="text-right font-medium px-4 py-2.5" title="Verified patches applied across all findings">
+                    Patches applied
+                  </th>
+                  <th className="text-right font-medium px-4 py-2.5">Alarms on clean apps</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {rows.map((r, i) => (
+                  <tr key={r.tool} className={cx(i === 0 && 'font-medium')}>
+                    <td className="px-4 py-3 whitespace-nowrap">{r.tool}</td>
+                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">
+                      {isNum(r.detected) && isNum(r.total) ? `${r.detected} / ${r.total}` : cell(r.detected)}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">{cell(r.fixed)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{cell(r.findingsOnCleanApps)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 };
 

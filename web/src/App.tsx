@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { FileInput, ScanResponse, FixResponse } from './types';
+import React, { useMemo, useRef, useState } from 'react';
+import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity } from './types';
 import { apiClient } from './api';
 import { SAMPLE_APPS } from './mocks/sampleData';
 import { RiskMeter } from './components/RiskMeter';
@@ -20,6 +20,14 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
 ];
 
 const EDITOR_LINE = 20; // px, shared by gutter and textarea so numbers stay aligned
+const EDITOR_PAD = 12; // px, top padding of gutter and textarea (py-3)
+const SEV_RANK: Record<FindingSeverity, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+const SEV_MARK: Record<FindingSeverity, { dot: string; band: string; num: string }> = {
+  critical: { dot: 'bg-rose-500', band: 'bg-rose-500/15', num: 'text-rose-300' },
+  high: { dot: 'bg-orange-400', band: 'bg-orange-400/15', num: 'text-orange-300' },
+  medium: { dot: 'bg-amber-400', band: 'bg-amber-400/10', num: 'text-amber-200' },
+  low: { dot: 'bg-slate-400', band: 'bg-slate-400/10', num: 'text-slate-300' },
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('gate');
@@ -32,11 +40,48 @@ export default function App() {
   const [scanResponse, setScanResponse] = useState<ScanResponse | null>(null);
   const [fixResponse, setFixResponse] = useState<FixResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [scannedFiles, setScannedFiles] = useState<Record<string, string> | null>(null);
+  const [scanMs, setScanMs] = useState<number | null>(null);
+  const [focus, setFocus] = useState<{ path: string; line: number } | null>(null);
+  const [editorScroll, setEditorScroll] = useState(0);
 
   const gutterRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
   const currentFile = files[activeFileIndex] || files[0];
   const lineCount = (currentFile?.content || '').split('\n').length;
   const mock = apiClient.isMockMode();
+
+  // Worst severity per line for the open file, only while it still matches what was scanned.
+  const markers = useMemo(() => {
+    const m = new Map<number, FindingSeverity>();
+    if (!scanResponse || !currentFile || scannedFiles?.[currentFile.path] !== currentFile.content) return m;
+    for (const f of scanResponse.findings) {
+      if (f.file !== currentFile.path) continue;
+      const prev = m.get(f.line);
+      if (!prev || SEV_RANK[f.severity] > SEV_RANK[prev]) m.set(f.line, f.severity);
+    }
+    return m;
+  }, [scanResponse, scannedFiles, currentFile]);
+  const focusLine = focus && currentFile && focus.path === currentFile.path ? focus.line : null;
+
+  const jumpTo = (f: Finding) => {
+    const idx = files.findIndex((x) => x.path === f.file);
+    if (idx === -1) return;
+    setActiveFileIndex(idx);
+    setFocus({ path: f.file, line: f.line });
+    requestAnimationFrame(() => {
+      const ta = editorRef.current;
+      if (!ta) return;
+      const top = Math.max(0, (f.line - 1) * EDITOR_LINE - ta.clientHeight / 3);
+      ta.scrollTop = top;
+      if (gutterRef.current) gutterRef.current.scrollTop = top;
+      setEditorScroll(top);
+      const lines = files[idx].content.split('\n');
+      const start = lines.slice(0, f.line - 1).reduce((n, l) => n + l.length + 1, 0);
+      ta.focus({ preventScroll: true });
+      ta.setSelectionRange(start, start + (lines[f.line - 1]?.length ?? 0));
+    });
+  };
 
   const handleContentChange = (content: string) =>
     setFiles((prev) => prev.map((f, i) => (i === activeFileIndex ? { ...f, content } : f)));
@@ -48,6 +93,8 @@ export default function App() {
     setActiveFileIndex(0);
     setScanResponse(null);
     setFixResponse(null);
+    setScannedFiles(null);
+    setFocus(null);
     setError(null);
   };
 
@@ -81,8 +128,14 @@ export default function App() {
     setIsScanning(true);
     setError(null);
     setFixResponse(null);
+    setFocus(null);
     try {
-      setScanResponse(await apiClient.scan(files));
+      const snapshot = Object.fromEntries(files.map((f) => [f.path, f.content]));
+      const t0 = performance.now();
+      const res = await apiClient.scan(files);
+      setScanMs(Math.round(performance.now() - t0));
+      setScanResponse(res);
+      setScannedFiles(snapshot);
     } catch (err: any) {
       setError(err?.message || 'Scan request failed');
     } finally {
@@ -218,23 +271,42 @@ export default function App() {
                   className="w-12 flex-shrink-0 overflow-hidden text-right pr-3 py-3 text-slate-600 select-none border-r border-slate-800"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 >
-                  {Array.from({ length: lineCount }).map((_, i) => (
-                    <div key={i}>{i + 1}</div>
-                  ))}
+                  {Array.from({ length: lineCount }).map((_, i) => {
+                    const sev = markers.get(i + 1);
+                    return (
+                      <div key={i} className={cx('relative', sev && SEV_MARK[sev].num, focusLine === i + 1 && 'text-white')}>
+                        {sev && <span className={cx('absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full', SEV_MARK[sev].dot)} />}
+                        {i + 1}
+                      </div>
+                    );
+                  })}
                 </div>
+                <div className="relative flex-1 min-w-0">
+                  <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {[...markers].map(([line, sev]) => (
+                      <div
+                        key={line}
+                        className={cx('absolute inset-x-0', SEV_MARK[sev].band, focusLine === line && 'ring-1 ring-inset ring-white/30')}
+                        style={{ top: EDITOR_PAD + (line - 1) * EDITOR_LINE - editorScroll, height: EDITOR_LINE }}
+                      />
+                    ))}
+                  </div>
                 <textarea
+                  ref={editorRef}
                   value={currentFile?.content || ''}
                   onChange={(e) => handleContentChange(e.target.value)}
                   onScroll={(e) => {
                     if (gutterRef.current) gutterRef.current.scrollTop = e.currentTarget.scrollTop;
+                    setEditorScroll(e.currentTarget.scrollTop);
                   }}
                   wrap="off"
                   spellCheck={false}
                   aria-label="Source code"
                   placeholder="// Paste your Node.js / Express code here"
-                  className="editor-scroll flex-1 min-w-0 py-3 px-4 bg-transparent text-slate-100 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-800 placeholder:text-slate-600"
+                  className="editor-scroll absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-100 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-700 selection:text-white placeholder:text-slate-600"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 />
+                </div>
               </div>
 
               <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between gap-3">
@@ -264,7 +336,7 @@ export default function App() {
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />
-                  <FindingsList findings={scanResponse.findings} onFixAll={handleFixAll} isFixing={isFixing} />
+                  <FindingsList findings={scanResponse.findings} onFixAll={handleFixAll} isFixing={isFixing} onSelect={jumpTo} scanMs={scanMs} />
                   <ExploitSimulator />
                 </>
               ) : (
