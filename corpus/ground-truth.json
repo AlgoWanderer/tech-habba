@@ -1,0 +1,485 @@
+{
+  "apps": [
+    {
+      "app": "app01",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 25,
+          "severity": "high"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 23,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app02",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 8,
+          "severity": "critical"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 29,
+          "severity": "medium"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 9,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app03",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 17,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app04",
+      "flaws": [
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 22,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 28,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app05",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 8,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app06",
+      "flaws": [
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 25,
+          "severity": "high"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 18,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 30,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app07",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 16,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app08",
+      "flaws": [
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 15,
+          "severity": "high"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 7,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app09",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 28,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app10",
+      "flaws": [
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 14,
+          "severity": "high"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 21,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app11",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 22,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 28,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app12",
+      "flaws": [
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 15,
+          "severity": "high"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 8,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app13",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 22,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app14",
+      "flaws": [
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 14,
+          "severity": "high"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 21,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app15",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 17,
+          "severity": "high"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 9,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app16",
+      "flaws": [
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 27,
+          "severity": "medium"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 22,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app17",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 16,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app18",
+      "flaws": [
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 21,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 26,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app19",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 16,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app20",
+      "flaws": [
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 15,
+          "severity": "high"
+        },
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 9,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app21",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 23,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app22",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 16,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app23",
+      "flaws": [
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 20,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 26,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app24",
+      "flaws": [
+        {
+          "category": "secret",
+          "file": "index.js",
+          "line": 7,
+          "severity": "critical"
+        },
+        {
+          "category": "injection",
+          "file": "index.js",
+          "line": 23,
+          "severity": "high"
+        },
+        {
+          "category": "auth",
+          "file": "index.js",
+          "line": 16,
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "app": "app25",
+      "flaws": [
+        {
+          "category": "dependency",
+          "file": "package.json",
+          "line": 9,
+          "severity": "high"
+        },
+        {
+          "category": "idor",
+          "file": "index.js",
+          "line": 20,
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "app": "app26",
+      "flaws": []
+    },
+    {
+      "app": "app27",
+      "flaws": []
+    },
+    {
+      "app": "app28",
+      "flaws": []
+    },
+    {
+      "app": "app29",
+      "flaws": []
+    },
+    {
+      "app": "app30",
+      "flaws": []
+    }
+  ]
+}

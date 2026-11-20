@@ -1,0 +1,72 @@
+{
+  "findings": [
+    {
+      "id": "secret-hardcoded:index.js:5",
+      "ruleId": "secret-hardcoded",
+      "category": "secret",
+      "severity": "critical",
+      "file": "index.js",
+      "line": 5,
+      "endLine": 5,
+      "snippet": "const STRIPE_KEY = \"sk_live_EXAMPLEEXAMPLEEXAMPLE\";",
+      "message": "Hard-coded API key. Move it to an environment variable.",
+      "fixable": "auto",
+      "fixPreview": "const STRIPE_KEY = process.env.STRIPE_KEY;"
+    },
+    {
+      "id": "secret-hardcoded:index.js:7",
+      "ruleId": "secret-hardcoded",
+      "category": "secret",
+      "severity": "critical",
+      "file": "index.js",
+      "line": 7,
+      "endLine": 7,
+      "snippet": "mongoose.connect(\"mongodb://admin:hunter2@localhost:27017/app\");",
+      "message": "Database URI with an embedded password.",
+      "fixable": "auto",
+      "fixPreview": "mongoose.connect(process.env.MONGODB_URI);"
+    },
+    {
+      "id": "nosql-injection:index.js:14",
+      "ruleId": "nosql-injection",
+      "category": "injection",
+      "severity": "high",
+      "file": "index.js",
+      "line": 14,
+      "endLine": 14,
+      "snippet": "const user = await User.findOne({ email: req.body.email, password: req.body.password });",
+      "message": "Request body is passed straight into a MongoDB query (operator injection).",
+      "fixable": "auto",
+      "fixPreview": "User.findOne({ email: String(req.body.email), password: String(req.body.password) })"
+    },
+    {
+      "id": "route-no-auth:index.js:20",
+      "ruleId": "route-no-auth",
+      "category": "auth",
+      "severity": "high",
+      "file": "index.js",
+      "line": 20,
+      "endLine": 24,
+      "snippet": "app.get(\"/api/users\", async (req, res) => {",
+      "message": "Data-returning route has no authentication middleware.",
+      "fixable": "auto",
+      "fixPreview": "app.get(\"/api/users\", requireAuth, async (req, res) => {"
+    },
+    {
+      "id": "idor-suspect:index.js:28",
+      "ruleId": "idor-suspect",
+      "category": "idor",
+      "severity": "medium",
+      "file": "index.js",
+      "line": 28,
+      "endLine": 31,
+      "snippet": "app.get(\"/api/orders/:id\", requireAuth, async (req, res) => {",
+      "message": "Resource is looked up by id with no ownership check (possible IDOR). Needs human review.",
+      "fixable": "review"
+    }
+  ],
+  "score": {
+    "safety": 12,
+    "counts": { "critical": 2, "high": 2, "medium": 1, "low": 0 }
+  }
+}

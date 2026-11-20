@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SlopStop contract",
+  "definitions": {
+    "Finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "ruleId", "category", "severity", "file", "line", "endLine", "snippet", "message", "fixable"],
+      "properties": {
+        "id": { "type": "string" },
+        "ruleId": { "type": "string" },
+        "category": { "enum": ["secret", "injection", "auth", "dependency", "idor"] },
+        "severity": { "enum": ["critical", "high", "medium", "low"] },
+        "file": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "snippet": { "type": "string" },
+        "message": { "type": "string" },
+        "fixable": { "enum": ["auto", "review"] },
+        "fixPreview": { "type": "string" }
+      }
+    },
+    "Score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["safety", "counts"],
+      "properties": {
+        "safety": { "type": "number", "minimum": 0, "maximum": 100 },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["critical", "high", "medium", "low"],
+          "properties": {
+            "critical": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "ScanResponse": {
+      "type": "object",
+      "required": ["findings", "score"],
+      "properties": {
+        "findings": { "type": "array", "items": { "$ref": "#/definitions/Finding" } },
+        "score": { "$ref": "#/definitions/Score" }
+      }
+    },
+    "FixResponse": {
+      "type": "object",
+      "required": ["patched", "envFile", "results", "rescan"],
+      "properties": {
+        "patched": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "original", "patched"],
+            "properties": { "path": { "type": "string" }, "original": { "type": "string" }, "patched": { "type": "string" } }
+          }
+        },
+        "envFile": { "type": "string" },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["findingId", "status", "reason"],
+            "properties": {
+              "findingId": { "type": "string" },
+              "status": { "enum": ["applied", "rejected", "review"] },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "rescan": { "$ref": "#/definitions/ScanResponse" },
+        "timingMs": { "type": "number" }
+      }
+    }
+  }
+}

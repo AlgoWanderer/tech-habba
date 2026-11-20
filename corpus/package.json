@@ -1,0 +1,9 @@
+{
+  "name": "@slopstop/corpus",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Corpus of vibe-coded apps and benchmark suite for SlopStop",
+  "scripts": {
+    "benchmark": "node benchmark/run.js"
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "semgrep": {
+    "status": "not run",
+    "reason": "Semgrep is not installed locally on PATH. Install via `pip install semgrep` or download binary."
+  },
+  "gitleaks": {
+    "status": "not run",
+    "reason": "Gitleaks is not installed locally on PATH. Install via `winget install Gitleaks.Gitleaks` or download binary."
+  },
+  "llmFixer": {
+    "status": "simulated",
+    "note": "No LLM was called. simulateLLMFixer() approximates LLM rewrites with regex replacements and injected errors. Do not cite these numbers as real LLM results; run a real model to replace them.",
+    "promptTemplate": "You are an automated code fixing assistant. You are given a Node.js/Express file with potential security vulnerabilities. Return ONLY the complete corrected file. Do not wrap in markdown or add explanations.",
+    "totalApps": 30,
+    "appsPassingSyntax": 30,
+    "appsPreservingAllRoutes": 30,
+    "appsWithRouteDeletion": 0,
+    "groundTruthFlawsDetected": 6,
+    "falsePositivesOnCleanApps": 1,
+    "perAppResults": [
+      {
+        "app": "app01",
+        "syntaxPass": true,
+        "originalRouteCount": 3,
+        "fixedRouteCount": 3,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app02",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app03",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app04",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app05",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app06",
+        "syntaxPass": true,
+        "originalRouteCount": 3,
+        "fixedRouteCount": 3,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app07",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app08",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app09",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app10",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app11",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app12",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app13",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app14",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app15",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app16",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app17",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app18",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app19",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app20",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app21",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 1,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app22",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app23",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app24",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 3
+      },
+      {
+        "app": "app25",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 2
+      },
+      {
+        "app": "app26",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 0
+      },
+      {
+        "app": "app27",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 0
+      },
+      {
+        "app": "app28",
+        "syntaxPass": true,
+        "originalRouteCount": 2,
+        "fixedRouteCount": 2,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 0
+      },
+      {
+        "app": "app29",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 0
+      },
+      {
+        "app": "app30",
+        "syntaxPass": true,
+        "originalRouteCount": 1,
+        "fixedRouteCount": 1,
+        "flawsDetected": 0,
+        "totalFlawsInApp": 0
+      }
+    ]
+  }
+}

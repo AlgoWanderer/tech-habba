@@ -1,0 +1,16 @@
+{
+  "name": "@slopstop/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "slopstop": "bin/slopstop.js",
+    "slopstop-init": "bin/slopstop-init.js"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^5.1.1"
+  }
+}

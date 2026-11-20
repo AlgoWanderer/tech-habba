@@ -1,0 +1,1060 @@
+{
+  "method": {
+    "engine": "core/ (role A) via server/pipeline.js runScan + runFix (scan -> applyFixes -> verify -> rescan)",
+    "matching": "finding matches a ground-truth flaw if category and file are equal and line is within ±1; one-to-one",
+    "precisionNote": "precision counts every finding not in ground-truth.json as unmatched, including real flaws the corpus did not label",
+    "timing": "per app: full scan + fix + verify + rescan of all its files",
+    "generatedAt": "2026-11-20T14:52:15.167Z"
+  },
+  "summary": {
+    "totalApps": 30,
+    "cleanApps": 5,
+    "flawedApps": 25,
+    "totalGroundTruthFlaws": 56,
+    "detectedGroundTruthFlaws": 56,
+    "recall": 1,
+    "precision": 0.737,
+    "totalFindings": 76,
+    "unmatchedFindings": 20,
+    "falsePositivesOnCleanApps": 0,
+    "totalCriticalHighBefore": 65,
+    "totalCriticalHighAfter": 9,
+    "criticalHighReductionPercent": 86.2,
+    "meanDurationMsPerFile": 129.94,
+    "p95DurationMsPerFile": 238.69,
+    "fixesAttempted": 56,
+    "verifierRejections": 0,
+    "rejectionRate": 0,
+    "flawsLeftAsReviewCount": 20
+  },
+  "recallByCategory": {
+    "secret": {
+      "flaws": 14,
+      "detected": 14
+    },
+    "injection": {
+      "flaws": 12,
+      "detected": 12
+    },
+    "auth": {
+      "flaws": 12,
+      "detected": 12
+    },
+    "idor": {
+      "flaws": 11,
+      "detected": 11
+    },
+    "dependency": {
+      "flaws": 7,
+      "detected": 7
+    }
+  },
+  "reviewFlaws": [
+    {
+      "app": "app01",
+      "findingId": "nosql-injection:index.js:25",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app02",
+      "findingId": "idor-suspect:index.js:29",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app02",
+      "findingId": "dep-vuln:package.json:9",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app04",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app05",
+      "findingId": "dep-vuln:package.json:8",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app06",
+      "findingId": "idor-suspect:index.js:30",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app06",
+      "findingId": "nosql-injection:index.js:31",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app08",
+      "findingId": "dep-vuln:package.json:7",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app09",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app11",
+      "findingId": "idor-suspect:index.js:28",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app12",
+      "findingId": "dep-vuln:package.json:8",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app13",
+      "findingId": "idor-suspect:index.js:22",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app15",
+      "findingId": "dep-vuln:package.json:9",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app16",
+      "findingId": "idor-suspect:index.js:27",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app18",
+      "findingId": "idor-suspect:index.js:26",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app20",
+      "findingId": "dep-vuln:package.json:9",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app21",
+      "findingId": "idor-suspect:index.js:23",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app23",
+      "findingId": "idor-suspect:index.js:26",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app25",
+      "findingId": "idor-suspect:index.js:20",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    },
+    {
+      "app": "app25",
+      "findingId": "dep-vuln:package.json:9",
+      "reason": "Needs human review; SlopStop does not auto-fix this."
+    }
+  ],
+  "missed": [],
+  "unmatchedFindings": [
+    {
+      "app": "app01",
+      "findingId": "route-no-auth:index.js:29",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app02",
+      "findingId": "secret-hardcoded:index.js:21",
+      "severity": "critical",
+      "cleanApp": false
+    },
+    {
+      "app": "app03",
+      "findingId": "nosql-injection:index.js:23",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app05",
+      "findingId": "route-no-auth:index.js:11",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app05",
+      "findingId": "route-no-auth:index.js:18",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app06",
+      "findingId": "route-no-auth:index.js:24",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app06",
+      "findingId": "nosql-injection:index.js:31",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app07",
+      "findingId": "route-no-auth:index.js:21",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app08",
+      "findingId": "route-no-auth:index.js:14",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app08",
+      "findingId": "route-no-auth:index.js:19",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app09",
+      "findingId": "route-no-auth:index.js:22",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app10",
+      "findingId": "route-no-auth:index.js:20",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app12",
+      "findingId": "route-no-auth:index.js:14",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app12",
+      "findingId": "route-no-auth:index.js:19",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app14",
+      "findingId": "route-no-auth:index.js:20",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app16",
+      "findingId": "route-no-auth:index.js:21",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app18",
+      "findingId": "route-no-auth:index.js:20",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app20",
+      "findingId": "route-no-auth:index.js:14",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app22",
+      "findingId": "route-no-auth:index.js:15",
+      "severity": "high",
+      "cleanApp": false
+    },
+    {
+      "app": "app24",
+      "findingId": "route-no-auth:index.js:22",
+      "severity": "high",
+      "cleanApp": false
+    }
+  ],
+  "rejections": [],
+  "perApp": [
+    {
+      "app": "app01",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 30,
+        "counts": {
+          "critical": 1,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 75,
+      "durationMs": 221.96
+    },
+    {
+      "app": "app02",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 27,
+        "counts": {
+          "critical": 2,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 67,
+      "durationMs": 114.49
+    },
+    {
+      "app": "app03",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 103.55
+    },
+    {
+      "app": "app04",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 265.13
+    },
+    {
+      "app": "app05",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 30,
+        "counts": {
+          "critical": 1,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 75,
+      "durationMs": 174.96
+    },
+    {
+      "app": "app06",
+      "isClean": false,
+      "before": {
+        "findingsCount": 5,
+        "safety": 32,
+        "counts": {
+          "critical": 0,
+          "high": 4,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 75,
+      "durationMs": 238.69
+    },
+    {
+      "app": "app07",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 158.08
+    },
+    {
+      "app": "app08",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 40,
+        "counts": {
+          "critical": 0,
+          "high": 4,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 75,
+      "durationMs": 186.37
+    },
+    {
+      "app": "app09",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 52,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 148.04
+    },
+    {
+      "app": "app10",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 55,
+        "counts": {
+          "critical": 0,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 166.67
+    },
+    {
+      "app": "app11",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 52,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 144.93
+    },
+    {
+      "app": "app12",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 40,
+        "counts": {
+          "critical": 0,
+          "high": 4,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 75,
+      "durationMs": 154.86
+    },
+    {
+      "app": "app13",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 83.9
+    },
+    {
+      "app": "app14",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 55,
+        "counts": {
+          "critical": 0,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 169.02
+    },
+    {
+      "app": "app15",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 67,
+      "durationMs": 169.85
+    },
+    {
+      "app": "app16",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 62,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 155.38
+    },
+    {
+      "app": "app17",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 169.2
+    },
+    {
+      "app": "app18",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 62,
+        "counts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 165.03
+    },
+    {
+      "app": "app19",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 60,
+        "counts": {
+          "critical": 1,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 154.18
+    },
+    {
+      "app": "app20",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 55,
+        "counts": {
+          "critical": 0,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 85,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 67,
+      "durationMs": 155.07
+    },
+    {
+      "app": "app21",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 67,
+        "counts": {
+          "critical": 1,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 89.94
+    },
+    {
+      "app": "app22",
+      "isClean": false,
+      "before": {
+        "findingsCount": 3,
+        "safety": 45,
+        "counts": {
+          "critical": 1,
+          "high": 2,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 152.46
+    },
+    {
+      "app": "app23",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 1,
+        "safety": 92,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 157.47
+    },
+    {
+      "app": "app24",
+      "isClean": false,
+      "before": {
+        "findingsCount": 4,
+        "safety": 30,
+        "counts": {
+          "critical": 1,
+          "high": 3,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 100,
+      "durationMs": 160.95
+    },
+    {
+      "app": "app25",
+      "isClean": false,
+      "before": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 2,
+        "safety": 77,
+        "counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 2.18
+    },
+    {
+      "app": "app26",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 5.35
+    },
+    {
+      "app": "app27",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 6.19
+    },
+    {
+      "app": "app28",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 7.86
+    },
+    {
+      "app": "app29",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 9.46
+    },
+    {
+      "app": "app30",
+      "isClean": true,
+      "before": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "after": {
+        "findingsCount": 0,
+        "safety": 100,
+        "counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        }
+      },
+      "reductionPercent": 0,
+      "durationMs": 6.91
+    }
+  ]
+}
