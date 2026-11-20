@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { loadCore, loadHardener } from './coreAdapter.js';
 import { runFix, runScan } from './pipeline.js';
 import { runExploit } from './exploit/sandbox.js';
-import { loadBenchmark, loadExperiment } from './benchmark.js';
+import { loadBenchmark, loadExperiment, loadModelEval } from './benchmark.js';
 import { getAiClient } from './ai/client.js';
 import { FIX_MODES, SCAN_MODES, fixHybrid, scanWithMode } from './ai/hybrid.js';
 import { httpTestEnabled } from './exploit/httpTest.js';
@@ -94,6 +94,13 @@ export async function createApp({ core, hardener, ai } = {}) {
     const metric = loadBenchmark();
     if (!metric) return res.status(404).json({ error: 'No benchmark results yet (corpus/benchmark/results.json).' });
     res.json(metric);
+  });
+
+  // slopstop-ignore route-no-auth: local-only, public model comparison numbers
+  app.get('/api/model-eval', (req, res) => {
+    const r = loadModelEval();
+    if (!r) return res.status(404).json({ error: 'No model evaluation yet (run node server/eval/models.js).' });
+    res.json(r);
   });
 
   // slopstop-ignore route-no-auth: local-only, public experiment numbers
