@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { loadCore, loadHardener } from './coreAdapter.js';
 import { runFix, runScan } from './pipeline.js';
 import { runExploit } from './exploit/sandbox.js';
+import { loadBenchmark } from './benchmark.js';
 
 const MAX_FILES = 50;
 const MAX_PROMPT = 20000;
@@ -56,6 +57,13 @@ export async function createApp({ core, hardener } = {}) {
     if (prompt.length > MAX_PROMPT) throw badRequest(`Prompt is longer than ${MAX_PROMPT} characters.`);
     res.json(await hardener.harden(prompt));
   }));
+
+  // Not part of the frozen contract: an additive, read-only endpoint for the scorecard page.
+  app.get('/api/benchmark', (req, res) => {
+    const metric = loadBenchmark();
+    if (!metric) return res.status(404).json({ error: 'No benchmark results yet (corpus/benchmark/results.json).' });
+    res.json(metric);
+  });
 
   app.use((req, res) => res.status(404).json({ error: `No route ${req.method} ${req.path}` }));
   // eslint-disable-next-line no-unused-vars
