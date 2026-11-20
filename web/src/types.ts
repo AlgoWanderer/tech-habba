@@ -141,8 +141,12 @@ export interface ModelMetricRow {
   recall?: number;
   f1?: number;
   accuracy?: number;
-  categoryAccuracy?: Record<string, number>;
+  categoryAccuracy?: number | Record<string, number>;
   meanMs?: number;
+  /** Test snippets scored (server/eval/models.js). */
+  snippets?: number;
+  /** Answers that were invalid JSON or errored; counted as wrong in every metric. */
+  invalidOrError?: number;
 }
 
 export interface ModelEvalResponse {

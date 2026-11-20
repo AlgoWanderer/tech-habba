@@ -252,6 +252,9 @@ const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({
                   <th className="text-right font-medium px-4 py-2.5">Recall</th>
                   <th className="text-right font-medium px-4 py-2.5">F1</th>
                   <th className="text-right font-medium px-4 py-2.5">Accuracy</th>
+                  <th className="text-right font-medium px-4 py-2.5" title="Answers that were not valid JSON; counted as wrong">
+                    Invalid answers
+                  </th>
                   <th className="text-right font-medium px-4 py-2.5">Mean latency</th>
                 </tr>
               </thead>
@@ -260,18 +263,31 @@ const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({
                   <tr key={m.model} className={cx(i === 0 && 'bg-slate-50/50')}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="font-medium text-slate-900">{m.model}</div>
-                      {m.categoryAccuracy && (
+                      {typeof m.categoryAccuracy === 'number' ? (
                         <div className="text-[11px] text-slate-500 mt-0.5">
-                          {Object.entries(m.categoryAccuracy)
-                            .map(([cat, score]) => `${cat}: ${(score * 100).toFixed(0)}%`)
-                            .join(' · ')}
+                          category correct: {(m.categoryAccuracy * 100).toFixed(0)}%
                         </div>
+                      ) : (
+                        m.categoryAccuracy && (
+                          <div className="text-[11px] text-slate-500 mt-0.5">
+                            {Object.entries(m.categoryAccuracy)
+                              .map(([cat, score]) => `${cat}: ${(score * 100).toFixed(0)}%`)
+                              .join(' · ')}
+                          </div>
+                        )
                       )}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.precision)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.recall)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.f1)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.accuracy)}</td>
+                    <td className={cx('px-4 py-3 text-right tabular-nums', (m.invalidOrError ?? 0) > 0 && 'text-rose-700 font-medium')}>
+                      {typeof m.invalidOrError === 'number'
+                        ? typeof m.snippets === 'number'
+                          ? `${m.invalidOrError} of ${m.snippets}`
+                          : m.invalidOrError
+                        : <span className="text-slate-400">not measured</span>}
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums">{ms(m.meanMs)}</td>
                   </tr>
                 ))}
