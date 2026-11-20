@@ -213,6 +213,18 @@ describe('aiPatch', () => {
     expect(client.sent[0].userText).toContain('Model Loan fields: _id, memberId, bookId, due');
   });
 
+  it('never AI-patches files it cannot parse and syntax-check (pre-demo regression: .ts file replaced wholesale)', async () => {
+    const ts = [{ path: 'server.ts', content: 'import express from "express";\nconst app = express();\nconst key: string = "abc";\napp.get("/users", async (req, res) => { res.json(await User.find(req.body)); });\n' }];
+    const finding = { id: 'ai-injection:server.ts:4', ruleId: 'ai-x', category: 'injection', severity: 'high', file: 'server.ts', line: 4, endLine: 4, snippet: 'app.get', message: 'x', fixable: 'review', source: 'ai' };
+    const client = createFakeClient(() => ({ replacement: 'app.get("/users", (req, res) => res.json([]));', explanation: '' }));
+    const r = await aiPatch(core, ts, finding, client);
+    expect(r.result.status).toBe('rejected');
+    expect(r.result.reason).toMatch(/only applied to JavaScript files SlopStop can parse/);
+    expect(client.calls).toBe(0);
+    const broken = [{ path: 'index.js', content: 'const app = express(\napp.get("/x", (req, res) => {\n' }];
+    expect((await aiPatch(core, broken, { ...finding, file: 'index.js', line: 2 }, client)).result.status).toBe('rejected');
+  });
+
   it('turns a model error into a rejection, never a crash', async () => {
     const f = await authFinding();
     const r = await aiPatch(core, FILES, f, createFakeClient(() => { throw new Error('HTTP 429'); }));

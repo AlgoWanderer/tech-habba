@@ -145,6 +145,12 @@ export async function aiPatch(core, files, finding, client, { ruleFindings, http
   const reject = (reason) => ({ result: { findingId: finding.id, status: 'rejected', reason: `AI patch rejected: ${reason}`, source: 'ai' }, patched: null });
   const file = files.find((f) => f.path === finding.file);
   if (!file) return reject('file not found.');
+  // Every AI patch must pass node --check and be scoped to a parsed statement. Files that cannot be
+  // syntax-checked (TypeScript, JSX, package.json...) or parsed are never AI-patched: in pre-demo testing a
+  // model "fixed" a .ts route by replacing the whole file (imports, app, secret) and no gate could catch it.
+  if (!/\.(c|m)?js$/i.test(file.path) || !parse(file.content)) {
+    return reject('AI patches are only applied to JavaScript files SlopStop can parse and syntax-check (.js, .mjs, .cjs). Review this one by hand.');
+  }
 
   const lines = file.content.split('\n');
   const { start, end } = enclosingRange(file.content, finding.line);
