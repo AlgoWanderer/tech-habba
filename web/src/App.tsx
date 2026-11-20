@@ -528,7 +528,7 @@ export default function App() {
       <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between text-xs text-slate-500">
           <span>SlopStop · patches are never written to disk without your confirmation</span>
-          <span className="hidden sm:inline">Deterministic engine · no LLM in the fix path</span>
+          <span className="hidden sm:inline">Rules: deterministic · Hybrid: every AI fix verified by 6 checks</span>
         </div>
       </footer>
     </div>
