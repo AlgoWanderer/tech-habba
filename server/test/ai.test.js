@@ -91,6 +91,13 @@ describe('gemini client', () => {
   });
 });
 
+describe('core pass-through', () => {
+  it('the live core exposes role A\'s maskSecrets and mergeFindings to the AI layer', () => {
+    expect(typeof core.maskSecrets).toBe('function');
+    expect(typeof core.mergeFindings).toBe('function');
+  });
+});
+
 describe('masking', () => {
   it('removes secret values but keeps line count', async () => {
     const { files, count } = await maskForModel(core, FILES);
