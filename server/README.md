@@ -27,6 +27,11 @@ On startup it prints whether it is using the **real** engine (`core/index.js`) o
 
 Bad input returns `400 {error}`.
 
+Extra, read-only (not in the frozen contract):
+- `GET /api/benchmark` -> role C's `corpus/benchmark/results.json`, mapped to the dashboard's
+  `BenchmarkMetric` shape (`web/src/types.ts`). Returns `404 {error}` until results exist. Missing
+  numbers are omitted, never invented, so the scorecard can show "not measured".
+
 ## How /api/fix works
 
 1. Fresh `scan()` of the submitted files. Unknown ids are `rejected`; `fixable: "review"` ids stay `review`.
