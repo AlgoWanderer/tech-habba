@@ -1,263 +1,95 @@
 {
+  "method": {
+    "matching": "a tool finding counts for a ground-truth flaw if same file and line within Â±1, any category; one-to-one",
+    "generatedAt": "2026-11-20T16:09:22.032Z"
+  },
   "semgrep": {
-    "status": "not run",
-    "reason": "Semgrep is not installed locally on PATH. Install via `pip install semgrep` or download binary."
+    "status": "run",
+    "version": "1.186.0",
+    "configs": [
+      "p/javascript",
+      "p/expressjs",
+      "p/nodejsscan",
+      "p/secrets"
+    ],
+    "durationMsWholeCorpus": 15257,
+    "errors": 0,
+    "totalGroundTruthFlaws": 56,
+    "detectedGroundTruthFlaws": 12,
+    "recall": 0.214,
+    "totalFindings": 14,
+    "findingsOnCleanApps": 1,
+    "recallByCategory": {
+      "secret": {
+        "flaws": 14,
+        "detected": 8
+      },
+      "injection": {
+        "flaws": 12,
+        "detected": 4
+      },
+      "auth": {
+        "flaws": 12,
+        "detected": 0
+      },
+      "idor": {
+        "flaws": 11,
+        "detected": 0
+      },
+      "dependency": {
+        "flaws": 7,
+        "detected": 0
+      }
+    },
+    "missedCount": 44,
+    "fixes": "none (detection only)",
+    "rulesHit": [
+      "node_api_key",
+      "node_nosqli_injection",
+      "node_secret"
+    ]
   },
   "gitleaks": {
-    "status": "not run",
-    "reason": "Gitleaks is not installed locally on PATH. Install via `winget install Gitleaks.Gitleaks` or download binary."
+    "status": "run",
+    "version": "8.30.1",
+    "durationMsWholeCorpus": 982,
+    "totalGroundTruthFlaws": 56,
+    "detectedGroundTruthFlaws": 0,
+    "recall": 0,
+    "totalFindings": 0,
+    "findingsOnCleanApps": 0,
+    "recallByCategory": {
+      "secret": {
+        "flaws": 14,
+        "detected": 0
+      },
+      "injection": {
+        "flaws": 12,
+        "detected": 0
+      },
+      "auth": {
+        "flaws": 12,
+        "detected": 0
+      },
+      "idor": {
+        "flaws": 11,
+        "detected": 0
+      },
+      "dependency": {
+        "flaws": 7,
+        "detected": 0
+      }
+    },
+    "missedCount": 56,
+    "fixes": "none (detection only)",
+    "secretRecall": "0/14",
+    "note": "Gitleaks only looks for secrets. Its 0 here is mostly a corpus artifact: planted keys are deliberately fake-format strings (e.g. sk_test_mock_fake_...) that do not match real provider key formats. Do not cite it as Gitleaks missing real secrets.",
+    "rulesHit": []
   },
   "llmFixer": {
-    "status": "simulated",
-    "note": "No LLM was called. simulateLLMFixer() approximates LLM rewrites with regex replacements and injected errors. Do not cite these numbers as real LLM results; run a real model to replace them.",
+    "status": "not run",
+    "reason": "no saved model outputs in llm-output/",
     "promptTemplate": "You are an automated code fixing assistant. You are given a Node.js/Express file with potential security vulnerabilities. Return ONLY the complete corrected file. Do not wrap in markdown or add explanations.",
-    "totalApps": 30,
-    "appsPassingSyntax": 30,
-    "appsPreservingAllRoutes": 30,
-    "appsWithRouteDeletion": 0,
-    "groundTruthFlawsDetected": 6,
-    "falsePositivesOnCleanApps": 1,
-    "perAppResults": [
-      {
-        "app": "app01",
-        "syntaxPass": true,
-        "originalRouteCount": 3,
-        "fixedRouteCount": 3,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app02",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app03",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app04",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app05",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app06",
-        "syntaxPass": true,
-        "originalRouteCount": 3,
-        "fixedRouteCount": 3,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app07",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app08",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app09",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app10",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app11",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app12",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app13",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app14",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app15",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app16",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app17",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app18",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app19",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app20",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app21",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 1,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app22",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app23",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app24",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 3
-      },
-      {
-        "app": "app25",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 2
-      },
-      {
-        "app": "app26",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 0
-      },
-      {
-        "app": "app27",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 0
-      },
-      {
-        "app": "app28",
-        "syntaxPass": true,
-        "originalRouteCount": 2,
-        "fixedRouteCount": 2,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 0
-      },
-      {
-        "app": "app29",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 0
-      },
-      {
-        "app": "app30",
-        "syntaxPass": true,
-        "originalRouteCount": 1,
-        "fixedRouteCount": 1,
-        "flawsDetected": 0,
-        "totalFlawsInApp": 0
-      }
-    ]
+    "outputsDir": "corpus/baselines/llm-output/<app>.js"
   }
 }

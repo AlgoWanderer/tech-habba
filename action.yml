@@ -1,0 +1,72 @@
+name: SlopStop security gate
+description: Scan the JS/TS files a pull request changes; fail on critical/high findings and post verified fix proposals to the job summary.
+branding:
+  icon: shield
+  color: red
+
+inputs:
+  files:
+    description: Space-separated files to scan. Default is the files changed against the PR base (or every tracked file on push).
+    required: false
+    default: ''
+  exclude:
+    description: Extended regex of paths to skip.
+    required: false
+    default: '(^|/)(node_modules|dist|build|corpus|test|tests|__tests__|fixtures)/|\.(test|spec)\.[cm]?[jt]sx?$'
+  fail-on-findings:
+    description: Set to "false" to report without failing the job.
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install SlopStop engine
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm install --no-audit --no-fund --omit=dev --workspace core --workspace server --workspace cli
+
+    - name: Scan
+      shell: bash
+      env:
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_EXCLUDE: ${{ inputs.exclude }}
+        FAIL: ${{ inputs.fail-on-findings }}
+        BASE_REF: ${{ github.base_ref }}
+        SLOPSTOP: ${{ github.action_path }}/cli/bin/slopstop.js
+      run: |
+        set -uo pipefail
+        if [ -n "$INPUT_FILES" ]; then
+          printf '%s\n' $INPUT_FILES > /tmp/slopstop-files
+        elif [ -n "$BASE_REF" ]; then
+          git fetch --no-tags --quiet origin "$BASE_REF"
+          git diff --name-only --diff-filter=ACMR "origin/$BASE_REF...HEAD" > /tmp/slopstop-files
+        else
+          git ls-files > /tmp/slopstop-files
+        fi
+        mapfile -t FILES < <(grep -Ei '\.(c|m)?[jt]sx?$' /tmp/slopstop-files | grep -Ev "$INPUT_EXCLUDE" || true)
+
+        if [ ${#FILES[@]} -eq 0 ]; then
+          echo "SlopStop: no JS/TS files to scan." | tee -a "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+
+        node "$SLOPSTOP" scan "${FILES[@]}" --fix > /tmp/slopstop-report 2>&1
+        code=$?
+        cat /tmp/slopstop-report
+        {
+          echo "## SlopStop security gate"
+          echo
+          echo "Scanned ${#FILES[@]} file(s). Patches below are proposals verified with \`node --check\` and a re-scan; nothing was written."
+          echo
+          echo '```diff'
+          cat /tmp/slopstop-report
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        if [ "$code" -eq 1 ] && [ "$FAIL" != "true" ]; then exit 0; fi
+        exit $code
