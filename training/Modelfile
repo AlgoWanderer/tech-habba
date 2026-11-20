@@ -8,6 +8,7 @@
 FROM ./out/gguf/slopstop-qwen-q8_0.gguf
 
 PARAMETER temperature 0.1
+PARAMETER num_predict 256
 PARAMETER stop "<|im_end|>"
 PARAMETER stop "<|endoftext|>"
 
