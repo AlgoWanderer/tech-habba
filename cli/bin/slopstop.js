@@ -5,11 +5,16 @@
 //   slopstop compare <dirA> <dirB>            compare two sets of apps (each subfolder = one app)
 // --fix prints proposed, verified patches. It never writes to your files.
 // --json prints machine-readable output instead of text.
+// --ai adds the AI reviewer (hybrid mode; needs GEMINI_API_KEY in server/.env). AI findings are
+// marked [AI 82%] and are never auto-fixed by --fix (that stays rules-only and verified).
 // Suppressions: .slopstopignore paths and `// slopstop-ignore <ruleId>: reason` comments (see lib/ignore.js).
 // --no-ignore reports everything.
 // Exit code 1 when critical/high findings exist (blocks the commit), 2 on usage errors.
+import '../../server/env.js';
 import { existsSync, statSync } from 'node:fs';
 import { loadCore } from '../../server/coreAdapter.js';
+import { getAiClient } from '../../server/ai/client.js';
+import { scanWithMode } from '../../server/ai/hybrid.js';
 import { runFix } from '../../server/pipeline.js';
 import { compare, formatCompare } from '../lib/compare.js';
 import { collectFiles } from '../lib/files.js';
@@ -60,7 +65,18 @@ if (!files.length) {
   process.exit(0);
 }
 
-const raw = await core.scan(files);
+let raw = await core.scan(files);
+if (flags.has('--ai')) {
+  const client = getAiClient();
+  if (!client) console.warn('SlopStop: --ai needs GEMINI_API_KEY in server/.env; using rules only.');
+  else {
+    try {
+      raw = (await scanWithMode(core, files, 'hybrid', client)).findings;
+    } catch (e) {
+      console.warn(`SlopStop: AI review failed (${e.message}); using rules only.`);
+    }
+  }
+}
 const { kept: findings, suppressed } = flags.has('--no-ignore') ? { kept: raw, suppressed: [] } : applyIgnores(raw, files, loadIgnoreFile());
 const auto = findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
 const fix = flags.has('--fix') && auto.length ? await runFix(core, files, auto) : null;
