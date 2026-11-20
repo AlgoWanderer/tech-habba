@@ -64,13 +64,24 @@ Gemini 3.1 Flash-Lite, 2 runs per AI arm. Method, numbers and failure analysis: 
 - **Prompt Hardener:** Gemini code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
 - **Negative result:** "the LLM alone breaks apps" was not shown. The AI-only arm broke 0 apps by our syntax and route checks; its weakness is fixing much less.
 
-**Model comparison** on the same snippet-classification task used for fine-tuning (`node server/eval/models.js`, 110 labelled snippets the models never trained on):
+**Fine-tuning an open model** ([training/README.md](training/README.md)): we fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs (comments stripped, so the model reads code, not hints). Training took **5.4 minutes on a laptop RTX 4060** and the model runs locally via Ollama.
 
-| Model | Precision | Recall | F1 |
-|---|---|---|---|
-| Rules | 0.95 | 1.00 | 0.97 |
-| Gemini 3.1 Flash-Lite | 0.79 | 0.82 | 0.80 |
-| Qwen2.5-Coder-1.5B, base and fine-tuned (local, via Ollama) | in progress | | |
+**Model comparison** (`node server/eval/models.js`): each model sees the same task it was trained on (snippet → vulnerable? + category). There are 122 labelled snippets (61 vulnerable) from the 30 corpus apps and DVNA, and none of these apps were in the training data.
+
+| Model | Precision | Recall | F1 | Category correct | Time per snippet |
+|---|---|---|---|---|---|
+| Rules | 0.94 | 0.97 | **0.95** | 0.81 | instant |
+| Gemini 3.1 Flash-Lite (hosted) | 0.92 | 0.79 | 0.85 | **0.88** | 4.9 s |
+| Qwen2.5-Coder-1.5B, base (local) | 1.00 | 0.05 | 0.09 | 0.00 | 0.4 s |
+| **Qwen2.5-Coder-1.5B, fine-tuned `slopstop-qwen`** (local) | 0.76 | 0.74 | **0.75** | 0.56 | 0.5 s |
+
+- **Fine-tuning moved F1 from 0.09 to 0.75 on apps the model never saw.** The base model answered "not vulnerable" almost every time.
+- **A 1.5B model trained in minutes gets within 0.1 F1 of Gemini.** It runs locally (code never leaves the machine) and is about 10× faster.
+- **Its weak spot is the category** (0.56). The training data had 260 injection, 37 IDOR, 6 auth, 3 secret and 0 dependency examples.
+- **Rules still lead on this corpus**, because they were built from its flaw list. That is why the product is rules first, with AI for what rules cannot express, and every AI fix verified.
+- **Caveats:**
+  - The base Qwen row used the 4-bit Ollama build, while the fine-tuned model is 8-bit. On A's validation set a same-precision 8-bit base scored about the same as the 4-bit one.
+  - The Qwen rows were run before the eval switched to sending the code alone (as in training), so they included a one-line `File:` header.
 
 ## What it checks
 
