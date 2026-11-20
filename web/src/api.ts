@@ -101,14 +101,16 @@ export const apiClient = {
     }
 
     try {
-      // In real mode, attempt to load from server or static benchmark path
+      // In real mode, load from server benchmark endpoint (role B's GET /api/benchmark)
       const response = await fetch(`${API_URL}/api/benchmark`);
       if (response.ok) {
         return await response.json();
       }
     } catch {
-      // fallback if corpus endpoint is not mounted yet
+      // Network error or server not responding
     }
-    return mockBenchmarkResults;
+
+    // In real mode, return empty object so all fields show "not measured"
+    return {};
   }
 };
