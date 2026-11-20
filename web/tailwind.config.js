@@ -19,7 +19,8 @@ export default {
         }
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace']
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'Menlo', 'Consolas', 'monospace']
       }
     },
   },
