@@ -7,6 +7,10 @@ interface FindingsListProps {
   findings: Finding[];
   onFixAll?: () => void;
   isFixing?: boolean;
+  /** Called when a finding is opened, e.g. to scroll the editor to its line. */
+  onSelect?: (f: Finding) => void;
+  /** Round-trip time of the scan request, measured in the browser. */
+  scanMs?: number | null;
 }
 
 const CATEGORY: Record<FindingCategory, { label: string; icon: React.ReactNode }> = {
@@ -26,7 +30,7 @@ const REVIEW_NOTE: Partial<Record<FindingCategory, string>> = {
 
 const ORDER: FindingSeverity[] = ['critical', 'high', 'medium', 'low'];
 
-export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false }) => {
+export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, isFixing = false, onSelect, scanMs }) => {
   const [expandedId, setExpandedId] = useState<string | null>(findings[0]?.id ?? null);
   const autoCount = findings.filter((f) => f.fixable === 'auto').length;
   const reviewCount = findings.length - autoCount;
@@ -40,7 +44,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
             Findings <Badge>{findings.length}</Badge>
           </span>
         }
-        subtitle={`${autoCount} auto-fixable · ${reviewCount} need review`}
+        subtitle={`${autoCount} auto-fixable · ${reviewCount} need review${typeof scanMs === 'number' ? ` · scanned in ${scanMs} ms` : ''}`}
         action={
           onFixAll && autoCount > 0 ? (
             <Button onClick={onFixAll} disabled={isFixing} icon={isFixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}>
@@ -72,7 +76,11 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
                   return (
                     <li key={f.id} className={cx(open && 'bg-slate-50/70')}>
                       <button
-                        onClick={() => setExpandedId(open ? null : f.id)}
+                        onClick={() => {
+                          setExpandedId(open ? null : f.id);
+                          if (!open) onSelect?.(f);
+                        }}
+                        title={onSelect ? 'Show this line in the editor' : undefined}
                         aria-expanded={open}
                         className="w-full text-left px-4 py-3 flex items-start gap-3 cursor-pointer hover:bg-slate-50 transition-colors"
                       >
