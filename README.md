@@ -68,13 +68,13 @@ Gemini 3.1 Flash-Lite, 2 runs per AI arm. Method, numbers and failure analysis: 
 
 **Model comparison** (`node server/eval/models.js`): each model sees the same task it was trained on (snippet → vulnerable? + category). There are 122 labelled snippets (61 vulnerable) from the 30 corpus apps and DVNA, and none of these apps were in the training data.
 
-Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training, and the same output-length cap. An invalid or failed answer counts as wrong.
+Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training, and the same output-length cap. Invalid answers are never dropped. One on a vulnerable snippet counts as a miss, and every invalid answer counts as wrong in accuracy.
 
 | Model | Accuracy | Precision | Recall | F1 | Category correct | Invalid answers | Time per snippet |
 |---|---|---|---|---|---|---|---|
 | Rules | **95%** | 0.94 | **0.97** | **0.95** | 0.81 | 0 | instant |
 | Gemini 3.1 Flash-Lite (hosted) | 86% | 0.92 | 0.79 | 0.85 | **0.88** | 0 | 4.9 s |
-| Qwen2.5-Coder-1.5B, base (local) | 44% | 0.46 | 0.59 | 0.51 | 0.28 | 36 of 122 | 2.6 s |
+| Qwen2.5-Coder-1.5B, base (local) | 44% | 0.55 | 0.59 | 0.57 | 0.28 | 36 of 122 | 2.6 s |
 | **Qwen2.5-Coder-1.5B, fine-tuned `slopstop-qwen`** (local) | **66%** | 0.72 | 0.54 | **0.62** | **0.70** | **0** | 0.6 s |
 
 - **Fine-tuning made the small model usable** on apps it never saw:
@@ -82,7 +82,8 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
   - correct categories rose from 28% to 70%
   - invalid answers fell from 36 to 0
   - it answers about 4× faster than the base model
-- **The gain is smaller than on the training validation set** (85% there vs 66% here). The corpus apps are different code from the training data, and recall is still low (0.54). The training data was also skewed: 260 injection, 37 IDOR, 6 auth, 3 secret and 0 dependency examples.
+- **The gain is smaller than on the training validation set** (85% there vs 66% here). The corpus apps are different code from the training data, and recall is still low (0.54).
+- **Recall fell from 0.74 to 0.54** once the `File: <path>` line was removed from the prompt so the input matched the training format exactly. The file name was apparently giving the model useful context. The training data was also skewed: 260 injection, 37 IDOR, 6 auth, 3 secret and 0 dependency examples.
 - **Gemini is still clearly better (86%), and rules lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
 - **Measurement note:** an earlier version of this table showed base F1 0.09 vs fine-tuned 0.75. That comparison was not like-for-like (a 4-bit base, and an extra file-name header in the input), and the scorer dropped invalid answers. Role A caught both; the numbers above are the corrected ones.
 
