@@ -187,12 +187,20 @@ export const apiClient = {
   async getExperimentResults(): Promise<ExperimentSummary> {
     if (isMock) {
       return {
-        hypothesis: "An LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship: rules + LLM + verifier (hybrid) finds more flaws than rules alone and breaks no apps, while the LLM alone breaks some.",
-        arms: [
-          { arm: "rules", flawsFound: 56, criticalHighLeft: 9, appsBroken: 0, aiPatchesRejected: 0, msPerApp: 140 },
-          { arm: "ai", flawsFound: 68, criticalHighLeft: 18, appsBroken: 4, aiPatchesRejected: 0, msPerApp: 1250 },
-          { arm: "hybrid", flawsFound: 72, criticalHighLeft: 3, appsBroken: 0, aiPatchesRejected: 6, msPerApp: 1390 }
-        ]
+        // Mock mode only: a copy of the measured corpus + DVNA rows from corpus/experiment/results.json.
+        method: { model: "sample data (mock mode) from corpus/experiment/results.json", runs: 2 },
+        bySet: {
+          corpus: {
+            rules: { totalApps: 30, groundTruthFlawsDetected: 56, groundTruthRecall: 1, criticalHighBefore: 65, criticalHighAfter: 9, criticalHighReductionPercent: 86.2, brokenAppsCount: 0, meanDurationMsPerApp: 97.73, totalModelCalls: 0 },
+            ai: { totalApps: 30, groundTruthFlawsDetected: 37, groundTruthRecall: 0.661, criticalHighBefore: 65, criticalHighAfter: 29.5, criticalHighReductionPercent: 54.6, brokenAppsCount: 0, meanDurationMsPerApp: 4722.83, totalModelCalls: 94 },
+            hybrid: { totalApps: 30, groundTruthFlawsDetected: 56, groundTruthRecall: 1, criticalHighBefore: 65, criticalHighAfter: 0.5, criticalHighReductionPercent: 99.2, brokenAppsCount: 0, meanDurationMsPerApp: 5437.17, totalModelCalls: 88 }
+          },
+          dvna: {
+            rules: { totalApps: 1, groundTruthFlawsDetected: 1, groundTruthRecall: 0.167, criticalHighBefore: 13, criticalHighAfter: 7, criticalHighReductionPercent: 46.2, brokenAppsCount: 0 },
+            ai: { totalApps: 1, groundTruthFlawsDetected: 4, groundTruthRecall: 0.667, criticalHighBefore: 13, criticalHighAfter: 9.5, criticalHighReductionPercent: 26.9, brokenAppsCount: 0 },
+            hybrid: { totalApps: 1, groundTruthFlawsDetected: 3, groundTruthRecall: 0.5, criticalHighBefore: 13, criticalHighAfter: 5, criticalHighReductionPercent: 61.5, brokenAppsCount: 0 }
+          }
+        }
       };
     }
 
@@ -210,27 +218,14 @@ export const apiClient = {
 
   async getModelEval(): Promise<ModelEvalResponse> {
     if (isMock) {
+      // Mock mode only: a copy of the measured rows in server/eval/model-eval*.json (122 snippets).
       return {
-        method: "Evaluated across precision, recall, F1, and mean latency on unseen code samples.",
+        method: "Sample data (mock mode): measured results from server/eval/model-eval*.json, 122 snippets from corpus + DVNA.",
         models: [
-          {
-            model: "Rules (deterministic AST)",
-            precision: 0.74,
-            recall: 1.0,
-            f1: 0.85,
-            accuracy: 0.82,
-            categoryAccuracy: { secret: 1.0, auth: 1.0, injection: 0.92, idor: 0.73, dependency: 0.86 },
-            meanMs: 140
-          },
-          {
-            model: "Gemini 3.1 Flash-Lite (hybrid)",
-            precision: 0.68,
-            recall: 0.92,
-            f1: 0.78,
-            accuracy: 0.76,
-            categoryAccuracy: { secret: 0.93, auth: 0.88, injection: 0.85, idor: 0.82, dependency: 0.71 },
-            meanMs: 1250
-          }
+          { model: "rules", precision: 0.937, recall: 0.967, f1: 0.952, accuracy: 0.951, categoryAccuracy: 0.814, invalidOrError: 0, snippets: 122, meanMs: 0 },
+          { model: "gemini (gemini-3.1-flash-lite)", precision: 0.923, recall: 0.787, f1: 0.85, accuracy: 0.861, categoryAccuracy: 0.875, invalidOrError: 0, snippets: 122, meanMs: 4949 },
+          { model: "ollama:qwen-base-q8", precision: 0.554, recall: 0.59, f1: 0.571, accuracy: 0.443, categoryAccuracy: 0.278, invalidOrError: 36, snippets: 122, meanMs: 2574 },
+          { model: "ollama:slopstop-qwen", precision: 0.717, recall: 0.541, f1: 0.617, accuracy: 0.664, categoryAccuracy: 0.697, invalidOrError: 0, snippets: 122, meanMs: 585 }
         ]
       };
     }
