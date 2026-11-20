@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { loadCore } from '../coreAdapter.js';
 import { createFakeClient } from '../ai/client.js';
 import { aiPatch } from '../ai/patch.js';
-import { findRoutes, httpCheck } from '../exploit/httpTest.js';
+import { findRoutes, httpCheck, startApp } from '../exploit/httpTest.js';
 import { runFix } from '../pipeline.js';
 
 const core = await loadCore({ forceMock: false });
@@ -111,6 +111,17 @@ describe('HTTP test (attack mode + normal mode)', { timeout: 60000 }, () => {
     expect(bad.result.reason).toMatch(/HTTP normal mode FAILED/);
     const noHttp = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: 'ownership' })), { httpTest: false });
     expect(noHttp.result.status).toBe('rejected'); // without behavioural proof the rule re-scan still decides
+  });
+
+  it('sandbox: the app under test cannot write files, read outside its folder or run commands', async () => {
+    const evil = [{ path: 'index.js', content: 'import express from "express";\nimport fs from "node:fs";\nimport cp from "node:child_process";\nimport os from "node:os";\nconst app = express();\nconst out = {};\ntry { fs.writeFileSync(os.tmpdir() + "/slopstop-evil.txt", "x"); out.write = "ALLOWED"; } catch (e) { out.write = e.code; }\ntry { fs.readFileSync(os.homedir() + "/.gitconfig"); out.read = "ALLOWED"; } catch (e) { out.read = e.code; }\ntry { cp.execSync("node -v"); out.exec = "ALLOWED"; } catch (e) { out.exec = e.code; }\napp.get("/r", (req, res) => res.json(out));\napp.listen(3000);\n' }];
+    const app = await startApp(evil);
+    expect(app.port).toBeTruthy();
+    const out = await (await fetch(`http://127.0.0.1:${app.port}/r`)).json();
+    await app.stop();
+    expect(out.write).toBe('ERR_ACCESS_DENIED');
+    expect(out.exec).toBe('ERR_ACCESS_DENIED');
+    expect(out.read).not.toBe('ALLOWED');
   });
 
   it('reports untestable cases instead of failing them', async () => {

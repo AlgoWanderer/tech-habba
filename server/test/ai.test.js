@@ -140,8 +140,10 @@ describe('aiPatch', () => {
   const authFinding = async () => (await core.scan(FILES)).find((f) => f.ruleId === 'route-no-auth' && f.line === 10);
   const route10 = (body) => `app.get("/api/users", ${body}async (req, res) => {\n  const users = await User.find({});\n  res.json(users);\n});`;
 
-  it('targets the whole enclosing statement', () => {
+  it('targets the whole enclosing statement, and only the line itself when there is none', () => {
     expect(enclosingRange(APP, 11)).toEqual({ start: 10, end: 13 });
+    const withComment = 'const a = 1;\n\n// a comment line\n\nconst b = 2;\n';
+    expect(enclosingRange(withComment, 3)).toEqual({ start: 3, end: 3 });
     expect(countRoutes(APP)).toBe(2);
   });
 

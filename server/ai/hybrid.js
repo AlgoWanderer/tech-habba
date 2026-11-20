@@ -67,8 +67,11 @@ export async function fixHybrid(core, files, ids, client, { aiFindings, httpTest
   }
 
   const before = await core.scan(files);
+  // Rule findings left for review are only offered to the model when they sit in a JavaScript file
+  // (package.json dependency findings, for example, stay "review": upgrading is a human decision).
+  const patchable = (f) => /\.(c|m)?js$/i.test(f.file);
   const queue = [
-    ...ruleIds.filter((id) => results.get(id)?.status === 'review').map((id) => before.find((f) => f.id === id)).filter(Boolean),
+    ...ruleIds.filter((id) => results.get(id)?.status === 'review').map((id) => before.find((f) => f.id === id)).filter((f) => f && patchable(f)),
     ...ids.filter((id) => id.startsWith('ai-')).map((id) => aiById.get(id) ?? (results.set(id, { findingId: id, status: 'rejected', reason: 'AI finding not provided or no longer in the code.', source: 'ai' }), null)).filter(Boolean),
   ];
 
