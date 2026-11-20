@@ -2,7 +2,7 @@
 
 > **Track 03:** AI Research | **Round 1:** Vibe-Coded and Vulnerable  
 > **Team Skuld (Role D: Dashboard & Pitch)**  
-> **Hypothesis:** *"An LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship: rules + LLM + verifier (hybrid) finds more flaws than rules alone and breaks no apps, while the LLM alone breaks some."*
+> **Research Question:** *"Does an LLM find and fix flaws that rules miss, and does a deterministic verifier make its output safer to ship? We compared Rules vs. AI Only vs. Hybrid across 51 apps."*
 
 ---
 
@@ -36,17 +36,31 @@ When an LLM (Gemini 3.1 Flash-Lite) proposes a patch for a security flaw, **it i
 ## Slide 3: Why Not Rules Alone or AI Alone? The 3-Way Experiment
 ### *Judge Question 2: "What is the innovation if you just use AI?"*
 "A submission that only sends prompts to a hosted model and shows the reply is not accepted."  
-SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated three paradigms across the same codebase:
+SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated three paradigms across 51 applications (30 corpus apps, 10 raw AI apps, 10 hardened AI apps, 1 external DVNA suite):
 
-| Metric | 1. Rules Only (Deterministic AST) | 2. AI Only (Raw LLM Detection & Rewrite) | 3. Hybrid (Rules + AI + 6-Stage Verifier) |
-|---|:---:|:---:|:---:|
-| **Detection Speed** | ~140 ms | see results | see results |
-| **Flaws Detected** | 56/56 planted flaws | see results | see results |
-| **False Positives** | 0% on clean apps | see results | Filtered (rules win over conflicting AI flags) |
-| **Fix Safety** | AST rewrites | Breaks apps (unverified) | All AI patches verified before display |
-| **App Breakage Rate** | 0 apps broken | see results | see results |
+#### Corpus Benchmark (30 apps, 56 planted flaws)
+| Arm | Flaws Found | Critical + High | Apps Broken | Verification | Model Calls |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Rules Only** | 56 / 56 (100%) | 65 → 9 (−86.2%) | 0 | `node --check` + re-scan | 0 |
+| **AI Only** | 37 / 56 (66.1%) | 65 → 29.5 (−54.6%) | 0 | None (unverified) | 94 |
+| **Hybrid** | **56 / 56 (100%)** | **65 → 0.5 (−99.2%)** | **0** | **All 6 verification checks** | 88 |
 
-**Key Takeaway:** AI alone breaks apps; rules alone miss business logic context. **Hybrid combines rule precision with model reasoning, verified at every step.**
+#### DVNA (External Codebase, 6 documented in-scope flaws)
+| Arm | Flaws Found | Critical + High Reduction | Notes |
+|---|:---:|:---:|---|
+| **Rules Only** | 1 / 6 (16.7%) | 13 → 7 (−46.2%) | Misses command injection, body IDOR, role auth |
+| **AI Only** | **4 / 6 (66.7%)** | 13 → 9.5 (−26.9%) | Finds semantic flaws rules miss; unverified rewrites |
+| **Hybrid** | 3 / 6 (50.0%) | **13 → 5 (−61.5%)** | Safe AI patches applied with verified gate |
+
+#### Prompt Hardener (Gemini-Written Apps: Raw vs Hardened Prompts)
+- **Raw prompts (10 apps):** 41 critical/high in generated code → 2 after hybrid.
+- **Hardened prompts (10 apps):** **15 critical/high (−63% vs raw)** → 0 after hybrid.
+- *Prompt Hardener produces 63% fewer vulnerabilities before code is even written; SlopStop eliminates the rest.*
+
+#### Key Findings & Negative Result (Honest AI Research):
+- **AI-only's real weakness is low fix efficacy, not app breakage:** The experiment showed 0 broken apps across all arms (the LLM did not fail syntax or delete routes), but **AI-only fixes far less (54.6% vs 99.2% for Hybrid)** and leaves changes completely unverified.
+- **LLMs find semantic flaws rules miss:** On DVNA, AI caught 4/6 vs rules' 1/6 (including command injection and exposed Stripe keys).
+- **Hybrid wins:** Combines deterministic rule precision with model reasoning, achieving a **99.2% flaw reduction** with verified safety.
 
 ---
 
@@ -77,10 +91,11 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 
 ## Slide 6: Summary & Impact
 * **Benchmark Numbers (from real results.json):**
-  - 56 / 56 planted flaws detected across 30 applications.
+  - 56 / 56 planted flaws detected across 30 applications (100% recall).
   - 0 false alarms on clean applications.
-  - Critical/High findings reduced by **86.2%**.
-  - ~140 ms per app scan time.
+  - Critical/High findings reduced by **99.2% in Hybrid mode** (65 → 0.5) and 86.2% in Rules mode.
+  - **Prompt Hardener produces 63% fewer vulnerabilities upfront** (15 vs 41 critical/high).
+  - 0 broken apps across all verification passes.
   - Semgrep baseline comparison: Semgrep detected only 12 / 56 flaws; SlopStop detected 56 / 56.
 * **Live Demo Readiness:**
   - Real mode connected to local server on port 3001.
