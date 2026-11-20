@@ -30,7 +30,9 @@ export function enclosingRange(content, line) {
     const span = n.loc.end.line - n.loc.start.line;
     if (span < MAX_SPAN && (!best || span > best.loc.end.line - best.loc.start.line)) best = n;
   });
-  return best ? { start: best.loc.start.line, end: best.loc.end.line } : window;
+  // No enclosing statement or function (e.g. a blank or comment line): the model may rewrite ONLY that
+  // line, never a window that could include neighbouring statements.
+  return best ? { start: best.loc.start.line, end: best.loc.end.line } : { start: line, end: line };
 }
 
 export const PATCH_SYSTEM = `You fix exactly one security flaw in a Node.js / Express file.
