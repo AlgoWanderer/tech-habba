@@ -8,6 +8,7 @@
 // sets and schema fields that exist.
 import { parse, walk, isFunction } from '../../core/lib/ast.js';
 import { verify } from '../verify.js';
+import { httpCheck } from '../exploit/httpTest.js';
 import { containsPlaceholder, maskForModel } from './mask.js';
 
 const MAX_SPAN = 120;
@@ -137,7 +138,7 @@ const slice = (lines, a, b) => lines.slice(a - 1, b).map((l, i) => `${String(a +
  *   -> { result: {findingId, status: "applied"|"rejected", reason, source: "ai"}, patched: {path, original, patched} | null }
  * `files` is the current state (e.g. after rule fixes); `ruleFindings` = rule scan of those files.
  */
-export async function aiPatch(core, files, finding, client, { ruleFindings } = {}) {
+export async function aiPatch(core, files, finding, client, { ruleFindings, httpTest = false } = {}) {
   const reject = (reason) => ({ result: { findingId: finding.id, status: 'rejected', reason: `AI patch rejected: ${reason}`, source: 'ai' }, patched: null });
   const file = files.find((f) => f.path === finding.file);
   if (!file) return reject('file not found.');
@@ -191,8 +192,17 @@ export async function aiPatch(core, files, finding, client, { ruleFindings } = {
     if (!re?.fixed) return reject(`independent re-check says the flaw is still there (${String(re?.reason ?? '').slice(0, 120)}).`);
   }
 
+  // Last gate: actually run the app. Attack must be blocked AND a legitimate user must still get through.
+  let http = '';
+  if (httpTest) {
+    const patchedFiles = files.map((f) => (f.path === file.path ? { path: f.path, content: patchedText } : f));
+    const h = await httpCheck(files, patchedFiles, finding);
+    if (h.testable && !h.passed) return reject(`${h.summary}.`);
+    http = h.testable ? ` ${h.summary}.` : ` (HTTP test: not testable, ${h.reason}.)`;
+  }
+
   return {
-    result: { findingId: finding.id, status: 'applied', reason: `AI patch verified (node --check, re-scan${isRuleTarget ? '' : ', re-check'}): ${String(out.explanation ?? '').slice(0, 160)}`, source: 'ai' },
+    result: { findingId: finding.id, status: 'applied', reason: `AI patch verified (node --check, re-scan${isRuleTarget ? '' : ', re-check'}): ${String(out.explanation ?? '').slice(0, 160)}${http}`, source: 'ai' },
     patched: { path: file.path, original: file.content, patched: patchedText },
   };
 }

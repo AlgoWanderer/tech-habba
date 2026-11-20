@@ -8,6 +8,7 @@ import { runExploit } from './exploit/sandbox.js';
 import { loadBenchmark, loadExperiment } from './benchmark.js';
 import { getAiClient } from './ai/client.js';
 import { FIX_MODES, SCAN_MODES, fixHybrid, scanWithMode } from './ai/hybrid.js';
+import { httpTestEnabled } from './exploit/httpTest.js';
 
 const MAX_FILES = 50;
 const MAX_PROMPT = 20000;
@@ -71,7 +72,9 @@ export async function createApp({ core, hardener, ai } = {}) {
     if (!Array.isArray(ids) || !ids.every((id) => typeof id === 'string')) throw badRequest('findingIds must be an array of strings.');
     const mode = parseMode(req.body, FIX_MODES);
     needAi(mode);
-    res.json(mode === 'rules' ? await runFix(core, files, ids) : await fixHybrid(core, files, ids, ai, { aiFindings: req.body.aiFindings }));
+    // Two-mode HTTP test on every fix (attack blocked + legitimate user still works); body.httpTest:false skips it.
+    const httpTest = httpTestEnabled() && req.body.httpTest !== false && !core.isMock;
+    res.json(mode === 'rules' ? await runFix(core, files, ids, { httpTest }) : await fixHybrid(core, files, ids, ai, { aiFindings: req.body.aiFindings, httpTest }));
   }));
 
   // slopstop-ignore route-no-auth: local-only
