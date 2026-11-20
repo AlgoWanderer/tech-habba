@@ -21,9 +21,9 @@
 * **Screen:** **Scan View** (Risk Meter + Findings List).
 * **Action:** Highlight the semicircular gauge and findings list.
 * **Spoken Pitch:**
-  > "In under 40 milliseconds, SlopStop parses the AST with Acorn. Our safety score is a catastrophic **12 out of 100**, indicating an **88% critical risk**.
+  > "In a fraction of a second, SlopStop parses the code with Acorn. *(Read the safety score and risk % off the gauge; they depend on the sample app you load.)*
   > 
-  > Notice how findings are grouped: 2 Critical secrets, 2 High injection and missing auth sinks, and 1 Medium IDOR susceptibility. Every finding provides an exact line reference, rule identifier, and a preview of the deterministic AST transformation."
+  > Notice how findings are grouped by severity: hard-coded secrets, injection sinks, missing auth and IDOR suspects. Every finding provides an exact line reference, rule identifier, and a preview of the deterministic AST transformation."
 
 ---
 
@@ -67,7 +67,7 @@
 * **Screen:** Click **Scorecard** tab.
 * **Action:** Highlight KPI numbers and the Failure Analysis list.
 * **Spoken Pitch:**
-  > "Finally, our benchmark scorecard. Tested across 48 real-world vibe-coded repositories: baseline vulnerabilities dropped from 184 to just 14—a **92.4% reduction** in 38 milliseconds per file.
+  > "Finally, our benchmark scorecard. On our 30-app vibe-coded test corpus, SlopStop found all 56 planted flaws with zero false alarms on the 5 clean apps, and cut critical and high findings from 65 to 9, an **86% reduction**, in about 130 milliseconds per app. Every applied fix passed the syntax check and re-scan.
   > 
   > And we are honest about limitations: BOLA and IDOR logic flaws cannot be deterministically guessed because they require domain business knowledge. SlopStop flags them transparently for human review rather than pretending to fix them.
   > 

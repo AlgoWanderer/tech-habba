@@ -8,7 +8,8 @@
     "reason": "Gitleaks is not installed locally on PATH. Install via `winget install Gitleaks.Gitleaks` or download binary."
   },
   "llmFixer": {
-    "status": "completed",
+    "status": "simulated",
+    "note": "No LLM was called. simulateLLMFixer() approximates LLM rewrites with regex replacements and injected errors. Do not cite these numbers as real LLM results; run a real model to replace them.",
     "promptTemplate": "You are an automated code fixing assistant. You are given a Node.js/Express file with potential security vulnerabilities. Return ONLY the complete corrected file. Do not wrap in markdown or add explanations.",
     "totalApps": 30,
     "appsPassingSyntax": 30,
