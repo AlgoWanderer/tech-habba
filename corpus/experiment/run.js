@@ -217,8 +217,8 @@ export async function runHybridArm(core, files, flaws, client, tmpDir) {
   const gtFound = matchGroundTruth(scan.findings, flaws);
   const aiFindings = scan.findings.filter((f) => f.source === 'ai');
 
-  // Hybrid fix (deterministic rule patches + verified AI patches)
-  const fix = await fixHybrid(core, files, scan.findings.map((f) => f.id), client, { aiFindings });
+  // Hybrid fix (deterministic rule patches + verified AI patches, including the two-mode HTTP test)
+  const fix = await fixHybrid(core, files, scan.findings.map((f) => f.id), client, { aiFindings, httpTest: true });
   const current = files.map((f) => {
     const p = fix.patched.find((x) => x.path === f.path);
     return p ? { path: f.path, content: p.patched } : { ...f };
