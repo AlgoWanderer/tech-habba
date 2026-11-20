@@ -8,15 +8,4 @@ export { parseAudit } from './scanner/deps.js';
 
 export { computeScore } from './score.js';
 
-export function applyFixes(files, findings) {
-  void files;
-  return {
-    patched: [],
-    envFile: '',
-    results: (findings ?? []).map((f) => ({
-      findingId: typeof f === 'string' ? f : f.id,
-      status: 'review',
-      reason: 'Fixer not implemented yet.',
-    })),
-  };
-}
+export { applyFixes } from './fixer/index.js';

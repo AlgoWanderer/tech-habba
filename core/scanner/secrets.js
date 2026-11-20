@@ -155,7 +155,7 @@ export function scanSecrets(file, code, parsed) {
     if (!cls) return;
     const envName = envNameFor(cls, ctx);
     const r = ctx.range ?? node;
-    findings.push(make(file, code, node, cls.msg, { type: 'secret', start: r.start, end: r.end, envName, value }, value));
+    findings.push(make(file, code, node, cls.msg, { type: 'secret', start: r.start, end: r.end, envName, value, jwt: ctx.jwt }, value));
   });
   return findings;
 }
