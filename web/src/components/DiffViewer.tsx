@@ -52,8 +52,8 @@ function getVerificationBadge(r: FixResult): {
   icon: React.ReactNode;
 } {
   if (r.status === 'applied') {
-    // GREEN "Proven" -> status applied and reason mentions HTTP test passing
-    const isProven = /http.*(pass|attack|test|200|401|ok)/i.test(r.reason) || /proven|http test passed/i.test(r.reason);
+    // GREEN "Proven" -> status applied and reason strictly mentions HTTP test passed
+    const isProven = /HTTP test passed/i.test(r.reason);
     if (isProven) {
       return {
         label: 'Proven',
