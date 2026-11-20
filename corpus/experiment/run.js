@@ -30,6 +30,10 @@ const appsDir = path.join(corpusDir, 'apps');
 const rawDir = path.join(corpusDir, 'wild/raw');
 const hardenedDir = path.join(corpusDir, 'wild/hardened');
 const groundTruthPath = path.join(corpusDir, 'ground-truth.json');
+const dvnaDir = path.join(corpusDir, 'external/dvna');
+const dvnaGroundTruthPath = path.join(corpusDir, 'external/dvna-ground-truth.json');
+// External code is scanned and shown to the model, but never executed (no HTTP sandbox test).
+const NEVER_EXECUTE = new Set(['dvna']);
 const resultsPath = path.join(__dirname, 'results.json');
 
 const HIGH = new Set(['critical', 'high']);
@@ -82,7 +86,18 @@ export function parseArgs(args = process.argv.slice(2)) {
   return { sets, runs, arms };
 }
 
+function walkFiles(dir, base = dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const full = path.join(dir, d.name);
+    if (d.isDirectory()) return d.name === 'node_modules' ? [] : walkFiles(full, base);
+    return /\.(c|m)?js$/.test(d.name) || d.name === 'package.json'
+      ? [{ path: path.relative(base, full).split(path.sep).join('/'), content: fs.readFileSync(full, 'utf-8') }]
+      : [];
+  });
+}
+
 export function loadAppSet(setName) {
+  if (setName === 'dvna') return fs.existsSync(dvnaDir) ? [{ set: 'dvna', app: 'dvna', files: walkFiles(dvnaDir) }] : [];
   let baseDir = '';
   if (setName === 'corpus') baseDir = appsDir;
   else if (setName === 'raw') baseDir = rawDir;
@@ -208,7 +223,7 @@ export async function runAiArm(core, files, flaws, client, tmpDir) {
   };
 }
 
-export async function runHybridArm(core, files, flaws, client, tmpDir) {
+export async function runHybridArm(core, files, flaws, client, tmpDir, { httpTest = true } = {}) {
   const t0 = performance.now();
   const initialCalls = client.calls;
 
@@ -218,7 +233,7 @@ export async function runHybridArm(core, files, flaws, client, tmpDir) {
   const aiFindings = scan.findings.filter((f) => f.source === 'ai');
 
   // Hybrid fix (deterministic rule patches + verified AI patches, including the two-mode HTTP test)
-  const fix = await fixHybrid(core, files, scan.findings.map((f) => f.id), client, { aiFindings, httpTest: true });
+  const fix = await fixHybrid(core, files, scan.findings.map((f) => f.id), client, { aiFindings, httpTest });
   const current = files.map((f) => {
     const p = fix.patched.find((x) => x.path === f.path);
     return p ? { path: f.path, content: p.patched } : { ...f };
@@ -281,7 +296,7 @@ function aggregateRuns(runList) {
   };
 }
 
-function buildArmSummary(armName, perAppRows, totalGtFlaws) {
+function buildArmSummary(armName, perAppRows, totalGtFlaws, gtSet = 'corpus') {
   const rows = perAppRows.map((r) => r[armName]).filter(Boolean);
   if (!rows.length) return { status: 'skipped' };
 
@@ -302,7 +317,7 @@ function buildArmSummary(armName, perAppRows, totalGtFlaws) {
   const totalCalls = Math.round(rows.reduce((sum, r) => sum + getNum(r, 'modelCalls'), 0));
   const meanDuration = Math.round((rows.reduce((sum, r) => sum + getNum(r, 'durationMs'), 0) / totalApps) * 100) / 100;
 
-  const corpusRows = perAppRows.filter((p) => p.set === 'corpus' && p[armName]).map((p) => p[armName]);
+  const corpusRows = perAppRows.filter((p) => p.set === gtSet && p[armName]).map((p) => p[armName]);
   const gtDetected = corpusRows.length ? Math.round(corpusRows.reduce((sum, r) => sum + getNum(r, 'groundTruthFound'), 0) * 100) / 100 : null;
   const gtRecall = gtDetected !== null && totalGtFlaws > 0 ? Math.round((gtDetected / totalGtFlaws) * 1000) / 1000 : null;
 
@@ -341,6 +356,9 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
     ? JSON.parse(fs.readFileSync(groundTruthPath, 'utf-8'))
     : { apps: [] };
   const totalGtFlaws = groundTruth.apps.reduce((sum, a) => sum + a.flaws.length, 0);
+  const dvnaTruth = fs.existsSync(dvnaGroundTruthPath) ? JSON.parse(fs.readFileSync(dvnaGroundTruthPath, 'utf-8')) : { apps: [] };
+  const truthFor = (set, app) => (set === 'corpus' ? groundTruth : set === 'dvna' ? dvnaTruth : null)?.apps.find((a) => a.app === app)?.flaws ?? null;
+  const gtTotalFor = (set) => (set === 'corpus' ? totalGtFlaws : set === 'dvna' ? dvnaTruth.apps.reduce((s, a) => s + a.flaws.length, 0) : 0);
 
   const allApps = [];
   for (const s of sets) {
@@ -360,9 +378,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
 
   for (let idx = 0; idx < allApps.length; idx++) {
     const { set, app, files } = allApps[idx];
-    const flaws = set === 'corpus'
-      ? groundTruth.apps.find((a) => a.app === app)?.flaws ?? []
-      : null;
+    const flaws = truthFor(set, app);
 
     const row = { set, app };
     process.stdout.write(`[${idx + 1}/${allApps.length}] ${set}/${app}... `);
@@ -392,7 +408,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
       } else {
         const hybridRuns = [];
         for (let r = 0; r < runs; r++) {
-          hybridRuns.push(await runHybridArm(core, files, flaws, client, tmpDir));
+          hybridRuns.push(await runHybridArm(core, files, flaws, client, tmpDir, { httpTest: !NEVER_EXECUTE.has(set) }));
         }
         row.hybrid = aggregateRuns(hybridRuns);
       }
@@ -415,6 +431,18 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
       : { status: 'skipped', reason: 'no GEMINI_API_KEY' };
   }
 
+  // Per-set summaries, so outside code (dvna) and AI-written apps (raw, hardened) are not blended with the corpus.
+  const bySet = {};
+  for (const s of sets) {
+    const rows = perApp.filter((p) => p.set === s);
+    if (!rows.length) continue;
+    bySet[s] = {};
+    for (const arm of ['rules', 'ai', 'hybrid']) {
+      if (!arms.includes(arm)) continue;
+      bySet[s][arm] = arm !== 'rules' && !client ? { status: 'skipped', reason: 'no GEMINI_API_KEY' } : buildArmSummary(arm, rows, gtTotalFor(s), s);
+    }
+  }
+
   const result = {
     method: {
       hypothesis: HYPOTHESIS,
@@ -422,10 +450,13 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
       runs,
       sets,
       arms,
-      model: client?.name ?? (process.env.GEMINI_MODEL || 'gemini-2.5-flash'),
+      model: client ? `${client.name} (last answered: ${client.lastModel ?? 'n/a'})` : 'none (no GEMINI_API_KEY)',
       totalApps: allApps.length,
+      groundTruth: 'corpus: corpus/ground-truth.json; dvna: corpus/external/dvna-ground-truth.json (documented flaws only); raw/hardened: no ground truth',
+      httpTest: `hybrid arm runs the two-mode HTTP test except on ${[...NEVER_EXECUTE].join(', ')} (never executed)`,
     },
     summary,
+    bySet,
     perApp,
   };
 
