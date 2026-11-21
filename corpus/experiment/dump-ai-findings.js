@@ -1,6 +1,6 @@
 // Collects the AI detector's findings (hybrid mode, one run) on the sets without full ground truth
 // (raw, hardened) plus dvna, with the code line, so each one can be labelled true/false by hand
-// in labels.json. Run AFTER run.js (shares the Gemini rate limit):
+// in labels.json. Run AFTER run.js (both use the local QwenSkuld model):
 //   node corpus/experiment/dump-ai-findings.js            -> corpus/experiment/ai-findings.json
 import '../../server/env.js';
 import fs from 'node:fs';
@@ -15,7 +15,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const core = await loadCore({ forceMock: false });
 const client = getAiClient();
 if (!client) {
-  console.error('No GEMINI_API_KEY in server/.env');
+  console.error('No AI model: set OLLAMA_MODEL=QwenSkuld in server/.env');
   process.exit(1);
 }
 

@@ -249,8 +249,8 @@ const ARM_LABEL: Record<ExperimentArm, string> = { rules: 'Rules', ai: 'AI only 
 const SET_LABEL: Record<string, string> = {
   corpus: 'Corpus: 30 team-made apps, 56 planted flaws',
   dvna: 'DVNA: outside app we did not write, 6 documented flaws',
-  raw: 'Gemini-written apps, raw prompts (10)',
-  hardened: 'Gemini-written apps, hardened prompts (10)',
+  raw: 'AI-generated apps, raw prompts (10)',
+  hardened: 'AI-generated apps, hardened prompts (10)',
 };
 const SET_ORDER = ['corpus', 'dvna', 'raw', 'hardened'];
 

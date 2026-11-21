@@ -42,7 +42,7 @@ export async function createApp({ core, hardener, ai } = {}) {
   hardener ??= await loadHardener();
   if (ai === undefined) ai = getAiClient();
   const needAi = (mode) => {
-    if (mode !== 'rules' && !ai) throw badRequest('AI not configured: add GEMINI_API_KEY to server/.env');
+    if (mode !== 'rules' && !ai) throw badRequest('AI not configured: set OLLAMA_MODEL=QwenSkuld in server/.env and run Ollama');
     if (mode !== 'rules' && core.isMock) throw badRequest('AI modes need the real core/ engine.');
   };
 
@@ -128,6 +128,6 @@ if (isMain) {
   app.listen(port, '127.0.0.1', () => {
     console.log(`SlopStop API on http://localhost:${port}`);
     console.log(`core: ${mockCore ? 'MOCK (contract samples)' : 'real core/'} | prompt hardener: ${mockHardener ? 'MOCK' : 'real'}`);
-    console.log(`AI: ${app.locals.aiName ?? 'off (add GEMINI_API_KEY to server/.env to enable ai/hybrid modes)'}`);
+    console.log(`AI: ${app.locals.aiName ?? 'off (set OLLAMA_MODEL=QwenSkuld in server/.env to enable ai/hybrid modes)'}`);
   });
 }

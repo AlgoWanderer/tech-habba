@@ -15,7 +15,7 @@ SlopStop provides a deterministic safety gate:
 * **Verification Invariant**: Every patch is executed through `node --check` and re-scanned. Any patch that introduces syntax errors or fails to eliminate the vulnerability is discarded.
 * **Safe In-Memory Staging**: Patches are **never** auto-applied to the user's disk without explicit confirmation.
 * **Credential Hygiene**: Automatically generates sanitized `.env` templates without leaking secrets into git.
-* **Three-Stage Gate (Hybrid mode)**: Static rules, then **QwenSkuld** (our fine-tuned Qwen2.5-Coder-1.5B, served locally by Ollama; Gemini is optional), then a live HTTP test that proves each fix: the attack must be refused and a real user must still get through.
+* **Three-Stage Gate (Hybrid mode)**: Static rules, then **QwenSkuld** (our fine-tuned Qwen2.5-Coder-1.5B, served locally by Ollama), then a live HTTP test that proves each fix: the attack must be refused and a real user must still get through.
 * **Prompt Hardener** (API only, `POST /api/harden-prompt`; removed from the dashboard): local redaction of credentials from prompts before they reach an LLM, plus mandatory security constraints.
 
 ---

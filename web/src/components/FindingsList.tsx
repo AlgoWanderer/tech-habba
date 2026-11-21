@@ -150,7 +150,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({ findings, onFixAll, 
             <span className="font-medium text-slate-700">Source:</span>
             <span>Rules (deterministic AST)</span>
             <span className="inline-flex items-center gap-1.5">
-              <Badge tone="violet">AI xx%</Badge> Gemini 3.1 Flash-Lite model detection
+              <Badge tone="violet">AI xx%</Badge> QwenSkuld model detection
             </span>
           </div>
         )}

@@ -1,5 +1,5 @@
 // Loads server/.env into process.env without a dependency. Existing variables win, so a value set
-// in the shell or by CI is never overridden. The file is git-ignored; it holds GEMINI_API_KEY.
+// in the shell or by CI is never overridden. The file is git-ignored; it holds OLLAMA_MODEL=QwenSkuld.
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

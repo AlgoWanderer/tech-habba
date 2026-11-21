@@ -373,7 +373,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
   const runHybrid = arms.includes('hybrid');
 
   if ((runAi || runHybrid) && !client) {
-    console.warn('\n[!] skipped: no GEMINI_API_KEY (AI arms skipped; RULES running end to end)\n');
+    console.warn('\n[!] skipped: no AI model, set OLLAMA_MODEL=QwenSkuld in server/.env (AI arms skipped; RULES running end to end)\n');
   }
 
   for (let idx = 0; idx < allApps.length; idx++) {
@@ -391,7 +391,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
     // 2. AI ARM
     if (runAi) {
       if (!client) {
-        row.ai = { status: 'skipped', reason: 'no GEMINI_API_KEY' };
+        row.ai = { status: 'skipped', reason: 'no AI model (OLLAMA_MODEL)' };
       } else {
         const aiRuns = [];
         for (let r = 0; r < runs; r++) {
@@ -404,7 +404,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
     // 3. HYBRID ARM
     if (runHybrid) {
       if (!client) {
-        row.hybrid = { status: 'skipped', reason: 'no GEMINI_API_KEY' };
+        row.hybrid = { status: 'skipped', reason: 'no AI model (OLLAMA_MODEL)' };
       } else {
         const hybridRuns = [];
         for (let r = 0; r < runs; r++) {
@@ -423,12 +423,12 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
   if (runAi) {
     summary.ai = client
       ? buildArmSummary('ai', perApp, totalGtFlaws)
-      : { status: 'skipped', reason: 'no GEMINI_API_KEY' };
+      : { status: 'skipped', reason: 'no AI model (OLLAMA_MODEL)' };
   }
   if (runHybrid) {
     summary.hybrid = client
       ? buildArmSummary('hybrid', perApp, totalGtFlaws)
-      : { status: 'skipped', reason: 'no GEMINI_API_KEY' };
+      : { status: 'skipped', reason: 'no AI model (OLLAMA_MODEL)' };
   }
 
   // Per-set summaries, so outside code (dvna) and AI-written apps (raw, hardened) are not blended with the corpus.
@@ -439,7 +439,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
     bySet[s] = {};
     for (const arm of ['rules', 'ai', 'hybrid']) {
       if (!arms.includes(arm)) continue;
-      bySet[s][arm] = arm !== 'rules' && !client ? { status: 'skipped', reason: 'no GEMINI_API_KEY' } : buildArmSummary(arm, rows, gtTotalFor(s), s);
+      bySet[s][arm] = arm !== 'rules' && !client ? { status: 'skipped', reason: 'no AI model (OLLAMA_MODEL)' } : buildArmSummary(arm, rows, gtTotalFor(s), s);
     }
   }
 
@@ -450,7 +450,7 @@ export async function runExperiment({ sets, runs, arms } = parseArgs()) {
       runs,
       sets,
       arms,
-      model: client ? `${client.name} (last answered: ${client.lastModel ?? 'n/a'})` : 'none (no GEMINI_API_KEY)',
+      model: client ? `${client.name} (last answered: ${client.lastModel ?? 'n/a'})` : 'none (no OLLAMA_MODEL)',
       totalApps: allApps.length,
       groundTruth: 'corpus: corpus/ground-truth.json; dvna: corpus/external/dvna-ground-truth.json (documented flaws only); raw/hardened: no ground truth',
       httpTest: `hybrid arm runs the two-mode HTTP test except on ${[...NEVER_EXECUTE].join(', ')} (never executed)`,

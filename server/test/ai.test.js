@@ -79,7 +79,9 @@ describe('gemini client', () => {
     expect(sent.body).toMatchObject({ model: 'slopstop-qwen', stream: false, format: { type: 'object', properties: { vulnerable: { type: 'boolean' } } } });
     expect(sent.body.messages.map((m) => m.role)).toEqual(['system', 'user']);
     expect(getAiClient({ AI_PROVIDER: 'ollama', OLLAMA_MODEL: 'slopstop-qwen' }).name).toBe('ollama:slopstop-qwen');
-    expect(getAiClient({ AI_PROVIDER: 'ollama' })).toBeNull();
+    expect(getAiClient({ AI_PROVIDER: 'ollama' }).name).toBe('ollama:QwenSkuld');
+    expect(getAiClient({ OLLAMA_MODEL: 'QwenSkuld' }).name).toBe('ollama:QwenSkuld');
+    expect(getAiClient({ GEMINI_API_KEY: 'k' })).toBeNull();
   });
 
   it('never leaks the key in errors and is null without a key', async () => {

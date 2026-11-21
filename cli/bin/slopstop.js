@@ -5,7 +5,7 @@
 //   slopstop compare <dirA> <dirB>            compare two sets of apps (each subfolder = one app)
 // --fix prints proposed, verified patches. It never writes to your files.
 // --json prints machine-readable output instead of text.
-// --ai adds the AI reviewer (hybrid mode; needs GEMINI_API_KEY in server/.env). AI findings are
+// --ai adds the AI reviewer (hybrid mode with QwenSkuld; needs OLLAMA_MODEL=QwenSkuld in server/.env). AI findings are
 // marked [AI 82%] and are never auto-fixed by --fix (that stays rules-only and verified).
 // Suppressions: .slopstopignore paths and `// slopstop-ignore <ruleId>: reason` comments (see lib/ignore.js).
 // --no-ignore reports everything.
@@ -68,7 +68,7 @@ if (!files.length) {
 let raw = await core.scan(files);
 if (flags.has('--ai')) {
   const client = getAiClient();
-  if (!client) console.warn('SlopStop: --ai needs GEMINI_API_KEY in server/.env; using rules only.');
+  if (!client) console.warn('SlopStop: --ai needs QwenSkuld (set OLLAMA_MODEL=QwenSkuld in server/.env); using rules only.');
   else {
     try {
       raw = (await scanWithMode(core, files, 'hybrid', client)).findings;

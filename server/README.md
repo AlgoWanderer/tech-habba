@@ -68,7 +68,7 @@ or `SLOPSTOP_SKIP=1`. While core/ is not installed it allows every commit with a
 
 ## AI modes (Phase 2)
 
-Put `GEMINI_API_KEY=...` in `server/.env` (git-ignored; never commit it). Optional: `GEMINI_MODEL` (default `gemini-3.1-flash-lite`) and `GEMINI_FALLBACK_MODELS` (comma-separated, default `gemini-3.5-flash-lite,gemini-3.5-flash`). An unavailable or overloaded model hands the call to the next one. New keys cannot use `gemini-2.5-flash`, and the larger Flash models were often overloaded or slow (35 s+) on the free tier. Without a key everything works as before and the AI modes return 400 "AI not configured". `GET /api/health` reports `ai: true|false`.
+The AI model is **QwenSkuld**, our fine-tuned Qwen2.5-Coder-1.5B, served locally by Ollama (build it as in [training/README.md](../training/README.md#ollama)). Put `OLLAMA_MODEL=QwenSkuld` in `server/.env` (git-ignored), or set `AI_PROVIDER=ollama`. `OLLAMA_URL` defaults to `http://127.0.0.1:11434`. Without it everything works as before and the AI modes return 400 "AI not configured". `GET /api/health` reports `ai: true|false` and `aiModel: "ollama:QwenSkuld"`.
 
 | Request | What runs |
 |---|---|
@@ -80,7 +80,7 @@ Put `GEMINI_API_KEY=...` in `server/.env` (git-ignored; never commit it). Option
 AI findings carry `source:"ai"`, `confidence` (0-1) and `fixable:"review"`, with ids like `ai-injection:index.js:15`. For a hybrid fix, send back the AI findings from the hybrid scan as `aiFindings`: model output varies between calls, so the server re-checks the ones you send (their snippet must still be in the code) instead of asking again.
 
 **Safety gates on the model** (`server/ai/`):
-- **Privacy:** secrets found by the rules are masked (`<REDACTED_SECRET_n>`) before any code is sent. The key is sent only in a header, never logged.
+- **Privacy:** secrets found by the rules are masked (`<REDACTED_SECRET_n>`) before any code is sent. The model runs on the same machine, so code never leaves it.
 - **Detector output is untrusted:** unknown files, out-of-range lines and confidence below 0.5 are dropped, and snippets come from the real file.
 - **Every AI patch must pass:** no masked placeholder in the output, no deleted route, `node --check`, a rule re-scan (target gone, nothing new critical/high), and for AI-found flaws an independent re-check by the model. Anything else is reported as `rejected` with the reason and never applied. At most 10 AI patches per request.
 
