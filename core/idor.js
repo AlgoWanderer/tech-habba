@@ -51,6 +51,10 @@ export function scanIdor(file, code, parsed) {
     if (!params.size || !isFunction(r.handler)) continue;
     const body = code.slice(r.handler.start, r.handler.end);
     if (OWNERSHIP.test(body)) continue;
+    // Also accept the identity the file's own auth middleware sets (req.member, req.guest...), not only
+    // req.user: otherwise a correct ownership fix keeps being re-flagged on every fresh scan.
+    hints ??= { owner: ownerField(parsed.ast), prop: authProp(parsed.ast, code) };
+    if (hints.prop && new RegExp(`\\breq\\.${hints.prop}\\b`).test(body)) continue;
     const aliases = paramAliases(r.handler, params);
     let lookup = null;
     walk(r.handler.body, (n) => {
@@ -61,7 +65,6 @@ export function scanIdor(file, code, parsed) {
     if (!lookup) continue;
     const line = r.call.loc.start.line;
 
-    hints ??= { owner: ownerField(parsed.ast), prop: authProp(parsed.ast, code) };
     const req = r.handler.params[0]?.type === 'Identifier' ? r.handler.params[0].name : 'req';
     const suggestion = lookup.callee.type === 'MemberExpression' ? suggestOwnershipCall(lookup, code, { ...hints, req }) : null;
     const l = lookup.loc.start.line;
