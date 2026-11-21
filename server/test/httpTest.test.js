@@ -100,17 +100,16 @@ describe('HTTP test (attack mode + normal mode)', { timeout: 60000 }, () => {
     expect(client.sent[1].userText).toContain('req.user._id');
   });
 
-  it('IDOR: when only the rule pattern objects (req.member), a passing HTTP test decides', async () => {
+  it('IDOR with req.member: the rule now accepts the ownership check, and the HTTP test still catches the subtle bug', async () => {
     const idor = await find('idor-suspect');
     const route = (filter) => `app.get("/api/loans/:id", verifyMember, async (req, res) => {\n  const loan = await Loan.findOne({ _id: req.params.id, ${filter} });\n  res.json(loan);\n});`;
     const good = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: 'ownership' })), { httpTest: true });
     expect(good.result.status).toBe('applied');
-    expect(good.result.reason).toMatch(/the HTTP test proved it works/);
+    expect(good.result.reason).toMatch(/HTTP test passed on GET \/api\/loans\/:id/);
+    // req.member._id passes the re-scan now (it mentions req.member), so only the HTTP test can reject it
     const bad = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member._id'), explanation: 'ownership' })), { httpTest: true });
     expect(bad.result.status).toBe('rejected');
     expect(bad.result.reason).toMatch(/HTTP normal mode FAILED/);
-    const noHttp = await aiPatch(core, FILES, idor, createFakeClient(() => ({ replacement: route('memberId: req.member.id'), explanation: 'ownership' })), { httpTest: false });
-    expect(noHttp.result.status).toBe('rejected'); // without behavioural proof the rule re-scan still decides
   });
 
   it('sandbox: the app under test cannot write files, read outside its folder or run commands', async () => {
