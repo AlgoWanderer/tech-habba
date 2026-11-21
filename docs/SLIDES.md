@@ -59,7 +59,8 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 - *Prompt Hardener produces 63% fewer vulnerabilities before code is even written; SlopStop eliminates the rest.*
 
 #### Key Findings & Negative Result (Honest AI Research):
-- **AI-only's real weakness is low fix efficacy, not app breakage:** The experiment showed 0 broken apps across all arms (the LLM did not fail syntax or delete routes), but **AI-only fixes far less (54.6% vs 99.2% for Hybrid)** and leaves changes completely unverified.
+- **AI-only's real weakness is low fix efficacy, not app breakage (with Gemini):** The Gemini experiment showed 0 broken apps across all arms, but **AI-only fixes far less (54.6% vs 99.2% for Hybrid)** and leaves changes completely unverified.
+- **With our local QwenSkuld model (1 run, not in the committed results):** AI-only broke 8 of 51 apps (35 routes deleted); in Hybrid the verifier rejected 61% of its patches and 0 apps broke.
 - **LLMs find semantic flaws rules miss:** On DVNA, AI caught 4/6 vs rules' 1/6 (including the command injection), and in a Gemini-written app it caught a Stripe secret key returned in an API response, which no rule flags.
 - **Hybrid wins:** Combines deterministic rule precision with model reasoning, removing **99.2% of critical/high findings** on the corpus, with every AI fix verified.
 
@@ -104,8 +105,8 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
   - 0 false alarms on clean applications.
   - Critical/High findings reduced by **99.2% in Hybrid mode** (65 → 0.5) and 86.2% in Rules mode.
   - **Prompt Hardener produces 63% fewer vulnerabilities upfront** (15 vs 41 critical/high).
-  - 0 broken apps across all 51 test apps and all three arms (by syntax and route checks).
-  - Fine-tuned Qwen 1.5B: 44% → 66% accuracy on unseen apps (0 invalid answers vs 36); rules: 95%.
+  - 0 broken apps across all 51 test apps and all three arms with Gemini (by syntax and route checks); with local QwenSkuld, AI-only broke 8 apps and Hybrid 0 (1 run).
+  - Fine-tuned Qwen 1.5B (**QwenSkuld**): 44% → 66% accuracy on unseen apps (0 invalid answers vs 36); rules: 95%.
   - Semgrep baseline comparison: Semgrep detected only 12 / 56 flaws; SlopStop detected 56 / 56.
 * **Live Demo Readiness:**
   - Real mode connected to local server on port 3001.
