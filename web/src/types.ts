@@ -141,8 +141,12 @@ export interface ModelMetricRow {
   recall?: number;
   f1?: number;
   accuracy?: number;
-  categoryAccuracy?: Record<string, number>;
+  categoryAccuracy?: number | Record<string, number>;
   meanMs?: number;
+  /** Test snippets scored (server/eval/models.js). */
+  snippets?: number;
+  /** Answers that were invalid JSON or errored; counted as wrong in every metric. */
+  invalidOrError?: number;
 }
 
 export interface ModelEvalResponse {
@@ -157,18 +161,24 @@ export interface HealthResponse {
   version?: string;
 }
 
-// Phase 2 Experiment summary (GET /api/experiment)
-export interface ExperimentArmSummary {
-  arm: "rules" | "ai" | "hybrid";
-  flawsFound: number;
-  criticalHighLeft: number;
-  appsBroken: number;
-  aiPatchesRejected: number;
-  msPerApp: number;
+// Phase 2 Experiment (GET /api/experiment): corpus/experiment/results.json without perApp.
+// Per-arm stats exactly as server/corpus write them; every field optional ("not measured" if absent).
+export interface ExperimentArmStats {
+  status?: string;
+  totalApps?: number;
+  groundTruthFlawsDetected?: number | null;
+  groundTruthRecall?: number | null;
+  criticalHighBefore?: number;
+  criticalHighAfter?: number;
+  criticalHighReductionPercent?: number;
+  brokenAppsCount?: number;
+  meanDurationMsPerApp?: number;
+  totalModelCalls?: number;
 }
 
+export type ExperimentArm = "rules" | "ai" | "hybrid";
+
 export interface ExperimentSummary {
-  arms?: ExperimentArmSummary[];
-  hypothesis?: string;
-  timestamp?: string;
+  method?: { hypothesis?: string; model?: string; runs?: number; generatedAt?: string };
+  bySet?: Record<string, Partial<Record<ExperimentArm, ExperimentArmStats>>>;
 }

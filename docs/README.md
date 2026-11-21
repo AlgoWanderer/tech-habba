@@ -1,7 +1,7 @@
 # SlopStop 🛡️
 > **Pre-ship security gate and verified auto-patcher for AI-generated ("vibe-coded") Node/Express/MongoDB applications.**
 
-SlopStop acts as an automated, deterministic security firewall between AI code generation and deployment. It prevents vulnerable AI "slop" from reaching production by scanning, safely auto-patching with verified AST rewrites, and proving exploit mitigation—with zero hallucination and zero regressions.
+SlopStop acts as an automated, deterministic security firewall between AI code generation and deployment. It prevents vulnerable AI "slop" from reaching production by scanning, safely auto-patching with verified AST rewrites, and proving exploit mitigation. Every patch is syntax-checked and re-scanned before it is shown; 0 apps were broken across 51 test apps (by syntax and route checks).
 
 ---
 

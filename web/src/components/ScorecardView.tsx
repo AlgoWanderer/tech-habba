@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../api';
-import { BenchmarkMetric, ModelEvalResponse } from '../types';
-import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target, Cpu } from 'lucide-react';
+import { BenchmarkMetric, ExperimentArm, ExperimentArmStats, ExperimentSummary, ModelEvalResponse } from '../types';
+import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target, Cpu, FlaskConical } from 'lucide-react';
 import { Badge, Button, Card, CardHeader, cx } from './ui';
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
@@ -11,17 +11,20 @@ const NotMeasured = () => <span className="text-base font-normal text-slate-400"
 export const ScorecardView: React.FC = () => {
   const [data, setData] = useState<BenchmarkMetric | null>(null);
   const [evalData, setEvalData] = useState<ModelEvalResponse | null>(null);
+  const [expData, setExpData] = useState<ExperimentSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
     try {
-      const [bench, ev] = await Promise.all([
+      const [bench, ev, exp] = await Promise.all([
         apiClient.getBenchmarkResults(),
-        apiClient.getModelEval()
+        apiClient.getModelEval(),
+        apiClient.getExperimentResults()
       ]);
       setData(bench);
       setEvalData(ev);
+      setExpData(exp);
     } catch (err) {
       console.error('Failed loading benchmark data', err);
     } finally {
@@ -102,6 +105,8 @@ export const ScorecardView: React.FC = () => {
       </div>
 
       <DetectionCard data={data} />
+
+      <ExperimentCard exp={expData} />
 
       <ModelComparisonCard evalData={evalData} />
 
@@ -227,6 +232,75 @@ const Bar: React.FC<{ label: string; value?: number; max?: number; color: string
   );
 };
 
+const ARM_LABEL: Record<ExperimentArm, string> = { rules: 'Rules', ai: 'AI only (no verifier)', hybrid: 'Hybrid (rules + AI + 6 checks)' };
+const SET_LABEL: Record<string, string> = {
+  corpus: 'Corpus: 30 team-made apps, 56 planted flaws',
+  dvna: 'DVNA: outside app we did not write, 6 documented flaws',
+  raw: 'Gemini-written apps, raw prompts (10)',
+  hardened: 'Gemini-written apps, hardened prompts (10)',
+};
+const SET_ORDER = ['corpus', 'dvna', 'raw', 'hardened'];
+
+const ExperimentCard: React.FC<{ exp: ExperimentSummary | null }> = ({ exp }) => {
+  const sets = SET_ORDER.filter((s) => exp?.bySet?.[s]);
+  const dash = <span className="text-slate-400">not measured</span>;
+  const found = (a?: ExperimentArmStats) => {
+    if (!a || !isNum(a.groundTruthFlawsDetected ?? undefined) || !isNum(a.groundTruthRecall ?? undefined) || !a.groundTruthRecall) return dash;
+    return `${a.groundTruthFlawsDetected} / ${Math.round((a.groundTruthFlawsDetected as number) / (a.groundTruthRecall as number))}`;
+  };
+  const ch = (a?: ExperimentArmStats) =>
+    a && isNum(a.criticalHighBefore) && isNum(a.criticalHighAfter) ? `${a.criticalHighBefore} → ${a.criticalHighAfter}${isNum(a.criticalHighReductionPercent) ? ` (−${a.criticalHighReductionPercent}%)` : ''}` : dash;
+
+  return (
+    <Card>
+      <CardHeader
+        icon={<FlaskConical className="w-5 h-5" />}
+        title="Experiment: rules vs AI only vs hybrid"
+        subtitle={`Same apps, three arms${exp?.method?.model ? ` · model ${exp.method.model}` : ''}${isNum(exp?.method?.runs) ? ` · ${exp?.method?.runs} runs per AI arm (means)` : ''}. From corpus/experiment/results.json.`}
+      />
+      <div className="p-5 space-y-5">
+        {sets.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-400">Experiment not measured</p>
+        ) : (
+          sets.map((s) => (
+            <div key={s}>
+              <div className="text-sm font-medium text-slate-900 mb-2">{SET_LABEL[s] ?? s}</div>
+              <div className="border border-slate-200 rounded-lg overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-xs text-slate-500">
+                    <tr>
+                      <th className="text-left font-medium px-4 py-2.5">Arm</th>
+                      <th className="text-right font-medium px-4 py-2.5">Flaws found</th>
+                      <th className="text-right font-medium px-4 py-2.5">Critical + high (before → after)</th>
+                      <th className="text-right font-medium px-4 py-2.5">Apps broken</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {(['rules', 'ai', 'hybrid'] as ExperimentArm[]).map((arm) => {
+                      const a = exp?.bySet?.[s]?.[arm];
+                      return (
+                        <tr key={arm} className={cx(arm === 'hybrid' && 'font-medium')}>
+                          <td className="px-4 py-3 whitespace-nowrap">{ARM_LABEL[arm]}</td>
+                          <td className="px-4 py-3 text-right tabular-nums">{a?.status === 'skipped' ? 'skipped' : found(a)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums">{a?.status === 'skipped' ? 'skipped' : ch(a)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums">{a && isNum(a.brokenAppsCount) ? a.brokenAppsCount : dash}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))
+        )}
+        <p className="text-xs text-slate-500">
+          "Apps broken" = fails <code className="font-mono">node --check</code> or deletes routes. Raw/hardened apps have no answer key, so only the critical/high change is shown.
+        </p>
+      </div>
+    </Card>
+  );
+};
+
 const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({ evalData }) => {
   const models = evalData?.models ?? [];
   const pct = (v?: number) => (isNum(v) ? `${(v * 100).toFixed(1)}%` : <span className="text-slate-400">not measured</span>);
@@ -252,6 +326,9 @@ const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({
                   <th className="text-right font-medium px-4 py-2.5">Recall</th>
                   <th className="text-right font-medium px-4 py-2.5">F1</th>
                   <th className="text-right font-medium px-4 py-2.5">Accuracy</th>
+                  <th className="text-right font-medium px-4 py-2.5" title="Answers that were not valid JSON; counted as wrong">
+                    Invalid answers
+                  </th>
                   <th className="text-right font-medium px-4 py-2.5">Mean latency</th>
                 </tr>
               </thead>
@@ -260,18 +337,31 @@ const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({
                   <tr key={m.model} className={cx(i === 0 && 'bg-slate-50/50')}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="font-medium text-slate-900">{m.model}</div>
-                      {m.categoryAccuracy && (
+                      {typeof m.categoryAccuracy === 'number' ? (
                         <div className="text-[11px] text-slate-500 mt-0.5">
-                          {Object.entries(m.categoryAccuracy)
-                            .map(([cat, score]) => `${cat}: ${(score * 100).toFixed(0)}%`)
-                            .join(' · ')}
+                          category correct: {(m.categoryAccuracy * 100).toFixed(0)}%
                         </div>
+                      ) : (
+                        m.categoryAccuracy && (
+                          <div className="text-[11px] text-slate-500 mt-0.5">
+                            {Object.entries(m.categoryAccuracy)
+                              .map(([cat, score]) => `${cat}: ${(score * 100).toFixed(0)}%`)
+                              .join(' · ')}
+                          </div>
+                        )
                       )}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.precision)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.recall)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.f1)}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{pct(m.accuracy)}</td>
+                    <td className={cx('px-4 py-3 text-right tabular-nums', (m.invalidOrError ?? 0) > 0 && 'text-rose-700 font-medium')}>
+                      {typeof m.invalidOrError === 'number'
+                        ? typeof m.snippets === 'number'
+                          ? `${m.invalidOrError} of ${m.snippets}`
+                          : m.invalidOrError
+                        : <span className="text-slate-400">not measured</span>}
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums">{ms(m.meanMs)}</td>
                   </tr>
                 ))}

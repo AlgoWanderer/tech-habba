@@ -45,7 +45,7 @@
 * **Spoken Pitch:**
   > "Now watch the core magic of SlopStop. We click **Fix All Auto-Fixable**. 
   > 
-  > Unlike LLM-based 'auto-fixers' that hallucinate or introduce breaking changes, SlopStop is **100% deterministic**. It applies precise AST rewrites, runs `node --check` to verify syntax validity, and runs an automated re-scan.
+  > These fixes are **deterministic**: precise AST rewrites, each one checked with `node --check` and an automated re-scan before you see it. In our experiment, AI alone found 37 of 56 planted flaws; rules + AI + verifier found all 56, and the verifier rejected 37% of AI patches before they could ship.
   > 
   > Here is our side-by-side diff: Stripe keys and database URIs are extracted to environment variables, MongoDB queries cast inputs to strings to prevent operator injection, and route handlers are wrapped with auth middleware.
   > 

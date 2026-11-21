@@ -19,17 +19,18 @@
 
 ## Slide 2: The Core Innovation: The 6-Stage Verifier
 ### *Judge Question 1: "How do you verify if the AI is wrong?"*
-When an LLM (Gemini 3.1 Flash-Lite) proposes a patch for a security flaw, **it is never trusted blind**. Every single patch must pass through an automated 6-stage verification pipeline before the developer even sees it:
+When an LLM (Gemini 3.1 Flash-Lite) proposes a patch for a security flaw, **it is never trusted blind**. Each AI patch must pass up to six automated checks before the developer sees it (the independent re-check runs for AI-found flaws; the HTTP tests run where the app can be started, not on DVNA):
 
 1. **Syntax Check (`node --check`)**: Executes native V8 parsing in a sandbox. If the LLM dropped a closing brace, comma, or tag, the patch is discarded immediately.
 2. **Deterministic Re-Scan**: The modified file is re-scanned with Acorn AST rules. If the patch failed to remove the target vulnerability or introduced any new Critical/High vulnerability, it is rejected.
 3. **Structure & Real-Names Check**: Verifies that the patch only references identifiers, models, and middleware that actually exist in the file's AST scope.
-   - *Real Bug Caught in Experimentation:* Gemini wrote a fix referencing `req.user.organizationId`, which didn't exist in the project schema. It passed syntax validation, but our structure/name check caught it and rejected the patch!
+   - *Why it exists:* a patch can pass `node --check` yet reference a `req.X` property or schema field the app never defines, which would break the app at runtime. This check rejects it.
+   - *Measured:* across the experiment, the verifier rejected **19 of 51 AI patches (37%)**, 18 of them on the Gemini-written apps (`corpus/experiment/FAILURES.md`).
 4. **Independent AI Re-Check**: An independent model prompt verifies that the flaw was genuinely mitigated without logic regression.
 5. **HTTP Attack Mode (Attacks Blocked)**: Automated sandboxed HTTP probe sends the known exploit vector (e.g. NoSQL operator injection or unauthenticated fetch). Result must change from `HTTP 200 Exfiltrated` to `HTTP 401/403/400 Blocked`.
 6. **HTTP Normal Mode (Real Users Still Work)**: Normal user requests with valid credentials are sent to ensure business logic remains operational and routes were not deleted.
 
-**Result:** If a patch fails ANY of these 6 gates, it is marked **RED "Rejected"** and discarded. The verifier is the safety net that makes AI output safe to ship.
+**Result:** If a patch fails any of these checks, it is marked **RED "Rejected"** and discarded. The verifier is the safety net that makes AI output safer to ship. It is only as good as what it checks: before #44, a TypeScript file could slip past `node --check` (see `FAILURES.md`, section 6), and that hole is now closed.
 
 ---
 
@@ -67,12 +68,20 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 ## Slide 4: AI Model & Fine-Tuning
 ### *Judge Question 3: "Did you train or fine-tune on datasets?"*
 * **Current Production Hybrid Model:** Google Gemini 3.1 Flash-Lite via native REST API (zero heavyweight SDK).
-* **Privacy Guarantee (Privacy Gate):** Before ANY code is sent to an external model, SlopStop's `promptHardener` masks all secrets into `<REDACTED_SECRET_n>` tokens. Real API keys and passwords never reach model servers.
-* **Fine-Tuning Track (Role A Evaluation):**
-  - Fine-tuned `Qwen2.5-Coder-1.5B` on custom security transformation pairs vs. base Qwen vs. Gemini vs. deterministic rules on unseen applications.
-  - *Status:* If model weights/evals are completed by final judging, figures populate directly from `corpus/experiment/results.json`. Otherwise: documented as ongoing research track with Gemini 3.1 Flash-Lite as the reference baseline.
+* **Privacy Gate:** before any code is sent to the model, core's `maskSecrets` replaces every secret the scanner recognises, plus known key formats (Stripe, OpenAI, AWS, GitHub, database URLs with passwords, private keys), with `<REDACTED_SECRET_n>` tokens, keeping line numbers intact. A secret in a shape the scanner does not recognise is not masked. (The Prompt Hardener is separate: it redacts secrets from prompts *before* code is generated.)
+* **Fine-Tuning (done, `training/README.md`):**
+  - Fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on 612 examples (306 vulnerable/fixed pairs) from public datasets (CyberNative, SecureCodePairs). Comments were stripped so it reads code, not hints. **5.4 minutes on a laptop RTX 4060**; runs locally in Ollama.
+  - On 122 snippets from 31 apps it never saw (`server/eval/model-eval-qwen.json`, invalid answers count as wrong):
+
+    | Model | Accuracy | Category correct | Invalid answers |
+    |---|:---:|:---:|:---:|
+    | Rules | **95%** | 0.81 | 0 |
+    | Qwen 1.5B, base | 44% | 0.28 | 36 of 122 |
+    | Qwen 1.5B, fine-tuned | **66%** | **0.70** | **0** |
+
+  - Honest read: fine-tuning made the small model usable, but the gain is smaller on our apps than on held-out training-style snippets (85%). Its training data had almost no auth, secret or dependency examples (6, 3, 0), and rules remain far ahead.
 * **Future Work:**
-  - Fine-tuning a dedicated 7B security model on the OWASP NodeGoat dataset.
+  - Training data shaped like real AI-generated apps, with more auth, secret and dependency examples.
   - Expanding beyond Node/Express to FastAPI and Next.js App Router.
 
 ---
@@ -95,7 +104,8 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
   - 0 false alarms on clean applications.
   - Critical/High findings reduced by **99.2% in Hybrid mode** (65 → 0.5) and 86.2% in Rules mode.
   - **Prompt Hardener produces 63% fewer vulnerabilities upfront** (15 vs 41 critical/high).
-  - 0 broken apps across all verification passes.
+  - 0 broken apps across all 51 test apps and all three arms (by syntax and route checks).
+  - Fine-tuned Qwen 1.5B: 44% → 66% accuracy on unseen apps (0 invalid answers vs 36); rules: 95%.
   - Semgrep baseline comparison: Semgrep detected only 12 / 56 flaws; SlopStop detected 56 / 56.
 * **Live Demo Readiness:**
   - Real mode connected to local server on port 3001.
