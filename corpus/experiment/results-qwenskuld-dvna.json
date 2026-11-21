@@ -1,0 +1,200 @@
+{
+  "method": {
+    "hypothesis": "An LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship: rules + LLM + verifier (hybrid) finds more flaws than rules alone and breaks no apps, while the LLM alone breaks some.",
+    "generatedAt": "2026-11-21T01:58:16.098Z",
+    "runs": 1,
+    "sets": [
+      "dvna"
+    ],
+    "arms": [
+      "rules",
+      "ai",
+      "hybrid"
+    ],
+    "model": "ollama:slopstop-qwen-exp (last answered: slopstop-qwen-exp)",
+    "totalApps": 1,
+    "groundTruth": "corpus: corpus/ground-truth.json; dvna: corpus/external/dvna-ground-truth.json (documented flaws only); raw/hardened: no ground truth",
+    "httpTest": "hybrid arm runs the two-mode HTTP test except on dvna (never executed)"
+  },
+  "summary": {
+    "rules": {
+      "status": "completed",
+      "totalApps": 1,
+      "totalFindings": 13,
+      "criticalHighBefore": 13,
+      "criticalHighAfter": 7,
+      "criticalHighReductionPercent": 46.2,
+      "syntaxPassRate": 1,
+      "routesDeletedTotal": 0,
+      "brokenAppsCount": 0,
+      "groundTruthFlawsDetected": null,
+      "groundTruthRecall": null,
+      "meanDurationMsPerApp": 159,
+      "totalModelCalls": 0
+    },
+    "ai": {
+      "status": "completed",
+      "totalApps": 1,
+      "totalFindings": 6,
+      "criticalHighBefore": 13,
+      "criticalHighAfter": 4,
+      "criticalHighReductionPercent": 69.2,
+      "syntaxPassRate": 0,
+      "routesDeletedTotal": 20,
+      "brokenAppsCount": 1,
+      "groundTruthFlawsDetected": null,
+      "groundTruthRecall": null,
+      "meanDurationMsPerApp": 34446,
+      "totalModelCalls": 24
+    },
+    "hybrid": {
+      "status": "completed",
+      "totalApps": 1,
+      "totalFindings": 18,
+      "criticalHighBefore": 13,
+      "criticalHighAfter": 6,
+      "criticalHighReductionPercent": 53.8,
+      "syntaxPassRate": 1,
+      "routesDeletedTotal": 0,
+      "brokenAppsCount": 0,
+      "groundTruthFlawsDetected": null,
+      "groundTruthRecall": null,
+      "meanDurationMsPerApp": 22007,
+      "totalModelCalls": 25
+    }
+  },
+  "bySet": {
+    "dvna": {
+      "rules": {
+        "status": "completed",
+        "totalApps": 1,
+        "totalFindings": 13,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 7,
+        "criticalHighReductionPercent": 46.2,
+        "syntaxPassRate": 1,
+        "routesDeletedTotal": 0,
+        "brokenAppsCount": 0,
+        "groundTruthFlawsDetected": 1,
+        "groundTruthRecall": 0.167,
+        "meanDurationMsPerApp": 159,
+        "totalModelCalls": 0
+      },
+      "ai": {
+        "status": "completed",
+        "totalApps": 1,
+        "totalFindings": 6,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 4,
+        "criticalHighReductionPercent": 69.2,
+        "syntaxPassRate": 0,
+        "routesDeletedTotal": 20,
+        "brokenAppsCount": 1,
+        "groundTruthFlawsDetected": 1,
+        "groundTruthRecall": 0.167,
+        "meanDurationMsPerApp": 34446,
+        "totalModelCalls": 24
+      },
+      "hybrid": {
+        "status": "completed",
+        "totalApps": 1,
+        "totalFindings": 18,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 6,
+        "criticalHighReductionPercent": 53.8,
+        "syntaxPassRate": 1,
+        "routesDeletedTotal": 0,
+        "brokenAppsCount": 0,
+        "groundTruthFlawsDetected": 1,
+        "groundTruthRecall": 0.167,
+        "meanDurationMsPerApp": 22007,
+        "totalModelCalls": 25
+      }
+    }
+  },
+  "perApp": [
+    {
+      "set": "dvna",
+      "app": "dvna",
+      "rules": {
+        "findingsCount": 13,
+        "groundTruthFound": 1,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 7,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 32,
+        "routesAfter": 32,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 0,
+        "aiPatchesRejected": 0,
+        "durationMs": 159,
+        "modelCalls": 0
+      },
+      "ai": {
+        "findingsCount": 6,
+        "groundTruthFound": 1,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 4,
+        "syntaxPass": false,
+        "syntaxError": "SyntaxError: Invalid or unexpected token",
+        "routesBefore": 32,
+        "routesAfter": 12,
+        "routesDeleted": 20,
+        "aiPatchesApplied": 12,
+        "aiPatchesRejected": 0,
+        "durationMs": 34446,
+        "modelCalls": 24,
+        "runs": [
+          {
+            "findingsCount": 6,
+            "groundTruthFound": 1,
+            "criticalHighBefore": 13,
+            "criticalHighAfter": 4,
+            "syntaxPass": false,
+            "syntaxError": "SyntaxError: Invalid or unexpected token",
+            "routesBefore": 32,
+            "routesAfter": 12,
+            "routesDeleted": 20,
+            "aiPatchesApplied": 12,
+            "aiPatchesRejected": 0,
+            "durationMs": 34446,
+            "modelCalls": 24
+          }
+        ]
+      },
+      "hybrid": {
+        "findingsCount": 18,
+        "groundTruthFound": 1,
+        "criticalHighBefore": 13,
+        "criticalHighAfter": 6,
+        "syntaxPass": true,
+        "syntaxError": null,
+        "routesBefore": 32,
+        "routesAfter": 32,
+        "routesDeleted": 0,
+        "aiPatchesApplied": 3,
+        "aiPatchesRejected": 3,
+        "durationMs": 22007,
+        "modelCalls": 25,
+        "runs": [
+          {
+            "findingsCount": 18,
+            "groundTruthFound": 1,
+            "criticalHighBefore": 13,
+            "criticalHighAfter": 6,
+            "syntaxPass": true,
+            "syntaxError": null,
+            "routesBefore": 32,
+            "routesAfter": 32,
+            "routesDeleted": 0,
+            "aiPatchesApplied": 3,
+            "aiPatchesRejected": 3,
+            "durationMs": 22007,
+            "modelCalls": 25
+          }
+        ]
+      }
+    }
+  ]
+}
