@@ -7,6 +7,14 @@ import { GateStages, ModelChart } from './ScorecardGate';
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
 
+/** Display names: our fine-tuned model is QwenSkuld; raw ids stay in the results files. */
+const displayModel = (id: string) =>
+  /slopstop/i.test(id) ? 'QwenSkuld 1.5B (ours, fine-tuned)'
+  : /qwen/i.test(id) ? 'Qwen 1.5B base'
+  : /^gemini/i.test(id) ? id.replace(/^gemini\s*\((.+)\)$/i, 'Gemini ($1)')
+  : /^rules$/i.test(id) ? 'Static rules'
+  : id;
+
 const NotMeasured = () => <span className="text-base font-normal text-slate-400">Not measured</span>;
 
 export const ScorecardView: React.FC = () => {
@@ -341,7 +349,7 @@ const ModelComparisonCard: React.FC<{ evalData: ModelEvalResponse | null }> = ({
                 {models.map((m, i) => (
                   <tr key={m.model} className={cx(i === 0 && 'bg-slate-50/50')}>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="font-medium text-slate-900">{m.model}</div>
+                      <div className="font-medium text-slate-900">{displayModel(m.model)}</div>
                       {typeof m.categoryAccuracy === 'number' ? (
                         <div className="text-[11px] text-slate-500 mt-0.5">
                           category correct: {(m.categoryAccuracy * 100).toFixed(0)}%

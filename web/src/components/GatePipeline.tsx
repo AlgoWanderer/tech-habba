@@ -1,4 +1,4 @@
-// Three-stage security gate: 1. Static rules -> 2. Fine-tuned Qwen -> 3. Live HTTP test.
+// Three-stage security gate: 1. Static rules -> 2. QwenSkuld -> 3. Live HTTP test.
 // Each card animates while its real API call runs and settles on the measured result.
 import React, { useEffect, useRef } from 'react';
 import { ScanSearch, BrainCircuit, Globe, Check, Minus, X, Loader2 } from 'lucide-react';
@@ -19,8 +19,8 @@ const META: Record<StageId, { n: number; title: string; sub: string; icon: React
   },
   qwen: {
     n: 2,
-    title: 'Fine-tuned Qwen',
-    sub: 'Local, secrets masked',
+    title: 'QwenSkuld',
+    sub: 'Fine-tuned, runs locally',
     icon: <BrainCircuit className="w-5 h-5" />,
     tint: 'bg-violet-100 text-violet-700',
     soft: 'from-violet-50 to-white border-violet-200',

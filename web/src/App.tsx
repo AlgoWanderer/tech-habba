@@ -10,16 +10,14 @@ import { IDLE_STAGES, LogLine, StageId, StageState, Stages, parseHttpChecks, plu
 import { FindingsList } from './components/FindingsList';
 import { DiffViewer } from './components/DiffViewer';
 import { ExploitSimulator } from './components/ExploitSimulator';
-import { PromptHardenerView } from './components/PromptHardenerView';
 import { ScorecardView } from './components/ScorecardView';
 import { Button, Callout, cx } from './components/ui';
-import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-type TabType = 'gate' | 'hardener' | 'scorecard';
+type TabType = 'gate' | 'scorecard';
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'gate', label: 'Security Gate', icon: <Layers className="w-4 h-4" /> },
-  { id: 'hardener', label: 'Prompt Hardener', icon: <Lock className="w-4 h-4" /> },
   { id: 'scorecard', label: 'Scorecard', icon: <BarChart2 className="w-4 h-4" /> },
 ];
 
@@ -155,7 +153,7 @@ export default function App() {
     return (['critical', 'high', 'medium', 'low'] as FindingSeverity[]).filter((s) => c[s]).map((s) => `${c[s]} ${s}`).join(', ') || 'none';
   };
 
-  /** Runs the gate as a real pipeline: stage 1 rules scan, stage 2 fine-tuned Qwen (hybrid), stage 3 waits for the fix. */
+  /** Runs the gate as a real pipeline: stage 1 rules scan, stage 2 QwenSkuld (hybrid), stage 3 waits for the fix. */
   const handleScan = async () => {
     setIsScanning(true);
     setError(null);
@@ -200,8 +198,8 @@ export default function App() {
             ? ai.map((f) => `${f.category}${f.confidence !== undefined ? ` (${Math.round(f.confidence * 100)}%)` : ''} at line ${f.line}`).join(', ')
             : 'Agreed with the rules: no extra flaws found',
         });
-        if (ai.length) for (const f of ai) pushLog('qwen', `Qwen flagged ${f.file}:${f.line}: ${f.message}${f.confidence !== undefined ? ` (confidence ${Math.round(f.confidence * 100)}%)` : ''}`, 'bad');
-        else pushLog('qwen', `Qwen reviewed the code in ${fmtMs(ms)} and found nothing beyond the rules.`, 'good');
+        if (ai.length) for (const f of ai) pushLog('qwen', `QwenSkuld flagged ${f.file}:${f.line}: ${f.message}${f.confidence !== undefined ? ` (confidence ${Math.round(f.confidence * 100)}%)` : ''}`, 'bad');
+        else pushLog('qwen', `QwenSkuld reviewed the code in ${fmtMs(ms)} and found nothing beyond the rules.`, 'good');
         final = r;
       } else {
         setStage('qwen', { status: 'skipped', detail: mode === 'rules' ? 'Rules mode: switch to Hybrid to add the model' : 'AI not configured on the server' });
@@ -357,7 +355,6 @@ export default function App() {
       </header>
 
       <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
-        {activeTab === 'hardener' && <PromptHardenerView />}
         {activeTab === 'scorecard' && <ScorecardView />}
 
         {activeTab === 'gate' && (
@@ -602,7 +599,7 @@ export default function App() {
                   <ul className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left w-full max-w-xl">
                     {[
                       ['1', 'Static rules', 'Deterministic AST scan'],
-                      ['2', 'Fine-tuned Qwen', 'Local model finds what rules miss'],
+                      ['2', 'QwenSkuld', 'Our fine-tuned model finds what rules miss'],
                       ['3', 'Live HTTP test', 'Each fix proven by a real attack'],
                     ].map(([n, t, d]) => (
                       <li key={n} className="flex gap-3 p-3 rounded-lg border border-slate-200">

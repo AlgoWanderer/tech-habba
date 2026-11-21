@@ -11,7 +11,7 @@ const secs = (ms?: number) => (!isNum(ms) ? '—' : ms < 1 ? '<1 ms' : ms < 1000
 
 // Fixed categorical slot per entity (validated palette: blue, orange, aqua, yellow). Colour follows the model.
 const ENTITY = [
-  { match: /slopstop/i, name: 'SlopStop Qwen 1.5B', tag: 'ours, fine-tuned', color: '#2a78d6', ours: true },
+  { match: /slopstop/i, name: 'QwenSkuld 1.5B', tag: 'ours, fine-tuned Qwen', color: '#2a78d6', ours: true },
   { match: /^rules$/i, name: 'Static rules', tag: 'deterministic', color: '#eb6834', ours: false },
   { match: /gemini/i, name: 'Gemini 3.1 Flash-Lite', tag: 'cloud', color: '#1baf7a', ours: false },
   { match: /qwen/i, name: 'Qwen 1.5B base', tag: 'not fine-tuned', color: '#eda100', ours: false },
@@ -82,7 +82,7 @@ export const GateStages: React.FC<{ bench: BenchmarkMetric | null; ev: ModelEval
       />
       <StageTile
         n={2}
-        title="Fine-tuned Qwen"
+        title="QwenSkuld"
         icon={<BrainCircuit className="w-5 h-5" />}
         tint="bg-violet-100 text-violet-700"
         border="border-t-violet-300"
@@ -230,7 +230,7 @@ export const ModelChart: React.FC<{ ev: ModelEvalResponse | null }> = ({ ev }) =
     <Card>
       <CardHeader
         icon={<BrainCircuit className="w-5 h-5" />}
-        title="Why our fine-tuned model"
+        title="Why QwenSkuld"
         subtitle={`Same ${rows[0]?.m.snippets ?? 122} test snippets from 31 apps none of the models were trained on (server/eval/model-eval-qwen.json).`}
       />
       <div className="p-5 space-y-6">
