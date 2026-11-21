@@ -88,6 +88,26 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 - **Gemini is still clearly better (86%), and rules lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
 - **Measurement note:** an earlier version of this table showed base F1 0.09 vs fine-tuned 0.75. That comparison was not like-for-like (a 4-bit base, and an extra file-name header in the input), and the scorer dropped invalid answers. Role A caught both; the numbers above are the corrected ones.
 
+### Why QwenSkuld: our own fine-tuned model instead of the Gemini API
+
+| | Gemini API (where we started) | **QwenSkuld** (ours) |
+|---|---|---|
+| Can we train it on our task? | No: a hosted API can only be prompted | **Yes**: open weights, LoRA fine-tuned on vulnerable/fixed code pairs |
+| Where the code goes | Sent to Google's servers (secrets masked first) | **Never leaves the laptop**: runs offline in Ollama |
+| Speed per snippet | 4.9 s | **0.6 s** (8.5× faster) |
+| Cost | Pay per call, subject to quota | **Free** after a 5.4-minute training run |
+| Hardware | Cloud | A laptop RTX 4060 (8 GB); the model is 1.6 GB |
+
+**What fine-tuning bought us** (122 snippets from 31 apps it never saw, same base model before and after):
+- **Accuracy 44% → 66%** (+22 points), and the correct flaw category 28% → 70%.
+- **Unusable answers 36 → 0.** It always answers in the JSON format the pipeline expects, so every reply can be checked.
+- **On held-out training-style pairs: 54% → 85%** accuracy, with false alarms on safe code down from 9/34 to 3/34.
+- **Proven which model runs:** the served model is tied to its weights file by hash (see the fingerprint below).
+
+**Why it is safe to use a smaller model:** QwenSkuld never acts alone. The rules run first, its findings are always "review", and every patch it proposes must pass the verifier, including a live attack and a real-user check. In a local run on all 51 apps (1 run, not in the committed results), QwenSkuld on its own broke 8 apps. With the verifier in front of it, the verifier rejected 61% of its patches and **0 apps broke**.
+
+**The honest trade-off:** Gemini is still more accurate (86% vs 66%) and so are the rules on our corpus (95%). QwenSkuld wins on privacy, speed, cost and control, and the verifier makes up for its mistakes. Next step: retrain on full AI-generated apps with more auth, secret and dependency examples, which it barely saw in training.
+
 ### QwenSkuld blueprint (how it is built)
 
 All values come from `training/train.py`, `training/Modelfile`, `training/Modelfile.qwenskuld`, the training run's `training/out/metrics.json` and the adapter file itself.
