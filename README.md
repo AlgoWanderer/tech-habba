@@ -6,7 +6,7 @@ Track 03 · R1 *Vibe-coded and vulnerable* · Team Skuld
 
 AI coding tools ship working apps in minutes, and the same flaws keep showing up: hard-coded keys, routes with no login check, raw request bodies passed into database queries, and outdated packages. Asking another LLM to "fix it" often swaps those bugs for broken syntax or deleted features.
 
-SlopStop **scans**, **fixes** and **verifies** before anything ships. **Rules mode** is fully deterministic. **Hybrid mode** adds an LLM to find and fix what the rules miss: **QwenSkuld**, our fine-tuned Qwen2.5-Coder-1.5B running offline through Ollama, or Gemini. Every AI fix must pass six checks the model does not control, including a real HTTP attack test, and anything that fails is rejected. **AI proposes, deterministic code proves.** SlopStop never writes to your files without your confirmation.
+SlopStop **scans**, **fixes** and **verifies** before anything ships. **Rules mode** is fully deterministic. **Hybrid mode** adds an LLM to find and fix what the rules miss: **QwenSkuld**, our fine-tuned Qwen2.5-Coder-1.5B running offline through Ollama. Every AI fix must pass six checks the model does not control, including a real HTTP attack test, and anything that fails is rejected. **AI proposes, deterministic code proves.** SlopStop never writes to your files without your confirmation.
 
 ![SlopStop dashboard: scan results](docs/img/scan.png)
 
@@ -38,32 +38,32 @@ The other 19 planted flaws (11 IDOR, 7 vulnerable dependencies, 1 string-built q
 
 **Hypothesis:** an LLM finds and fixes flaws that rules miss, but only a deterministic verifier makes its output safe to ship.
 
-**Experiment:** three arms run on the same 51 apps.
+**Experiment:** three arms run on the same 51 apps: the 30 corpus apps, 20 AI-generated apps (10 from raw prompts, 10 from hardened prompts) and DVNA.
 
 | Arm | What it does |
 |---|---|
 | **Rules** | The deterministic engine |
-| **AI only** | Gemini detects flaws, then rewrites each file, with no verification |
-| **Hybrid** | Rules plus Gemini; every AI patch must pass six checks |
+| **AI only** | QwenSkuld detects flaws, then rewrites each file, with no verification |
+| **Hybrid** | Rules plus QwenSkuld; every AI patch must pass six checks |
 
 The six checks are: `node --check`, a rule re-scan, real names only, an independent AI re-check, **HTTP attack mode** (the exploit must be blocked) and **HTTP normal mode** (the real user must still get through).
 
-Gemini 3.1 Flash-Lite, 2 runs per AI arm. Method, numbers and failure analysis: [corpus/experiment/README.md](corpus/experiment/README.md).
+QwenSkuld running locally in Ollama, 1 run. Results: [`corpus/experiment/results-qwenskuld.json`](corpus/experiment/results-qwenskuld.json) and [`results-qwenskuld-dvna.json`](corpus/experiment/results-qwenskuld-dvna.json); method and failure analysis: [corpus/experiment/README.md](corpus/experiment/README.md).
 
 | | Rules | AI only | **Hybrid** |
 |---|---|---|---|
-| Corpus (30 apps): planted flaws found | 56/56 | 37/56 | **56/56** |
-| Corpus: critical/high removed | 86% | 55% | **99%** |
-| **DVNA** (outside app we did not write): documented flaws found | **1/6** | **4/6** | 3/6 |
-| DVNA: critical/high removed | 46% | 27% | **62%** |
-| Apps broken (syntax or deleted routes) | 0 | 0 | 0 |
+| Corpus (30 apps): planted flaws found | 56/56 | 19/56 | **56/56** |
+| Corpus: critical/high removed | 86% (65 → 9) | 29% (65 → 46) | **86%** (65 → 9) |
+| AI-generated apps (raw prompts): critical/high removed | 95% (41 → 2) | 27% (41 → 30) | **98%** (41 → 1) |
+| **DVNA** (outside app we did not write): documented flaws found | 1/6 | 1/6 | 1/6 |
+| **Apps broken** (syntax errors or deleted routes) | 0 | **8 of 51** (35 routes deleted) | **0** |
+| AI patches rejected by the verifier | | | **28 of 46 (61%)** |
 
-- **The rules are tuned to our corpus.** On outside code they find 1 of 6; the AI finds 4 of 6.
-- **The AI alone fixes far less, unverified.** Hybrid removes 99% of critical/high findings.
-- **The verifier catches the AI's mistakes.** On Gemini-written apps it rejected 13 of 16 AI patches. In live testing it caught an ownership check that compiled and passed the re-scan but locked users out of their own records. Only the HTTP normal-mode test caught it.
-- **Prompt Hardener:** Gemini code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
-- **Negative result (Gemini):** "the LLM alone breaks apps" was not shown. The AI-only arm broke 0 apps by our syntax and route checks; its weakness is fixing much less.
-- **With our local QwenSkuld** (1 run on the training laptop, not in the committed results): the AI-only arm broke 8 of 51 apps (35 routes deleted). In Hybrid the verifier rejected 61% of its patches and 0 apps broke.
+- **The AI alone breaks apps.** QwenSkuld rewriting files with no checks broke 8 of 51 apps and deleted 35 routes, including DVNA, which it no longer parsed.
+- **The verifier makes it safe.** In Hybrid the verifier rejected 61% of QwenSkuld's patches and **no app broke**. On the AI-generated apps it rejected 12 of 14. In live testing it caught an ownership check that compiled and passed the re-scan but locked users out of their own records; only the HTTP normal-mode test caught it.
+- **Hybrid matches the rules on our corpus and does slightly better on AI-generated apps** (41 → 1 vs 41 → 2), but does not yet find more flaws than the rules on outside code: on DVNA all three arms found 1 of 6. QwenSkuld's recall is the weak point (see the model comparison below).
+- **Prompt Hardener:** AI-generated code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
+- **Small sample:** 1 run on one laptop. AI output varies between runs.
 
 **Fine-tuning an open model: QwenSkuld** ([training/README.md](training/README.md)). We started with the Gemini API, but a hosted model can only be prompted, not fine-tuned, and every call sends code off the machine. So we fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs (comments stripped, so the model reads code, not hints). Training took **5.4 minutes on a laptop RTX 4060** and the model runs locally via Ollama as **QwenSkuld** (`slopstop-qwen` in the training scripts).
 
@@ -74,7 +74,7 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 | Model | Accuracy | Precision | Recall | F1 | Category correct | Invalid answers | Time per snippet |
 |---|---|---|---|---|---|---|---|
 | Rules | **95%** | 0.94 | **0.97** | **0.95** | 0.81 | 0 | instant |
-| Gemini 3.1 Flash-Lite (hosted) | 86% | 0.92 | 0.79 | 0.85 | **0.88** | 0 | 4.9 s |
+| Hosted API we started with (Gemini 3.1 Flash-Lite) | 86% | 0.92 | 0.79 | 0.85 | **0.88** | 0 | 4.9 s |
 | Qwen2.5-Coder-1.5B, base (local) | 44% | 0.55 | 0.59 | 0.57 | 0.28 | 36 of 122 | 2.6 s |
 | **QwenSkuld** (Qwen2.5-Coder-1.5B fine-tuned, local) | **66%** | 0.72 | 0.54 | **0.62** | **0.70** | **0** | 0.6 s |
 
@@ -127,9 +127,9 @@ All values come from `training/train.py`, `training/Modelfile`, `training/Modelf
 
 ### QwenSkuld fingerprint (proof of which model is running)
 
-A model's fingerprint is the hash of its weights. Changing even one weight changes it, so it shows that the fine-tuned model is the one answering, not the base Qwen or Gemini.
+A model's fingerprint is the hash of its weights. Changing even one weight changes it, so it shows that the fine-tuned model is the one answering, not the base Qwen or another model.
 
-- **The server says which model it uses.** `GET /api/health` returns `aiModel`: `ollama:QwenSkuld` for the fine-tuned model, or `gemini:…` for Gemini.
+- **The server says which model it uses.** `GET /api/health` returns `aiModel`: `ollama:QwenSkuld` for the fine-tuned model.
 - **Ollama's ID:** `ollama list` shows an ID for `QwenSkuld` that differs from the base `qwen-base-q8`. The ID also covers the settings, so `QwenSkuld` and `slopstop-qwen` have different IDs even though the weights are identical. `ollama show QwenSkuld --modelfile` prints the exact recipe (it should match `training/Modelfile.qwenskuld`).
 - **The weights file:** `certutil -hashfile training\out\gguf\slopstop-qwen-q8_0.gguf SHA256` on Windows, or `sha256sum` on Linux/macOS. The base model's GGUF gives a different hash.
 - **The link between the two:** Ollama stores the imported GGUF under its SHA-256. `ollama show QwenSkuld --modelfile` prints `FROM …\blobs\sha256-c292045f…`, the same hash as `slopstop-qwen-q8_0.gguf` below, so the model answering is provably built from that file.
@@ -173,7 +173,7 @@ Open the dashboard, pick a sample app, click **Scan code**, then **Fix automatic
 AI_PROVIDER=ollama OLLAMA_MODEL=QwenSkuld npm start -w server   # OLLAMA_URL defaults to http://localhost:11434
 ```
 
-For Gemini instead, set `GEMINI_API_KEY`. `GET /api/health` shows which model is active. Example apps to try (two that pass, one that fails, and the demo apps) are in [examples/](examples/README.md).
+`GET /api/health` shows which model is active. Example apps to try (two that pass, one that fails, and the demo apps) are in [examples/](examples/README.md).
 
 ## The dashboard: a three-stage security gate
 
@@ -183,7 +183,7 @@ In Hybrid mode the **Security Gate** tab runs the code through three animated st
 2. **QwenSkuld.** The fine-tuned model looks for what the rules cannot express (for example IDOR). Its findings are always "review".
 3. **Live HTTP test.** **Auto-fix & HTTP verify** patches the app, runs it in a sandbox and attacks it: each exploit must go from 200 to 401 while a logged-in user still gets 200.
 
-The ship gate then shows **Blocked**, **Needs review** or **Ready to ship**. The **Scorecard** tab mirrors the same three stages and adds a **Why QwenSkuld** chart (accuracy of rules, Gemini, base Qwen and QwenSkuld on 122 unseen snippets, with where it is *not* better).
+The ship gate then shows **Blocked**, **Needs review** or **Ready to ship**. The **Scorecard** tab mirrors the same three stages and adds a **Why QwenSkuld** chart (accuracy of QwenSkuld vs the rules, the base Qwen and the hosted API we started with, on 122 unseen snippets, with where it is *not* better).
 
 ## The four stages
 
@@ -245,4 +245,4 @@ node corpus/benchmark/run.js            # regenerate the benchmark numbers
 - **Not detected by either layer:** path traversal and command injection via `exec()` (QwenSkuld sometimes flags `exec`, but cannot yet produce an accepted fix). See `examples/fail-converter-app.js`.
 - **Custom auth middleware** is recognised by name patterns (e.g. `requireAuth`, `protect`, `verifyJwt`, `checkToken`) or by an inline 401/403 check in the handler. A route protected by a check with an unusual name can be reported as unauthenticated. Review the proposed patch before applying it.
 - **Dependency checks** use a built-in advisory list, not the live npm advisory database.
-- **The corpus** shares its flaw list with the scanner (see the caveat above), which is why we also test on DVNA and on 20 Gemini-written apps.
+- **The corpus** shares its flaw list with the scanner (see the caveat above), which is why we also test on DVNA and on 20 AI-generated apps.
