@@ -3,19 +3,21 @@ import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity, ScanMod
 import { apiClient } from './api';
 import { SAMPLE_APPS } from './mocks/sampleData';
 import { RiskMeter } from './components/RiskMeter';
+import { GatePipeline, fmtMs } from './components/GatePipeline';
+import { ShipGate } from './components/ShipGate';
+import { HttpProbe } from './components/HttpProbe';
+import { IDLE_STAGES, LogLine, StageId, StageState, Stages, parseHttpChecks, plural, verdictOf } from './gate/pipeline';
 import { FindingsList } from './components/FindingsList';
 import { DiffViewer } from './components/DiffViewer';
 import { ExploitSimulator } from './components/ExploitSimulator';
-import { PromptHardenerView } from './components/PromptHardenerView';
 import { ScorecardView } from './components/ScorecardView';
 import { Button, Callout, cx } from './components/ui';
-import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-type TabType = 'gate' | 'hardener' | 'scorecard';
+type TabType = 'gate' | 'scorecard';
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'gate', label: 'Security Gate', icon: <Layers className="w-4 h-4" /> },
-  { id: 'hardener', label: 'Prompt Hardener', icon: <Lock className="w-4 h-4" /> },
   { id: 'scorecard', label: 'Scorecard', icon: <BarChart2 className="w-4 h-4" /> },
 ];
 
@@ -23,10 +25,10 @@ const EDITOR_LINE = 20; // px, shared by gutter and textarea so numbers stay ali
 const EDITOR_PAD = 12; // px, top padding of gutter and textarea (py-3)
 const SEV_RANK: Record<FindingSeverity, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 const SEV_MARK: Record<FindingSeverity, { dot: string; band: string; num: string }> = {
-  critical: { dot: 'bg-rose-500', band: 'bg-rose-500/15', num: 'text-rose-300' },
-  high: { dot: 'bg-orange-400', band: 'bg-orange-400/15', num: 'text-orange-300' },
-  medium: { dot: 'bg-amber-400', band: 'bg-amber-400/10', num: 'text-amber-200' },
-  low: { dot: 'bg-slate-400', band: 'bg-slate-400/10', num: 'text-slate-300' },
+  critical: { dot: 'bg-rose-500', band: 'bg-rose-100/70', num: 'text-rose-600' },
+  high: { dot: 'bg-orange-400', band: 'bg-orange-100/70', num: 'text-orange-600' },
+  medium: { dot: 'bg-amber-400', band: 'bg-amber-100/60', num: 'text-amber-600' },
+  low: { dot: 'bg-slate-400', band: 'bg-slate-100', num: 'text-slate-500' },
 };
 
 export default function App() {
@@ -49,6 +51,9 @@ export default function App() {
   // Phase 2: Mode switch (Rules | AI only | Hybrid)
   const [mode, setMode] = useState<ScanMode>('rules');
   const [aiAvailable, setAiAvailable] = useState<boolean>(true);
+  const [aiModel, setAiModel] = useState<string | null>(null);
+  const [stages, setStages] = useState<Stages>(IDLE_STAGES);
+  const [log, setLog] = useState<LogLine[]>([]);
 
   const gutterRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -60,9 +65,9 @@ export default function App() {
     apiClient.getHealth().then((h) => {
       const avail = Boolean(h.ai);
       setAiAvailable(avail);
-      if (!avail && (mode === 'ai' || mode === 'hybrid')) {
-        setMode('rules');
-      }
+      setAiModel((h as { aiModel?: string }).aiModel ?? null);
+      if (avail) setMode('hybrid');
+      else if (mode === 'ai' || mode === 'hybrid') setMode('rules');
     });
   }, []);
 
@@ -107,6 +112,8 @@ export default function App() {
     setScannedFiles(null);
     setFocus(null);
     setError(null);
+    setStages(IDLE_STAGES);
+    setLog([]);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,30 +142,95 @@ export default function App() {
     setActiveFileIndex(Math.max(0, index - 1));
   };
 
+  const logId = useRef(0);
+  const pushLog = (stage: StageId, text: string, tone?: LogLine['tone']) =>
+    setLog((prev) => [...prev, { id: ++logId.current, stage, text, tone }]);
+  const setStage = (id: StageId, st: StageState) => setStages((prev) => ({ ...prev, [id]: st }));
+
+  const sevSummary = (fs: Finding[]) => {
+    const c = { critical: 0, high: 0, medium: 0, low: 0 } as Record<FindingSeverity, number>;
+    for (const f of fs) c[f.severity] += 1;
+    return (['critical', 'high', 'medium', 'low'] as FindingSeverity[]).filter((s) => c[s]).map((s) => `${c[s]} ${s}`).join(', ') || 'none';
+  };
+
+  /** Runs the gate as a real pipeline: stage 1 rules scan, stage 2 QwenSkuld (hybrid), stage 3 waits for the fix. */
   const handleScan = async () => {
     setIsScanning(true);
     setError(null);
     setFixResponse(null);
     setFocus(null);
+    setStages({ ...IDLE_STAGES, http: { status: 'idle', detail: 'Runs when you auto-fix' } });
+    setLog([]);
+    const snapshot = Object.fromEntries(files.map((f) => [f.path, f.content]));
+    const lines = files.reduce((n, f) => n + f.content.split('\n').length, 0);
+    const useRules = mode !== 'ai';
+    const useModel = mode !== 'rules' && aiAvailable;
     try {
-      const snapshot = Object.fromEntries(files.map((f) => [f.path, f.content]));
-      const t0 = performance.now();
-      const res = await apiClient.scan(files, mode);
-      setScanMs(Math.round(performance.now() - t0));
-      setScanResponse(res);
-      setScannedFiles(snapshot);
+      const tStart = performance.now();
+      let final: ScanResponse | null = null;
+
+      if (useRules) {
+        setStage('rules', { status: 'running' });
+        pushLog('rules', `Parsing ${plural(files.length, 'file')} (${lines} lines) into an AST with acorn…`, 'muted');
+        const t0 = performance.now();
+        const r = await apiClient.scan(files, 'rules');
+        const ms = performance.now() - t0;
+        const rules = [...new Set(r.findings.map((f) => f.ruleId))];
+        setStage('rules', { status: 'done', ms, metric: plural(r.findings.length, 'finding'), detail: rules.length ? rules.join(', ') : 'No rule matched' });
+        pushLog('rules', `Rules matched ${plural(r.findings.length, 'finding')} (${sevSummary(r.findings)}) in ${fmtMs(ms)}.`, r.findings.length ? 'bad' : 'good');
+        final = r;
+      } else {
+        setStage('rules', { status: 'skipped', detail: 'AI only mode: rules not used' });
+      }
+
+      if (useModel) {
+        setStage('qwen', { status: 'running' });
+        pushLog('qwen', `Masking secrets, then sending the code to ${aiModel ?? 'the model'} on this machine…`, 'muted');
+        const t0 = performance.now();
+        const r = await apiClient.scan(files, mode);
+        const ms = performance.now() - t0;
+        const ai = r.findings.filter((f) => f.source === 'ai');
+        setStage('qwen', {
+          status: 'done',
+          ms,
+          metric: ai.length ? `+${plural(ai.length, 'finding')}` : 'Nothing new',
+          detail: ai.length
+            ? ai.map((f) => `${f.category}${f.confidence !== undefined ? ` (${Math.round(f.confidence * 100)}%)` : ''} at line ${f.line}`).join(', ')
+            : 'Agreed with the rules: no extra flaws found',
+        });
+        if (ai.length) for (const f of ai) pushLog('qwen', `QwenSkuld flagged ${f.file}:${f.line}: ${f.message}${f.confidence !== undefined ? ` (confidence ${Math.round(f.confidence * 100)}%)` : ''}`, 'bad');
+        else pushLog('qwen', `QwenSkuld reviewed the code in ${fmtMs(ms)} and found nothing beyond the rules.`, 'good');
+        final = r;
+      } else {
+        setStage('qwen', { status: 'skipped', detail: mode === 'rules' ? 'Rules mode: switch to Hybrid to add the model' : 'AI not configured on the server' });
+      }
+
+      if (final) {
+        setScanMs(Math.round(performance.now() - tStart));
+        setScanResponse(final);
+        setScannedFiles(snapshot);
+        const v = verdictOf(final.findings);
+        pushLog('http', v === 'blocked' ? 'Gate: BLOCKED. Auto-fix, then prove each fix with a live HTTP attack.' : v === 'review' ? 'Gate: needs human review.' : 'Gate: ready to ship.', v === 'ship' ? 'good' : 'info');
+      }
     } catch (err: any) {
       setError(err?.message || 'Scan request failed');
+      setStages((prev) => {
+        const next = { ...prev };
+        for (const k of Object.keys(next) as StageId[]) if (next[k].status === 'running') next[k] = { status: 'failed', detail: err?.message };
+        return next;
+      });
     } finally {
       setIsScanning(false);
     }
   };
 
+  /** Stage 3: fix, re-scan, and let the server prove each fix with a live HTTP attack + a real user. */
   const handleFixAll = async () => {
     if (!scanResponse) return;
     setIsFixing(true);
     setError(null);
     setEditorNotice(null);
+    setStage('http', { status: 'running' });
     try {
       const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
       const aiFindings = scanResponse.findings.filter((f) => f.source === 'ai');
@@ -166,9 +238,34 @@ export default function App() {
       const ids = fixMode === 'hybrid'
         ? scanResponse.findings.map((f) => f.id)
         : scanResponse.findings.filter((f) => f.fixable === 'auto').map((f) => f.id);
-      setFixResponse(await apiClient.fix(files, ids, fixMode, aiFindings));
+      pushLog('http', `Patching ${plural(ids.length, 'finding')}, re-scanning, and starting the app in a locked-down sandbox…`, 'muted');
+      const t0 = performance.now();
+      const res = await apiClient.fix(files, ids, fixMode, aiFindings);
+      const ms = performance.now() - t0;
+      const checks = parseHttpChecks(res);
+      const applied = res.results.filter((r) => r.status === 'applied').length;
+      const rejected = res.results.filter((r) => r.status === 'rejected').length;
+      pushLog('http', `${plural(applied, 'patch', 'patches')} applied, ${rejected} rejected by the verifier.`, rejected ? 'info' : 'good');
+      for (const c of checks) {
+        pushLog(
+          'http',
+          c.passed
+            ? `${c.route}: attack ${c.attackBefore} → ${c.attackAfter} (blocked), real user ${c.normal} (still works).`
+            : `${c.route || c.findingId}: ${c.failure}`,
+          c.passed ? 'good' : 'bad',
+        );
+      }
+      const passed = checks.filter((c) => c.passed).length;
+      setStage(
+        'http',
+        checks.length
+          ? { status: passed === checks.length ? 'done' : 'failed', ms, metric: `${passed} of ${checks.length} proven`, detail: 'Attack blocked, real user still works' }
+          : { status: 'skipped', ms, detail: 'No fix here could be exercised over HTTP' },
+      );
+      setFixResponse(res);
     } catch (err: any) {
       setError(err?.message || 'Fix request failed');
+      setStage('http', { status: 'failed', detail: err?.message });
     } finally {
       setIsFixing(false);
     }
@@ -216,7 +313,7 @@ export default function App() {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white flex-shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-sky-100 to-violet-100 border border-white flex items-center justify-center text-sky-700 flex-shrink-0">
               <Shield className="w-5 h-5" />
             </div>
             <div className="min-w-0 hidden sm:block">
@@ -258,7 +355,6 @@ export default function App() {
       </header>
 
       <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
-        {activeTab === 'hardener' && <PromptHardenerView />}
         {activeTab === 'scorecard' && <ScorecardView />}
 
         {activeTab === 'gate' && (
@@ -294,25 +390,25 @@ export default function App() {
               </div>
 
               {/* File tabs */}
-              <div className="flex items-end gap-1 px-3 border-b border-slate-800 bg-slate-900 overflow-x-auto overflow-y-hidden">
+              <div className="flex items-end gap-1 px-3 border-b border-slate-200 bg-slate-50 overflow-x-auto overflow-y-hidden">
                 {files.map((file, idx) => (
                   <div
                     key={idx}
                     onClick={() => setActiveFileIndex(idx)}
                     className={cx(
                       'group flex items-center gap-2 h-9 px-3 font-mono text-[13px] cursor-pointer border-b-2 -mb-px whitespace-nowrap',
-                      activeFileIndex === idx ? 'border-sky-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200',
+                      activeFileIndex === idx ? 'border-sky-500 text-sky-700 bg-white' : 'border-transparent text-slate-500 hover:text-slate-800',
                     )}
                   >
                     {file.path}
                     {files.length > 1 && (
-                      <button onClick={(e) => handleRemoveFile(idx, e)} className="text-slate-500 hover:text-white" aria-label={`Remove ${file.path}`}>
+                      <button onClick={(e) => handleRemoveFile(idx, e)} className="text-slate-400 hover:text-slate-800" aria-label={`Remove ${file.path}`}>
                         <X className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
                 ))}
-                <button onClick={handleAddEmptyFile} className="h-9 px-2 text-slate-500 hover:text-white" aria-label="Add file">
+                <button onClick={handleAddEmptyFile} className="h-9 px-2 text-slate-400 hover:text-slate-800" aria-label="Add file">
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
@@ -342,17 +438,17 @@ export default function App() {
               })()}
 
               {/* Editor: no soft-wrap, gutter scroll synced with the textarea */}
-              <div className="flex-1 min-h-0 flex bg-slate-950 font-mono text-[13px]">
+              <div className="flex-1 min-h-0 flex bg-white font-mono text-[13px]">
                 <div
                   ref={gutterRef}
                   aria-hidden
-                  className="w-12 flex-shrink-0 overflow-hidden text-right pr-3 py-3 text-slate-600 select-none border-r border-slate-800"
+                  className="w-12 flex-shrink-0 overflow-hidden text-right pr-3 py-3 text-slate-400 select-none border-r border-slate-100 bg-slate-50/60"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 >
                   {Array.from({ length: lineCount }).map((_, i) => {
                     const sev = markers.get(i + 1);
                     return (
-                      <div key={i} className={cx('relative', sev && SEV_MARK[sev].num, focusLine === i + 1 && 'text-white')}>
+                      <div key={i} className={cx('relative', sev && SEV_MARK[sev].num, focusLine === i + 1 && 'text-slate-900 font-semibold')}>
                         {sev && <span className={cx('absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full', SEV_MARK[sev].dot)} />}
                         {i + 1}
                       </div>
@@ -364,7 +460,7 @@ export default function App() {
                     {[...markers].map(([line, sev]) => (
                       <div
                         key={line}
-                        className={cx('absolute inset-x-0', SEV_MARK[sev].band, focusLine === line && 'ring-1 ring-inset ring-white/30')}
+                        className={cx('absolute inset-x-0', SEV_MARK[sev].band, focusLine === line && 'ring-1 ring-inset ring-sky-300')}
                         style={{ top: EDITOR_PAD + (line - 1) * EDITOR_LINE - editorScroll, height: EDITOR_LINE }}
                       />
                     ))}
@@ -381,7 +477,7 @@ export default function App() {
                   spellCheck={false}
                   aria-label="Source code"
                   placeholder="// Paste your Node.js / Express code here"
-                  className="editor-scroll absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-100 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-700 selection:text-white placeholder:text-slate-600"
+                  className="editor-scroll absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-800 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-100 selection:text-slate-900 placeholder:text-slate-400"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 />
                 </div>
@@ -442,7 +538,7 @@ export default function App() {
                     disabled={isScanning || !currentFile?.content.trim()}
                     icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
                   >
-                    {isScanning ? 'Scanning…' : 'Scan code'}
+                    {isScanning ? 'Running the gate…' : 'Run security gate'}
                   </Button>
                 </div>
               </div>
@@ -450,6 +546,8 @@ export default function App() {
 
             {/* Results */}
             <div className="flex flex-col gap-6 min-w-0">
+              <GatePipeline stages={stages} log={log} />
+
               {editorNotice && (
                 <Callout tone="success" icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}>
                   {editorNotice}
@@ -463,6 +561,9 @@ export default function App() {
               )}
 
               {fixResponse && scanResponse ? (
+                <>
+                <ShipGate findings={fixResponse.rescan.findings} />
+                <HttpProbe checks={parseHttpChecks(fixResponse)} tested={fixResponse.results.filter((r) => r.status === 'applied').length} />
                 <DiffViewer
                   fixResponse={fixResponse}
                   originalScore={scanResponse.score}
@@ -470,8 +571,10 @@ export default function App() {
                   onReset={() => setFixResponse(null)}
                   onApplyToEditor={handleApplyToEditor}
                 />
+                </>
               ) : scanResponse ? (
                 <>
+                  <ShipGate findings={scanResponse.findings} onFix={handleFixAll} isFixing={isFixing} />
                   <RiskMeter score={scanResponse.score} />
                   <FindingsList
                     findings={scanResponse.findings}
@@ -495,12 +598,12 @@ export default function App() {
                   </p>
                   <ul className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left w-full max-w-xl">
                     {[
-                      ['1', 'Scan', 'Deterministic AST rules, no AI'],
-                      ['2', 'Fix', 'Each patch is syntax-checked'],
-                      ['3', 'Re-scan', 'See the before and after'],
+                      ['1', 'Static rules', 'Deterministic AST scan'],
+                      ['2', 'QwenSkuld', 'Our fine-tuned model finds what rules miss'],
+                      ['3', 'Live HTTP test', 'Each fix proven by a real attack'],
                     ].map(([n, t, d]) => (
                       <li key={n} className="flex gap-3 p-3 rounded-lg border border-slate-200">
-                        <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0">
+                        <span className="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
                           {n}
                         </span>
                         <span>
@@ -516,7 +619,7 @@ export default function App() {
                     disabled={isScanning}
                     icon={isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
                   >
-                    {isScanning ? 'Scanning…' : 'Scan sample app'}
+                    {isScanning ? 'Running the gate…' : 'Run the security gate'}
                   </Button>
                 </section>
               )}
@@ -528,7 +631,7 @@ export default function App() {
       <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between text-xs text-slate-500">
           <span>SlopStop · patches are never written to disk without your confirmation</span>
-          <span className="hidden sm:inline">Rules: deterministic · Hybrid: every AI fix verified by 6 checks</span>
+          <span className="hidden sm:inline">Rules: deterministic · Hybrid: every AI fix verified (up to six checks)</span>
         </div>
       </footer>
     </div>

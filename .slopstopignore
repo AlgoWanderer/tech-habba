@@ -5,3 +5,5 @@ web/src/mocks/
 web/src/components/PromptHardenerView.tsx
 # The exploit sandbox deliberately serves one unprotected route to show the 200 vs 401.
 server/exploit/sandbox.js
+# Deliberately vulnerable example apps for trying the gate (see examples/README.md).
+examples/

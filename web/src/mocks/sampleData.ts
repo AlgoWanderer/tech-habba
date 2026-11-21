@@ -286,6 +286,11 @@ export const mockBenchmarkResults = {
 
 export const SAMPLE_APPS = [
   {
+    name: "Library API (live HTTP demo)",
+    filename: "index.js",
+    content: "import express from \"express\";\nimport mongoose from \"mongoose\";\nimport jwt from \"jsonwebtoken\";\nconst app = express();\napp.use(express.json());\nconst TOKEN_SECRET = process.env.TOKEN_SECRET;\nconst Member = mongoose.model(\"Member\", new mongoose.Schema({ email: String, password: String }));\nconst Loan = mongoose.model(\"Loan\", new mongoose.Schema({ memberId: String, bookId: String }));\nfunction verifyMember(req, res, next) {\n  try {\n    req.member = jwt.verify(req.headers.authorization?.split(\" \")[1], TOKEN_SECRET);\n    next();\n  } catch {\n    return res.status(401).json({ error: \"Please log in\" });\n  }\n}\napp.post(\"/api/login\", async (req, res) => {\n  const member = await Member.findOne({ email: req.body.email, password: req.body.password });\n  if (!member) return res.status(401).json({ error: \"Wrong email or password\" });\n  res.json({ token: jwt.sign({ id: member._id }, TOKEN_SECRET) });\n});\napp.get(\"/api/staff/members\", async (req, res) => {\n  res.json(await Member.find({}));\n});\napp.get(\"/api/loans/:id\", verifyMember, async (req, res) => {\n  const loan = await Loan.findById(req.params.id);\n  res.json(loan);\n});\napp.listen(3000);\n"
+  },
+  {
     name: "Vibe-Coded E-Commerce (Contract Sample)",
     filename: "index.js",
     content: `import express from "express";

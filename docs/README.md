@@ -15,7 +15,8 @@ SlopStop provides a deterministic safety gate:
 * **Verification Invariant**: Every patch is executed through `node --check` and re-scanned. Any patch that introduces syntax errors or fails to eliminate the vulnerability is discarded.
 * **Safe In-Memory Staging**: Patches are **never** auto-applied to the user's disk without explicit confirmation.
 * **Credential Hygiene**: Automatically generates sanitized `.env` templates without leaking secrets into git.
-* **Prompt Hardener**: Client-side/local redaction of sensitive credentials prior to prompt submission to LLMs, wrapped with mandatory architectural security constraints.
+* **Three-Stage Gate (Hybrid mode)**: Static rules, then **QwenSkuld** (our fine-tuned Qwen2.5-Coder-1.5B, served locally by Ollama; Gemini is optional), then a live HTTP test that proves each fix: the attack must be refused and a real user must still get through.
+* **Prompt Hardener** (API only, `POST /api/harden-prompt`; removed from the dashboard): local redaction of credentials from prompts before they reach an LLM, plus mandatory security constraints.
 
 ---
 
@@ -133,7 +134,7 @@ Suppress intentional cases with a `.slopstopignore` file (paths) or `// slopstop
 | **0:40 - 1:15** | **Security Gate (Scan View)** | *“Notice the Safety Score is 12/100 (88% Critical Risk). The semicircular gauge immediately highlights 2 Critical secrets, 2 High injection/auth risks, and 1 Medium IDOR flaw. Each finding has line numbers and deterministic fix previews.”* |
 | **1:15 - 1:50** | **Exploit Simulator** | *“Before patching, let’s simulate an exploit. We hit ‘Run Exploit Simulation’. Left: The unauthenticated `/api/users` endpoint returns sensitive records with a 200 OK. Right: Post-mitigation returns 401 Unauthorized, dropping the attack.”* |
 | **1:50 - 2:25** | **Fix View (Diff Viewer)** | *“Click ‘Fix All Auto-Fixable’. SlopStop rewrites the AST deterministically, runs `node --check`, and re-scans. The diff viewer shows the side-by-side patch. Notice the generated `.env` template—values are never exposed. The risk meter drops from 88% down to 8%.”* |
-| **2:25 - 2:45** | **Prompt Hardener** | *“Switch to the Prompt Hardener tab. Developers paste raw prompts containing API keys and passwords. SlopStop strips secrets locally, replaces them with `<API_KEY_1>`, and injects 7 mandatory security constraints before the prompt ever touches an external LLM.”* |
+| **2:25 - 2:45** | **Three-Stage Gate (Hybrid)** | *“Switch to Hybrid and load the Library API sample. Rules, then QwenSkuld, our fine-tuned model running offline, then a live HTTP test. Click ‘Auto-fix & HTTP verify’: each attack goes 200 → 401 while a real user still gets 200, and the gate says Ready to ship.”* |
 | **2:45 - 3:00** | **Benchmark Scorecard** | *“Switch to Scorecard. On our 30-app test corpus: all 56 planted flaws found, zero false alarms on clean apps, and critical/high findings cut from 65 to 9 (86%) in about 140 ms per app. Every applied fix passed the syntax check and re-scan.”* |
 
 ---

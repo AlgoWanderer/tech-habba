@@ -33,7 +33,7 @@
 * **Spoken Pitch:**
   > "Before touching the code, let's verify if these flaws are exploitable. We click **Run Exploit Simulation**.
   > 
-  > On the left: Our probe hits the unauthenticated `/api/users` endpoint. Result? HTTP 200 OKâ€”names, emails, internal roles, and customer balances are exfiltrated.
+  > On the left: Our probe hits the unauthenticated `/api/users` endpoint. Result? HTTP 200 OK: names, emails, internal roles, and customer balances are exfiltrated.
   > 
   > On the right: SlopStop tests the hardened route with the injected authentication barrier. The attack is terminated with an HTTP 401 Unauthorized."
 
@@ -53,32 +53,30 @@
 
 ---
 
-### [2:20 - 2:50] Screen 4b: The 30-Second Hybrid Step (Verifier Catches AI Mistakes)
-* **Screen:** Return to **Security Gate** -> Select **Hybrid** mode -> Click **Scan code**.
-* **Action:** 
-  1. Point at the violet **AI 82%** finding (e.g. `ai-xss` reflected query injection).
-  2. Click **Fix all (rules + AI, verified)**.
-  3. In the Patch Results list, point directly at the **RED "Rejected"** AI patch.
+### [2:20 - 2:50] Screen 4b: The Three-Stage Gate (Verifier Catches AI Mistakes)
+* **Screen:** Return to **Security Gate** -> Select **Hybrid** mode -> load the **Library API (live HTTP demo)** sample -> Click **Scan code**.
+* **Action:**
+  1. Watch the three stage cards fill in: **1. Static rules** -> **2. QwenSkuld** (our fine-tuned model, running locally in Ollama) -> **3. Live HTTP test**.
+  2. Click **Auto-fix & HTTP verify**.
+  3. Point at the HTTP chips: each attack goes **200 -> 401** while a real user still gets **200**. The ship gate turns to **Ready to ship**.
 * **Spoken Pitch:**
-  > "Now let's switch from pure deterministic Rules to **Hybrid Mode** (Rules + Gemini 3.1 Flash-Lite + Verifier).
-  > 
-  > Watch the scanner: in addition to deterministic rules, Gemini surfaces deep flaws the rules missed, tagged with a violet **AI 82%** badge and confidence score.
-  > 
-  > When we click **Fix all (rules + AI, verified)**, the model proposes patches for complex review findings. But look at this red **Rejected** row: the LLM proposed a patch that broke syntax.
-  > 
-  > In any other tool, that broken code ships to production. In SlopStop, our 6-stage verifier caught the AI's mistake instantly and blocked it.
-  > 
+  > "Now let's switch to **Hybrid Mode**: rules first, then QwenSkuld, our own fine-tuned Qwen model running offline on this laptop, then a live attack on the patched app.
+  >
+  > Every fix here is proven: the same exploit that got in before (200) is refused after (401), and a logged-in user still gets in (200).
+  >
+  > And when the AI is wrong, the gate catches it. On our test app QwenSkuld correctly flags an order IDOR, but its patch would lock owners out of their own orders. The live HTTP test sees that, rejects the patch, and nothing ships.
+  >
   > **AI proposes, deterministic code proves.**"
 
 ---
 
-### [2:50 - 3:15] Screen 5: Prompt Hardener (Privacy Gate)
-* **Screen:** Click **Prompt Hardener** tab.
-* **Action:** Load sample prompt -> click **Harden Prompt & Redact Secrets**.
+### [2:50 - 3:15] Screen 5: Why QwenSkuld (Scorecard Model Chart)
+* **Screen:** Click **Scorecard** tab -> **Why QwenSkuld** chart.
+* **Action:** Point at the four accuracy bars and the win tiles.
 * **Spoken Pitch:**
-  > "Fixing bad code after the fact is great; preventing it from being generated is better. In our **Prompt Hardener**, developers paste their initial prompting instructions.
-  > 
-  > SlopStop runs a pure, local regex engine that redacts sensitive credentials into `<API_KEY_1>` placeholders before they leave the machine. It wraps the prompt with 7 mandatory architectural security rules: parameterized queries, forced auth, and input sanitization. Redacted values never touch any remote LLM."
+  > "We started with the Gemini API, but a hosted model can only be prompted, not fine-tuned, and every call sends code off the machine. So we fine-tuned Qwen2.5-Coder-1.5B with LoRA in 5.4 minutes on a laptop GPU.
+  >
+  > On 122 snippets it never saw, fine-tuning took it from 44% to 66% accuracy, from 36 unusable answers to 0, and it is 8.5x faster than Gemini, fully offline. Gemini and the rules are still more accurate, which is exactly why QwenSkuld sits behind the rules and every fix is verified."
 
 ---
 

@@ -41,10 +41,73 @@ textarea.font-mono {
 }
 
 .editor-scroll::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
 }
 
 .editor-scroll::-webkit-scrollbar-corner,
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* ---------- Security-gate motion (transform/opacity only; off for reduced motion) ---------- */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes gate-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes gate-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes gate-pulse-ring {
+  0% { box-shadow: 0 0 0 0 var(--ring, rgba(99, 102, 241, 0.35)); }
+  100% { box-shadow: 0 0 0 14px rgba(99, 102, 241, 0); }
+}
+@keyframes gate-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+@keyframes gate-flow {
+  from { background-position: 0 0; }
+  to { background-position: 24px 0; }
+}
+@keyframes gate-scan-line {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(var(--scan-h, 120px)); opacity: 0; }
+}
+@keyframes gate-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.gate-fade-up { animation: gate-fade-up 480ms var(--ease-out) both; }
+.gate-pop { animation: gate-pop 420ms var(--ease-out) both; }
+.gate-pulse { animation: gate-pulse-ring 1.4s ease-out infinite; }
+.gate-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: gate-shimmer 1.3s ease-in-out infinite;
+}
+/* Connector between stages: dashes flow while the next stage runs. */
+.gate-flow {
+  background-image: repeating-linear-gradient(90deg, var(--flow, #a5b4fc) 0 8px, transparent 8px 16px);
+  background-size: 24px 100%;
+  animation: gate-flow 0.7s linear infinite;
+}
+.gate-grow-x { transform-origin: left center; animation: gate-grow-x 900ms var(--ease-out) both; }
+.gate-scan-line { animation: gate-scan-line 1.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-fade-up, .gate-pop, .gate-pulse, .gate-shimmer::after, .gate-flow, .gate-grow-x, .gate-scan-line {
+    animation: none !important;
+  }
 }
