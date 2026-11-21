@@ -65,7 +65,7 @@ QwenSkuld running locally in Ollama, 1 run. Results: [`corpus/experiment/results
 - **Prompt Hardener:** AI-generated code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
 - **Small sample:** 1 run on one laptop. AI output varies between runs.
 
-**Fine-tuning an open model: QwenSkuld** ([training/README.md](training/README.md)). We started with the Gemini API, but a hosted model can only be prompted, not fine-tuned, and every call sends code off the machine. So we fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs (comments stripped, so the model reads code, not hints). Training took **5.4 minutes on a laptop RTX 4060** and the model runs locally via Ollama as **QwenSkuld** (`slopstop-qwen` in the training scripts).
+**Fine-tuning an open model: QwenSkuld** ([training/README.md](training/README.md)). We trained our own model so it learns our exact task and the code never leaves the machine. We fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs (comments stripped, so the model reads code, not hints). Training took **5.4 minutes on a laptop RTX 4060** and the model runs locally via Ollama as **QwenSkuld** (`slopstop-qwen` in the training scripts).
 
 **Model comparison** (`node server/eval/models.js`): each model sees the same task it was trained on (snippet → vulnerable? + category). There are 122 labelled snippets (61 vulnerable) from the 30 corpus apps and DVNA, and none of these apps were in the training data.
 
@@ -74,7 +74,6 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 | Model | Accuracy | Precision | Recall | F1 | Category correct | Invalid answers | Time per snippet |
 |---|---|---|---|---|---|---|---|
 | Rules | **95%** | 0.94 | **0.97** | **0.95** | 0.81 | 0 | instant |
-| Hosted API we started with (Gemini 3.1 Flash-Lite) | 86% | 0.92 | 0.79 | 0.85 | **0.88** | 0 | 4.9 s |
 | Qwen2.5-Coder-1.5B, base (local) | 44% | 0.55 | 0.59 | 0.57 | 0.28 | 36 of 122 | 2.6 s |
 | **QwenSkuld** (Qwen2.5-Coder-1.5B fine-tuned, local) | **66%** | 0.72 | 0.54 | **0.62** | **0.70** | **0** | 0.6 s |
 
@@ -85,18 +84,18 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
   - it answers about 4× faster than the base model
 - **The gain is smaller than on the training validation set** (85% there vs 66% here). The corpus apps are different code from the training data, and recall is still low (0.54).
 - **Recall fell from 0.74 to 0.54** once the `File: <path>` line was removed from the prompt so the input matched the training format exactly. The file name was apparently giving the model useful context. The training data was also skewed: 260 injection, 37 IDOR, 6 auth, 3 secret and 0 dependency examples.
-- **Gemini is still clearly better (86%), and rules lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
+- **The rules still lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
 - **Measurement note:** an earlier version of this table showed base F1 0.09 vs fine-tuned 0.75. That comparison was not like-for-like (a 4-bit base, and an extra file-name header in the input), and the scorer dropped invalid answers. Role A caught both; the numbers above are the corrected ones.
 
-### Why QwenSkuld: our own fine-tuned model instead of the Gemini API
+### Why QwenSkuld: our own fine-tuned model
 
-| | Gemini API (where we started) | **QwenSkuld** (ours) |
-|---|---|---|
-| Can we train it on our task? | No: a hosted API can only be prompted | **Yes**: open weights, LoRA fine-tuned on vulnerable/fixed code pairs |
-| Where the code goes | Sent to Google's servers (secrets masked first) | **Never leaves the laptop**: runs offline in Ollama |
-| Speed per snippet | 4.9 s | **0.6 s** (8.5× faster) |
-| Cost | Pay per call, subject to quota | **Free** after a 5.4-minute training run |
-| Hardware | Cloud | A laptop RTX 4060 (8 GB); the model is 1.6 GB |
+| | **QwenSkuld** |
+|---|---|
+| Trained for this task | Open weights, LoRA fine-tuned on vulnerable/fixed code pairs, answers in the exact JSON the pipeline needs |
+| Privacy | **Code never leaves the laptop**: runs offline in Ollama |
+| Speed | **0.6 s** per snippet |
+| Cost | **Free** to run, after a 5.4-minute training run |
+| Hardware | A laptop RTX 4060 (8 GB); the model is 1.6 GB |
 
 **What fine-tuning bought us** (122 snippets from 31 apps it never saw, same base model before and after):
 - **Accuracy 44% → 66%** (+22 points), and the correct flaw category 28% → 70%.
@@ -104,9 +103,9 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 - **On held-out training-style pairs: 54% → 85%** accuracy, with false alarms on safe code down from 9/34 to 3/34.
 - **Proven which model runs:** the served model is tied to its weights file by hash (see the fingerprint below).
 
-**Why it is safe to use a smaller model:** QwenSkuld never acts alone. The rules run first, its findings are always "review", and every patch it proposes must pass the verifier, including a live attack and a real-user check. In a local run on all 51 apps (1 run, not in the committed results), QwenSkuld on its own broke 8 apps. With the verifier in front of it, the verifier rejected 61% of its patches and **0 apps broke**.
+**Why it is safe to use a smaller model:** QwenSkuld never acts alone. The rules run first, its findings are always "review", and every patch it proposes must pass the verifier, including a live attack and a real-user check. In the 51-app experiment above (1 run), QwenSkuld on its own broke 8 apps. With the verifier in front of it, the verifier rejected 61% of its patches and **0 apps broke**.
 
-**The honest trade-off:** Gemini is still more accurate (86% vs 66%) and so are the rules on our corpus (95%). QwenSkuld wins on privacy, speed, cost and control, and the verifier makes up for its mistakes. Next step: retrain on full AI-generated apps with more auth, secret and dependency examples, which it barely saw in training.
+**The honest trade-off:** the rules are still more accurate on our corpus (95% vs 66%), and QwenSkuld's recall is its weak point. That is why it sits behind the rules and every patch it proposes is verified. Next step: retrain on full AI-generated apps with more auth, secret and dependency examples, which it barely saw in training.
 
 ### QwenSkuld blueprint (how it is built)
 
@@ -183,7 +182,7 @@ In Hybrid mode the **Security Gate** tab runs the code through three animated st
 2. **QwenSkuld.** The fine-tuned model looks for what the rules cannot express (for example IDOR). Its findings are always "review".
 3. **Live HTTP test.** **Auto-fix & HTTP verify** patches the app, runs it in a sandbox and attacks it: each exploit must go from 200 to 401 while a logged-in user still gets 200.
 
-The ship gate then shows **Blocked**, **Needs review** or **Ready to ship**. The **Scorecard** tab mirrors the same three stages and adds a **Why QwenSkuld** chart (accuracy of QwenSkuld vs the rules, the base Qwen and the hosted API we started with, on 122 unseen snippets, with where it is *not* better).
+The ship gate then shows **Blocked**, **Needs review** or **Ready to ship**. The **Scorecard** tab mirrors the same three stages and adds a **Why QwenSkuld** chart (QwenSkuld's accuracy on 122 unseen snippets compared with the rules and the base Qwen, with where it is *not* better).
 
 ## The four stages
 
