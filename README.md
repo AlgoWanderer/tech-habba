@@ -88,6 +88,34 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 - **Gemini is still clearly better (86%), and rules lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
 - **Measurement note:** an earlier version of this table showed base F1 0.09 vs fine-tuned 0.75. That comparison was not like-for-like (a 4-bit base, and an extra file-name header in the input), and the scorer dropped invalid answers. Role A caught both; the numbers above are the corrected ones.
 
+### QwenSkuld blueprint (how it is built)
+
+All values come from `training/train.py`, `training/Modelfile` and the training run's `training/out/metrics.json`.
+
+| Part | Value |
+|---|---|
+| Base model | `Qwen/Qwen2.5-Coder-1.5B-Instruct` (about 1.5 billion parameters) |
+| Method | LoRA (PEFT) in bf16. The base weights are frozen and only a small adapter is trained. Loss is computed on the assistant's JSON answer only. |
+| LoRA settings | rank 16, alpha 16, dropout 0, on all attention and MLP projections (`q,k,v,o,gate,up,down`). That is about 18.5M trainable parameters, roughly 1.2% of the model (computed from the config). |
+| Data | 612 training and 68 validation examples: vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs, with comments stripped |
+| Training | 2 epochs, learning rate 2e-4 (linear, 10 warm-up steps), batch 2 × 4 gradient accumulation, max length 2048, seed 42 |
+| Hardware and time | NVIDIA RTX 4060 Laptop GPU (8 GB), **5.4 minutes** |
+| Loss | train 1.29 → 0.16; validation 0.272 → 0.245 |
+| Packaging | The adapter is merged into the base model, converted to GGUF (8-bit, `q8_0`) with llama.cpp, then imported into Ollama from `training/Modelfile` |
+| Runtime settings | temperature 0.1, at most 256 output tokens, a fixed system prompt |
+| Task (input → output) | code snippet → `{"vulnerable": bool, "category": "secret\|injection\|auth\|idor\|dependency\|none", "reason": string}` |
+
+### QwenSkuld fingerprint (proof of which model is running)
+
+A model's fingerprint is the hash of its weights. Changing even one weight changes it, so it shows that the fine-tuned model is the one answering, not the base Qwen or Gemini.
+
+- **The server says which model it uses.** `GET /api/health` returns `aiModel`: `ollama:QwenSkuld` for the fine-tuned model, or `gemini:…` for Gemini.
+- **Ollama's ID:** `ollama list` shows an ID for `QwenSkuld` that differs from the base `qwen-base-q8`. `ollama show QwenSkuld --modelfile` prints the exact recipe it was built from (it should match `training/Modelfile`).
+- **The weights file:** `certutil -hashfile training/out/gguf/slopstop-qwen-q8_0.gguf SHA256` on Windows, or `sha256sum` on Linux/macOS. The base model's GGUF gives a different hash.
+- **Behaviour:** on the 122 evaluation snippets the base model gives 36 invalid answers and QwenSkuld gives 0 (table above), which is a quick behavioural check.
+
+The weights and the GGUF are git-ignored (too large for the repo), so the hashes live on the training laptop.
+
 ## What it checks
 
 | Flaw | Example | Auto-fix |
