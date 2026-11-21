@@ -46,7 +46,7 @@ const KIND: Record<Line['kind'], { icon: React.ReactNode; chip: string; word: st
   broken: { icon: <UserX className="w-3.5 h-3.5 text-rose-500" />, chip: 'bg-rose-50 text-rose-700 border-rose-200', word: 'Broken' },
 };
 
-export const HttpProbe: React.FC<{ results: FixResult[] }> = ({ results }) => {
+export const HttpProbe: React.FC<{ results: FixResult[]; applied?: boolean }> = ({ results, applied }) => {
   const probes = parseProbes(results);
   if (!probes.length) return null;
   let delay = 0;
@@ -55,6 +55,7 @@ export const HttpProbe: React.FC<{ results: FixResult[] }> = ({ results }) => {
       <div className="flex items-center gap-2.5 mb-1">
         <span className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center"><Radar className="w-4 h-4" /></span>
         <h2 className="text-[15px] font-semibold text-slate-900">Live HTTP exploit probes</h2>
+        {applied && <span className="ml-auto text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 h-5 inline-flex items-center">Proof for the fixes you applied</span>}
       </div>
       <p className="text-xs text-slate-500 mb-4">
         Each fix was attacked for real in a sandbox: the exploit must work before, be blocked after, and the real user must still get in.

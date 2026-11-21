@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { FileInput, ScanResponse, FixResponse, Finding, FindingSeverity, ScanMode, FixMode } from './types';
+import { FileInput, ScanResponse, FixResponse, FixResult, Finding, FindingSeverity, ScanMode, FixMode } from './types';
 import { apiClient } from './api';
 import { SAMPLE_APPS } from './mocks/sampleData';
 import { RiskMeter } from './components/RiskMeter';
@@ -51,6 +51,8 @@ export default function App() {
   const [aiAvailable, setAiAvailable] = useState<boolean>(true);
   const [aiModel, setAiModel] = useState<string | null>(null);
   const [scannedMode, setScannedMode] = useState<ScanMode | null>(null);
+  // Verifier results of the fix the user applied; kept after "Apply to editor" so the HTTP proof stays visible.
+  const [proof, setProof] = useState<FixResult[] | null>(null);
 
   const gutterRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -97,8 +99,10 @@ export default function App() {
     });
   };
 
-  const handleContentChange = (content: string) =>
+  const handleContentChange = (content: string) => {
+    setProof(null); // edited code: the earlier HTTP proof no longer applies
     setFiles((prev) => prev.map((f, i) => (i === activeFileIndex ? { ...f, content } : f)));
+  };
 
   const handleLoadSample = (idx: number) => {
     const sample = SAMPLE_APPS[idx];
@@ -107,6 +111,7 @@ export default function App() {
     setActiveFileIndex(0);
     setScanResponse(null);
     setFixResponse(null);
+    setProof(null);
     setScannedFiles(null);
     setFocus(null);
     setError(null);
@@ -163,6 +168,7 @@ export default function App() {
     setIsFixing(true);
     setError(null);
     setEditorNotice(null);
+    setProof(null);
     try {
       const fixMode: FixMode = mode === 'ai' ? 'rules' : (mode as FixMode);
       const aiFindings = scanResponse.findings.filter((f) => f.source === 'ai');
@@ -195,6 +201,7 @@ export default function App() {
 
     const nextFiles = [...updatedFiles, ...newFiles];
     setFiles(nextFiles);
+    setProof(fixResponse.results);
     setFixResponse(null);
     setEditorNotice('Patched code applied to the editor (not saved to disk).');
 
@@ -461,6 +468,7 @@ export default function App() {
                 isFixing={isFixing}
                 scan={scanResponse}
                 fix={fixResponse}
+                proof={proof}
               />
 
               {editorNotice && (
@@ -489,6 +497,7 @@ export default function App() {
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />
+                  {proof && <HttpProbe results={proof} applied />}
                   <FindingsList
                     findings={scanResponse.findings}
                     onFixAll={handleFixAll}

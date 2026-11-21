@@ -1,7 +1,7 @@
 // Security Gate pipeline: Static rules -> AI model -> Live HTTP test, with a ship/no-ship verdict.
 // Step states come from the real scan/fix responses; the log while busy narrates what the server does.
 import React, { useEffect, useState } from 'react';
-import { FixResponse, ScanMode, ScanResponse, Score } from '../types';
+import { FixResponse, FixResult, ScanMode, ScanResponse, Score } from '../types';
 import { cx } from './ui';
 import { ScanSearch, BrainCircuit, Radar, Check, AlertTriangle, Loader2, Minus, ShieldAlert, ShieldCheck, ShieldQuestion, Shield } from 'lucide-react';
 
@@ -83,7 +83,9 @@ export const GatePipeline: React.FC<{
   isFixing: boolean;
   scan: ScanResponse | null;
   fix: FixResponse | null;
-}> = ({ mode, aiModel, isScanning, isFixing, scan, fix }) => {
+  /** Verifier results of an already-applied fix (kept after "Apply to editor"). */
+  proof?: FixResult[] | null;
+}> = ({ mode, aiModel, isScanning, isFixing, scan, fix, proof }) => {
   const model = modelLabel(aiModel);
   const usesAi = mode !== 'rules';
   const scanLog = [
@@ -111,8 +113,9 @@ export const GatePipeline: React.FC<{
   const aiResults = fix?.results.filter((r) => r.source === 'ai') ?? [];
   const aiApplied = aiResults.filter((r) => r.status === 'applied').length;
   const aiRejected = aiResults.filter((r) => r.status === 'rejected').length;
-  const proven = fix?.results.filter((r) => /HTTP test passed/.test(r.reason)).length ?? 0;
-  const httpBlocked = fix?.results.filter((r) => /HTTP (normal|attack) mode FAILED/.test(r.reason)).length ?? 0;
+  const verified = fix?.results ?? proof ?? null;
+  const proven = verified?.filter((r) => /HTTP test passed/.test(r.reason)).length ?? 0;
+  const httpBlocked = verified?.filter((r) => /HTTP (normal|attack) mode FAILED/.test(r.reason)).length ?? 0;
 
   // Step 1: static rules
   const s1: [StepState, string] =
@@ -131,7 +134,7 @@ export const GatePipeline: React.FC<{
   // Step 3: live HTTP test
   const s3: [StepState, string] =
     isFixing ? ['running', 'Attacking the fixed app in a sandbox…']
-      : fix ? (proven + httpBlocked ? [httpBlocked ? 'warn' : 'done', `${proven} fix${proven === 1 ? '' : 'es'} proven by real attacks${httpBlocked ? ` · ${httpBlocked} unsafe fix${httpBlocked === 1 ? '' : 'es'} blocked` : ''}`] : ['skipped', 'No route here the sandbox could attack'])
+      : verified ? (proven + httpBlocked ? [httpBlocked ? 'warn' : 'done', `${proven} fix${proven === 1 ? '' : 'es'} proven by real attacks${httpBlocked ? ` · ${httpBlocked} unsafe fix${httpBlocked === 1 ? '' : 'es'} blocked` : ''}${!fix ? ' · applied' : ''}`] : ['skipped', 'No route here the sandbox could attack'])
         : scan ? ['idle', 'Runs when you click Fix']
           : ['idle', 'Real attacks + a real-user check'];
 
