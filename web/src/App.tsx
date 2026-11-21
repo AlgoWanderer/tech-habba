@@ -7,6 +7,8 @@ import { FindingsList } from './components/FindingsList';
 import { DiffViewer } from './components/DiffViewer';
 import { ExploitSimulator } from './components/ExploitSimulator';
 import { ScorecardView } from './components/ScorecardView';
+import { GatePipeline } from './components/GatePipeline';
+import { HttpProbe } from './components/HttpProbe';
 import { Button, Callout, cx } from './components/ui';
 import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -21,10 +23,10 @@ const EDITOR_LINE = 20; // px, shared by gutter and textarea so numbers stay ali
 const EDITOR_PAD = 12; // px, top padding of gutter and textarea (py-3)
 const SEV_RANK: Record<FindingSeverity, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 const SEV_MARK: Record<FindingSeverity, { dot: string; band: string; num: string }> = {
-  critical: { dot: 'bg-rose-500', band: 'bg-rose-500/15', num: 'text-rose-300' },
-  high: { dot: 'bg-orange-400', band: 'bg-orange-400/15', num: 'text-orange-300' },
-  medium: { dot: 'bg-amber-400', band: 'bg-amber-400/10', num: 'text-amber-200' },
-  low: { dot: 'bg-slate-400', band: 'bg-slate-400/10', num: 'text-slate-300' },
+  critical: { dot: 'bg-rose-400', band: 'bg-rose-100/70', num: 'text-rose-600' },
+  high: { dot: 'bg-orange-400', band: 'bg-orange-100/70', num: 'text-orange-600' },
+  medium: { dot: 'bg-amber-400', band: 'bg-amber-100/60', num: 'text-amber-600' },
+  low: { dot: 'bg-slate-400', band: 'bg-slate-100', num: 'text-slate-500' },
 };
 
 export default function App() {
@@ -47,6 +49,8 @@ export default function App() {
   // Phase 2: Mode switch (Rules | AI only | Hybrid)
   const [mode, setMode] = useState<ScanMode>('rules');
   const [aiAvailable, setAiAvailable] = useState<boolean>(true);
+  const [aiModel, setAiModel] = useState<string | null>(null);
+  const [scannedMode, setScannedMode] = useState<ScanMode | null>(null);
 
   const gutterRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -58,6 +62,7 @@ export default function App() {
     apiClient.getHealth().then((h) => {
       const avail = Boolean(h.ai);
       setAiAvailable(avail);
+      setAiModel(h.aiModel ?? null);
       if (!avail && (mode === 'ai' || mode === 'hybrid')) {
         setMode('rules');
       }
@@ -145,6 +150,7 @@ export default function App() {
       setScanMs(Math.round(performance.now() - t0));
       setScanResponse(res);
       setScannedFiles(snapshot);
+      setScannedMode(mode);
     } catch (err: any) {
       setError(err?.message || 'Scan request failed');
     } finally {
@@ -291,25 +297,25 @@ export default function App() {
               </div>
 
               {/* File tabs */}
-              <div className="flex items-end gap-1 px-3 border-b border-slate-800 bg-slate-900 overflow-x-auto overflow-y-hidden">
+              <div className="flex items-end gap-1 px-3 border-y border-slate-200 bg-slate-50 overflow-x-auto overflow-y-hidden">
                 {files.map((file, idx) => (
                   <div
                     key={idx}
                     onClick={() => setActiveFileIndex(idx)}
                     className={cx(
-                      'group flex items-center gap-2 h-9 px-3 font-mono text-[13px] cursor-pointer border-b-2 -mb-px whitespace-nowrap',
-                      activeFileIndex === idx ? 'border-sky-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200',
+                      'group flex items-center gap-2 h-9 px-3 font-mono text-[13px] cursor-pointer border-b-2 -mb-px whitespace-nowrap transition-colors',
+                      activeFileIndex === idx ? 'border-sky-500 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800',
                     )}
                   >
                     {file.path}
                     {files.length > 1 && (
-                      <button onClick={(e) => handleRemoveFile(idx, e)} className="text-slate-500 hover:text-white" aria-label={`Remove ${file.path}`}>
+                      <button onClick={(e) => handleRemoveFile(idx, e)} className="text-slate-400 hover:text-slate-800" aria-label={`Remove ${file.path}`}>
                         <X className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
                 ))}
-                <button onClick={handleAddEmptyFile} className="h-9 px-2 text-slate-500 hover:text-white" aria-label="Add file">
+                <button onClick={handleAddEmptyFile} className="h-9 px-2 text-slate-400 hover:text-slate-800" aria-label="Add file">
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
@@ -339,17 +345,17 @@ export default function App() {
               })()}
 
               {/* Editor: no soft-wrap, gutter scroll synced with the textarea */}
-              <div className="flex-1 min-h-0 flex bg-slate-950 font-mono text-[13px]">
+              <div className="flex-1 min-h-0 flex bg-white font-mono text-[13px]">
                 <div
                   ref={gutterRef}
                   aria-hidden
-                  className="w-12 flex-shrink-0 overflow-hidden text-right pr-3 py-3 text-slate-600 select-none border-r border-slate-800"
+                  className="w-12 flex-shrink-0 overflow-hidden text-right pr-3 py-3 text-slate-400 bg-slate-50/70 select-none border-r border-slate-200"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 >
                   {Array.from({ length: lineCount }).map((_, i) => {
                     const sev = markers.get(i + 1);
                     return (
-                      <div key={i} className={cx('relative', sev && SEV_MARK[sev].num, focusLine === i + 1 && 'text-white')}>
+                      <div key={i} className={cx('relative', sev && SEV_MARK[sev].num, focusLine === i + 1 && 'text-slate-900 font-semibold')}>
                         {sev && <span className={cx('absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full', SEV_MARK[sev].dot)} />}
                         {i + 1}
                       </div>
@@ -361,10 +367,11 @@ export default function App() {
                     {[...markers].map(([line, sev]) => (
                       <div
                         key={line}
-                        className={cx('absolute inset-x-0', SEV_MARK[sev].band, focusLine === line && 'ring-1 ring-inset ring-white/30')}
+                        className={cx('absolute inset-x-0 ss-fade-up', SEV_MARK[sev].band, focusLine === line && 'ring-1 ring-inset ring-sky-300')}
                         style={{ top: EDITOR_PAD + (line - 1) * EDITOR_LINE - editorScroll, height: EDITOR_LINE }}
                       />
                     ))}
+                    {isScanning && <div className="absolute inset-x-0 top-0 h-[30%] ss-sweep" />}
                   </div>
                 <textarea
                   ref={editorRef}
@@ -378,7 +385,7 @@ export default function App() {
                   spellCheck={false}
                   aria-label="Source code"
                   placeholder="// Paste your Node.js / Express code here"
-                  className="editor-scroll absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-100 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-700 selection:text-white placeholder:text-slate-600"
+                  className="editor-scroll absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-800 resize-none focus:outline-none whitespace-pre overflow-auto font-mono selection:bg-sky-200 selection:text-slate-900 placeholder:text-slate-400"
                   style={{ lineHeight: `${EDITOR_LINE}px` }}
                 />
                 </div>
@@ -447,6 +454,15 @@ export default function App() {
 
             {/* Results */}
             <div className="flex flex-col gap-6 min-w-0">
+              <GatePipeline
+                mode={isScanning || !scannedMode ? mode : scannedMode}
+                aiModel={aiModel}
+                isScanning={isScanning}
+                isFixing={isFixing}
+                scan={scanResponse}
+                fix={fixResponse}
+              />
+
               {editorNotice && (
                 <Callout tone="success" icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}>
                   {editorNotice}
@@ -460,6 +476,8 @@ export default function App() {
               )}
 
               {fixResponse && scanResponse ? (
+                <>
+                <HttpProbe results={fixResponse.results} />
                 <DiffViewer
                   fixResponse={fixResponse}
                   originalScore={scanResponse.score}
@@ -467,6 +485,7 @@ export default function App() {
                   onReset={() => setFixResponse(null)}
                   onApplyToEditor={handleApplyToEditor}
                 />
+                </>
               ) : scanResponse ? (
                 <>
                   <RiskMeter score={scanResponse.score} />

@@ -41,7 +41,38 @@ textarea.font-mono {
 }
 
 .editor-scroll::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
+}
+
+/* Gate pipeline animations (soft, short; disabled for reduced motion) */
+@keyframes ss-fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes ss-pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes ss-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes ss-flow { to { background-position: 16px 0; } }
+@keyframes ss-ring { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, .45); } 100% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); } }
+@keyframes ss-sweep { from { transform: translateY(-100%); } to { transform: translateY(340%); } }
+@keyframes ss-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.ss-fade-up { animation: ss-fade-up .45s cubic-bezier(.2, .7, .2, 1) both; }
+.ss-pop { animation: ss-pop .4s ease-out both; }
+.ss-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, .45), transparent);
+  background-size: 200% 100%;
+  animation: ss-shimmer 1.4s linear infinite;
+}
+.ss-flow {
+  background-image: repeating-linear-gradient(90deg, #7dd3fc 0 8px, transparent 8px 16px);
+  animation: ss-flow .5s linear infinite;
+}
+.ss-ring { animation: ss-ring 1.4s ease-out infinite; }
+.ss-sweep {
+  background: linear-gradient(180deg, transparent, rgba(125, 211, 252, .28), transparent);
+  animation: ss-sweep 1.8s ease-in-out infinite;
+}
+.ss-grow { transform-origin: left; animation: ss-grow .6s cubic-bezier(.2, .7, .2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-fade-up, .ss-pop, .ss-shimmer, .ss-flow, .ss-ring, .ss-sweep, .ss-grow { animation: none !important; }
 }
 
 .editor-scroll::-webkit-scrollbar-corner,

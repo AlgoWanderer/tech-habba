@@ -158,6 +158,7 @@ export interface ModelEvalResponse {
 export interface HealthResponse {
   ok: boolean;
   ai?: boolean;
+  aiModel?: string | null; // e.g. "gemini:gemini-3.1-flash-lite>..." or "ollama:slopstop-qwen"
   version?: string;
 }
 
