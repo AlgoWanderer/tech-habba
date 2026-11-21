@@ -6,12 +6,12 @@ A small open code model fine-tuned to review a Node.js/Express snippet and answe
 {"vulnerable": true, "category": "secret|injection|auth|idor|dependency|none", "reason": "<one sentence>"}
 ```
 
-It is one arm of the Phase 2 comparison: **rules vs Gemini vs base Qwen vs fine-tuned Qwen**.
+It is compared with the rules and with the base Qwen model it started from.
 
-**Why our own model:** the Gemini API can only be prompted, not fine-tuned, and sends code off the machine.
-QwenSkuld (the served name of this model) runs offline on a laptop, answers in 0.6 s instead of 4.9 s, costs nothing
-per call, and fine-tuning took it from 44% to 66% accuracy with 0 unusable answers on apps it never saw. See
-[Why QwenSkuld](../README.md#why-qwenskuld-our-own-fine-tuned-model-instead-of-the-gemini-api) in the main README.
+**Why our own model:** an open model can be fine-tuned on our exact task, and it runs offline, so code never leaves
+the machine. QwenSkuld (the served name of this model) runs on a laptop, answers in 0.6 s, costs nothing per call,
+and fine-tuning took it from 44% to 66% accuracy with 0 unusable answers on apps it never saw. See
+[Why QwenSkuld](../README.md#why-qwenskuld-our-own-fine-tuned-model) in the main README.
 
 ## Result (held-out validation split, 68 examples)
 
