@@ -172,6 +172,8 @@ Open the dashboard, pick a sample app, click **Scan code**, then **Fix automatic
 AI_PROVIDER=ollama OLLAMA_MODEL=QwenSkuld npm start -w server   # OLLAMA_URL defaults to http://localhost:11434
 ```
 
+Or put `OLLAMA_MODEL=QwenSkuld` in `server/.env` once and just run `npm start -w server`. QwenSkuld is the only AI model the product uses; without it, Rules mode still works and the AI modes report "AI not configured". To use QwenSkuld running on a teammate's laptop, set `OLLAMA_URL=http://<their-ip>:11434` (their Ollama must listen on the network: `OLLAMA_HOST=0.0.0.0`).
+
 `GET /api/health` shows which model is active. Example apps to try (two that pass, one that fails, and the demo apps) are in [examples/](examples/README.md).
 
 ## The dashboard: a three-stage security gate

@@ -1,3 +1,6 @@
+// SlopStop's AI model is QwenSkuld (our fine-tuned Qwen2.5-Coder-1.5B) served locally by Ollama:
+// see createOllamaClient and getAiClient below. The Gemini client is kept ONLY for the model
+// comparison (server/eval/models.js); the product never uses it.
 // Gemini client over plain fetch (no SDK). The key travels only in the x-goog-api-key header and is
 // never logged, put in a URL or returned in an error. Tests use createFakeClient instead.
 const API = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -110,8 +113,8 @@ export function toJsonSchema(s) {
 }
 
 /**
- * Local open model via Ollama (e.g. base "qwen2.5-coder:1.5b" or role A's fine-tuned "slopstop-qwen").
- * Code never leaves the machine. Same interface as the Gemini client.
+ * The product's AI model: QwenSkuld (role A's fine-tuned Qwen) or another model served by Ollama.
+ * Code never leaves the machine.
  */
 export function createOllamaClient({ model, baseUrl = 'http://127.0.0.1:11434', timeoutMs = 120000, fetchImpl = fetch } = {}) {
   if (!model) throw new AiError('Ollama model not set (OLLAMA_MODEL)');
@@ -168,14 +171,14 @@ export function createOllamaClient({ model, baseUrl = 'http://127.0.0.1:11434', 
 }
 
 /**
- * The configured client, or null when nothing is configured (AI features then report "not configured").
- * AI_PROVIDER=ollama uses OLLAMA_MODEL (+ OLLAMA_URL); otherwise Gemini with GEMINI_API_KEY.
+ * The product's AI client: QwenSkuld via Ollama. OLLAMA_MODEL picks the model (normally QwenSkuld);
+ * AI_PROVIDER=ollama alone means QwenSkuld. OLLAMA_URL defaults to http://127.0.0.1:11434.
+ * Returns null when neither is set (AI modes then report "not configured", and CI stays offline).
  */
+export const PRODUCT_MODEL = 'QwenSkuld';
 export function getAiClient(env = process.env) {
-  if (env.AI_PROVIDER === 'ollama') return env.OLLAMA_MODEL ? createOllamaClient({ model: env.OLLAMA_MODEL, baseUrl: env.OLLAMA_URL || undefined }) : null;
-  if (!env.GEMINI_API_KEY) return null;
-  const fallbacks = env.GEMINI_FALLBACK_MODELS !== undefined ? env.GEMINI_FALLBACK_MODELS.split(',').map((s) => s.trim()).filter(Boolean) : DEFAULT_FALLBACKS;
-  return createGeminiClient({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || DEFAULT_MODEL, fallbacks });
+  const model = env.OLLAMA_MODEL || (env.AI_PROVIDER === 'ollama' ? PRODUCT_MODEL : '');
+  return model ? createOllamaClient({ model, baseUrl: env.OLLAMA_URL || undefined }) : null;
 }
 
 /**

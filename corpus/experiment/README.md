@@ -38,7 +38,9 @@ The model and date are recorded in `results.json` under `method`.
 
 ## Results
 
-Run on 2026-11-21 with Gemini 3.1 Flash-Lite, falling back to 3.5 Flash-Lite and 3.5 Flash (recorded in `results.json`, `method.model`), 2 runs per AI arm. Numbers are means over the runs. Source: `results.json` → `bySet`.
+> **SlopStop's AI model is QwenSkuld.** Its own run (1 run, 51 apps) is in [`results-qwenskuld.json`](results-qwenskuld.json) and [`results-qwenskuld-dvna.json`](results-qwenskuld-dvna.json) and is the one reported in the [main README](../../README.md). The tables below are the earlier **comparison run with the hosted Gemini API**, kept for reference.
+
+Comparison run on 2026-11-21 with Gemini 3.1 Flash-Lite, falling back to 3.5 Flash-Lite and 3.5 Flash (recorded in `results.json`, `method.model`), 2 runs per AI arm. Numbers are means over the runs. Source: `results.json` → `bySet`.
 
 **Corpus (30 apps, 56 planted flaws)**
 
