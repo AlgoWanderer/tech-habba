@@ -61,7 +61,7 @@ Gemini 3.1 Flash-Lite, 2 runs per AI arm. Method, numbers and failure analysis: 
 - **The rules are tuned to our corpus.** On outside code they find 1 of 6; the AI finds 4 of 6.
 - **The AI alone fixes far less, unverified.** Hybrid removes 99% of critical/high findings.
 - **The verifier catches the AI's mistakes.** On Gemini-written apps it rejected 13 of 16 AI patches. In live testing it caught an ownership check that compiled and passed the re-scan but locked users out of their own records. Only the HTTP normal-mode test caught it.
-- **Prompt Hardener:** Gemini code from hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41).
+- **Prompts alone are not enough:** Gemini code from security-hardened prompts had **63% fewer** critical/high findings than from raw prompts (15 vs 41), but not zero (it still hard-coded secrets in every app), so a gate is still needed.
 - **Negative result:** "the LLM alone breaks apps" was not shown. The AI-only arm broke 0 apps by our syntax and route checks; its weakness is fixing much less.
 
 **Fine-tuning an open model** ([training/README.md](training/README.md)): we fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs (comments stripped, so the model reads code, not hints). Training took **5.4 minutes on a laptop RTX 4060** and the model runs locally via Ollama.
@@ -138,13 +138,11 @@ npx slopstop compare dirA/ dirB/        # compare two sets of apps
 ```
 This repo gates its own pull requests with it ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). Intentional cases can be suppressed with `.slopstopignore` or `// slopstop-ignore <ruleId>: reason`, and suppressed findings are still listed.
 
-**Prompt Hardener** (dashboard tab, or `POST /api/harden-prompt`) strips API keys, tokens and DB passwords from a prompt before it reaches an AI model, and prepends 7 security rules for the generated code.
-
 ## Repository layout
 
 | Folder | What |
 |---|---|
-| `core/` | Scanner, fixers and prompt hardener (deterministic, no LLM) |
+| `core/` | Scanner and fixers (deterministic, no LLM); also the prompt-hardening helper used in the experiment |
 | `server/` | Express API, verifier (`node --check` + re-scan) and exploit sandbox |
 | `cli/` | `slopstop` CLI and pre-commit hook installer |
 | `web/` | React + Vite + Tailwind dashboard |

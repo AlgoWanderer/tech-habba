@@ -53,10 +53,10 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 | **AI Only** | **4 / 6 (66.7%)** | 13 → 9.5 (−26.9%) | Finds semantic flaws rules miss; unverified rewrites |
 | **Hybrid** | 3 / 6 (50.0%) | **13 → 5 (−61.5%)** | Safe AI patches applied with verified gate |
 
-#### Prompt Hardener (Gemini-Written Apps: Raw vs Hardened Prompts)
+#### Research finding: does a better prompt make AI code safe? (Gemini apps, raw vs security-hardened prompts)
 - **Raw prompts (10 apps):** 41 critical/high in generated code → 2 after hybrid.
 - **Hardened prompts (10 apps):** **15 critical/high (−63% vs raw)** → 0 after hybrid.
-- *Prompt Hardener produces 63% fewer vulnerabilities before code is even written; SlopStop eliminates the rest.*
+- *Adding security rules to the prompt cut critical/high flaws by 63%, but not to zero: Gemini still hard-coded secrets in every app. A better prompt helps; a gate is still needed.*
 
 #### Key Findings & Negative Result (Honest AI Research):
 - **AI-only's real weakness is low fix efficacy, not app breakage:** The experiment showed 0 broken apps across all arms (the LLM did not fail syntax or delete routes), but **AI-only fixes far less (54.6% vs 99.2% for Hybrid)** and leaves changes completely unverified.
@@ -68,7 +68,7 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
 ## Slide 4: AI Model & Fine-Tuning
 ### *Judge Question 3: "Did you train or fine-tune on datasets?"*
 * **Current Production Hybrid Model:** Google Gemini 3.1 Flash-Lite via native REST API (zero heavyweight SDK).
-* **Privacy Gate:** before any code is sent to the model, core's `maskSecrets` replaces every secret the scanner recognises, plus known key formats (Stripe, OpenAI, AWS, GitHub, database URLs with passwords, private keys), with `<REDACTED_SECRET_n>` tokens, keeping line numbers intact. A secret in a shape the scanner does not recognise is not masked. (The Prompt Hardener is separate: it redacts secrets from prompts *before* code is generated.)
+* **Privacy Gate:** before any code is sent to the model, core's `maskSecrets` replaces every secret the scanner recognises, plus known key formats (Stripe, OpenAI, AWS, GitHub, database URLs with passwords, private keys), with `<REDACTED_SECRET_n>` tokens, keeping line numbers intact. A secret in a shape the scanner does not recognise is not masked.
 * **Fine-Tuning (done, `training/README.md`):**
   - Fine-tuned **Qwen2.5-Coder-1.5B** with LoRA on 612 examples (306 vulnerable/fixed pairs) from public datasets (CyberNative, SecureCodePairs). Comments were stripped so it reads code, not hints. **5.4 minutes on a laptop RTX 4060**; runs locally in Ollama.
   - On 122 snippets from 31 apps it never saw (`server/eval/model-eval-qwen.json`, invalid answers count as wrong):
@@ -103,7 +103,7 @@ SlopStop is not an AI wrapper; it is a **measured hybrid system**. We evaluated 
   - 56 / 56 planted flaws detected across 30 applications (100% recall).
   - 0 false alarms on clean applications.
   - Critical/High findings reduced by **99.2% in Hybrid mode** (65 → 0.5) and 86.2% in Rules mode.
-  - **Prompt Hardener produces 63% fewer vulnerabilities upfront** (15 vs 41 critical/high).
+  - **Security-hardened prompts gave 63% fewer critical/high flaws** (15 vs 41), but not zero, so the gate is still needed.
   - 0 broken apps across all 51 test apps and all three arms (by syntax and route checks).
   - Fine-tuned Qwen 1.5B: 44% → 66% accuracy on unseen apps (0 invalid answers vs 36); rules: 95%.
   - Semgrep baseline comparison: Semgrep detected only 12 / 56 flaws; SlopStop detected 56 / 56.

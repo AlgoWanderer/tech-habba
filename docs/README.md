@@ -15,7 +15,6 @@ SlopStop provides a deterministic safety gate:
 * **Verification Invariant**: Every patch is executed through `node --check` and re-scanned. Any patch that introduces syntax errors or fails to eliminate the vulnerability is discarded.
 * **Safe In-Memory Staging**: Patches are **never** auto-applied to the user's disk without explicit confirmation.
 * **Credential Hygiene**: Automatically generates sanitized `.env` templates without leaking secrets into git.
-* **Prompt Hardener**: Client-side/local redaction of sensitive credentials prior to prompt submission to LLMs, wrapped with mandatory architectural security constraints.
 
 ---
 
@@ -29,7 +28,6 @@ flowchart TD
         UI_Findings["Grouped Findings & Badges"]
         UI_Diff["Side-by-Side AST Diff Viewer"]
         UI_Exploit["Exploit Simulator (200 OK vs 401 Blocked)"]
-        UI_Hardener["Prompt Hardener & Redaction"]
         UI_Scorecard["Benchmark Scorecard"]
     end
 
@@ -37,7 +35,6 @@ flowchart TD
         EP_Scan["POST /api/scan"]
         EP_Fix["POST /api/fix"]
         EP_Exploit["POST /api/exploit"]
-        EP_Harden["POST /api/harden-prompt"]
     end
 
     subgraph Core["Role A & D: Core Engine"]
@@ -45,7 +42,6 @@ flowchart TD
         Core_Score["Score Computation (0-100 Safety)"]
         Core_Fix["applyFixes() (Deterministic AST Rewrite)"]
         Core_Verify["node --check & Re-scan Verifier"]
-        Core_Hardener["promptHardener.js (Pure Function, No LLM)"]
     end
 
     subgraph Corpus["Role C: Evaluation Benchmark"]
@@ -64,8 +60,6 @@ flowchart TD
     Core_Verify -->|"Verified Patches + .env + Rescan"| UI_Diff
 
     UI_Exploit -->|"POST /api/exploit"| EP_Exploit
-    UI_Hardener -->|"POST /api/harden-prompt"| EP_Harden
-    EP_Harden --> Core_Hardener
 
     Corpus_Bench --> UI_Scorecard
 ```
@@ -87,7 +81,7 @@ npm install --prefix web
 ```
 
 ### Running Tests
-To verify the Prompt Hardener test suite:
+To run the test suites (core, server, cli):
 ```bash
 npm test
 # or
@@ -133,8 +127,7 @@ Suppress intentional cases with a `.slopstopignore` file (paths) or `// slopstop
 | **0:40 - 1:15** | **Security Gate (Scan View)** | *“Notice the Safety Score is 12/100 (88% Critical Risk). The semicircular gauge immediately highlights 2 Critical secrets, 2 High injection/auth risks, and 1 Medium IDOR flaw. Each finding has line numbers and deterministic fix previews.”* |
 | **1:15 - 1:50** | **Exploit Simulator** | *“Before patching, let’s simulate an exploit. We hit ‘Run Exploit Simulation’. Left: The unauthenticated `/api/users` endpoint returns sensitive records with a 200 OK. Right: Post-mitigation returns 401 Unauthorized, dropping the attack.”* |
 | **1:50 - 2:25** | **Fix View (Diff Viewer)** | *“Click ‘Fix All Auto-Fixable’. SlopStop rewrites the AST deterministically, runs `node --check`, and re-scans. The diff viewer shows the side-by-side patch. Notice the generated `.env` template—values are never exposed. The risk meter drops from 88% down to 8%.”* |
-| **2:25 - 2:45** | **Prompt Hardener** | *“Switch to the Prompt Hardener tab. Developers paste raw prompts containing API keys and passwords. SlopStop strips secrets locally, replaces them with `<API_KEY_1>`, and injects 7 mandatory security constraints before the prompt ever touches an external LLM.”* |
-| **2:45 - 3:00** | **Benchmark Scorecard** | *“Switch to Scorecard. On our 30-app test corpus: all 56 planted flaws found, zero false alarms on clean apps, and critical/high findings cut from 65 to 9 (86%) in about 140 ms per app. Every applied fix passed the syntax check and re-scan.”* |
+| **2:25 - 3:00** | **Benchmark Scorecard** | *“Switch to Scorecard. On our 30-app test corpus: all 56 planted flaws found, zero false alarms on clean apps, and critical/high findings cut from 65 to 9 (86%) in about 140 ms per app. Every applied fix passed the syntax check and re-scan.”* |
 
 ---
 

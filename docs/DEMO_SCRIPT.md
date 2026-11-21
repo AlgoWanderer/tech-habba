@@ -72,16 +72,6 @@
 
 ---
 
-### [2:50 - 3:15] Screen 5: Prompt Hardener (Privacy Gate)
-* **Screen:** Click **Prompt Hardener** tab.
-* **Action:** Load sample prompt -> click **Harden Prompt & Redact Secrets**.
-* **Spoken Pitch:**
-  > "Fixing bad code after the fact is great; preventing it from being generated is better. In our **Prompt Hardener**, developers paste their initial prompting instructions.
-  > 
-  > SlopStop runs a pure, local regex engine that redacts sensitive credentials into `<API_KEY_1>` placeholders before they leave the machine. It wraps the prompt with 7 mandatory architectural security rules: parameterized queries, forced auth, and input sanitization. Redacted values never touch any remote LLM."
-
----
-
 ### [3:15 - 3:30] Screen 6: Scorecard & Honest Limitations
 * **Screen:** Click **Scorecard** tab.
 * **Action:** Highlight KPI numbers and the Failure Analysis list.

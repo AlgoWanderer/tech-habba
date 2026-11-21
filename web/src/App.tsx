@@ -6,16 +6,14 @@ import { RiskMeter } from './components/RiskMeter';
 import { FindingsList } from './components/FindingsList';
 import { DiffViewer } from './components/DiffViewer';
 import { ExploitSimulator } from './components/ExploitSimulator';
-import { PromptHardenerView } from './components/PromptHardenerView';
 import { ScorecardView } from './components/ScorecardView';
 import { Button, Callout, cx } from './components/ui';
-import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Lock, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Upload, Play, Loader2, ScanSearch, Layers, BarChart2, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-type TabType = 'gate' | 'hardener' | 'scorecard';
+type TabType = 'gate' | 'scorecard';
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
   { id: 'gate', label: 'Security Gate', icon: <Layers className="w-4 h-4" /> },
-  { id: 'hardener', label: 'Prompt Hardener', icon: <Lock className="w-4 h-4" /> },
   { id: 'scorecard', label: 'Scorecard', icon: <BarChart2 className="w-4 h-4" /> },
 ];
 
@@ -258,7 +256,6 @@ export default function App() {
       </header>
 
       <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
-        {activeTab === 'hardener' && <PromptHardenerView />}
         {activeTab === 'scorecard' && <ScorecardView />}
 
         {activeTab === 'gate' && (
