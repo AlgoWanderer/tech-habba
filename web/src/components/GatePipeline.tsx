@@ -1,8 +1,8 @@
-// Three-stage security gate: 1. Static rules -> 2. QwenSkuld -> 3. Live HTTP test.
+// Three-stage security gate: 1. Static rules -> 2. AI model (QwenSkuld when the server runs it) -> 3. Live HTTP test.
 // Each card animates while its real API call runs and settles on the measured result.
 import React, { useEffect, useRef } from 'react';
 import { ScanSearch, BrainCircuit, Globe, Check, Minus, X, Loader2 } from 'lucide-react';
-import { LogLine, StageId, StageState, Stages } from '../gate/pipeline';
+import { LogLine, ModelLabel, StageId, StageState, Stages } from '../gate/pipeline';
 import { cx } from './ui';
 
 const META: Record<StageId, { n: number; title: string; sub: string; icon: React.ReactNode; tint: string; soft: string; ring: string; flow: string; text: string }> = {
@@ -59,8 +59,8 @@ const STATUS_LABEL: Record<StageState['status'], string> = {
   failed: 'Failed',
 };
 
-const StageCard: React.FC<{ id: StageId; st: StageState }> = ({ id, st }) => {
-  const m = META[id];
+const StageCard: React.FC<{ id: StageId; st: StageState; label?: ModelLabel }> = ({ id, st, label }) => {
+  const m = label ? { ...META[id], title: label.title, sub: label.sub } : META[id];
   const active = st.status === 'running';
   const settled = st.status === 'done' || st.status === 'failed';
   return (
@@ -133,7 +133,7 @@ const LOG_TONE: Record<NonNullable<LogLine['tone']>, string> = {
   muted: 'text-slate-400',
 };
 
-export const GatePipeline: React.FC<{ stages: Stages; log: LogLine[] }> = ({ stages, log }) => {
+export const GatePipeline: React.FC<{ stages: Stages; log: LogLine[]; model: ModelLabel }> = ({ stages, log, model }) => {
   const feed = useRef<HTMLOListElement>(null);
   useEffect(() => {
     feed.current?.scrollTo({ top: feed.current.scrollHeight, behavior: 'smooth' });
@@ -148,7 +148,7 @@ export const GatePipeline: React.FC<{ stages: Stages; log: LogLine[] }> = ({ sta
       {ORDER.map((id, i) => (
         <React.Fragment key={id}>
           {i > 0 && <Connector from={stages[ORDER[i - 1]]} to={stages[id]} color={META[id].flow} />}
-          <StageCard id={id} st={stages[id]} />
+          <StageCard id={id} st={stages[id]} label={id === 'qwen' ? model : undefined} />
         </React.Fragment>
       ))}
     </div>

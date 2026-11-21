@@ -34,7 +34,8 @@ export const ShipGate: React.FC<{
   onFix?: () => void;
   isFixing?: boolean;
   fixLabel?: string;
-}> = ({ findings, onFix, isFixing, fixLabel }) => {
+  modelName?: string;
+}> = ({ findings, onFix, isFixing, fixLabel, modelName = 'the AI model' }) => {
   const v = verdictOf(findings);
   const look = LOOK[v];
   const auto = findings.filter((f) => f.fixable === 'auto').length;
@@ -47,7 +48,7 @@ export const ShipGate: React.FC<{
         <span className={cx('inline-flex mt-1 items-center h-7 px-3 rounded-full border text-sm font-semibold', look.pill)}>{look.label}</span>
         <p className="text-xs text-slate-600 mt-1.5">
           {look.sub} {plural(findings.length, 'finding')}
-          {ai > 0 && ` (${ai} from QwenSkuld)`}, {auto} auto-fixable.
+          {ai > 0 && ` (${ai} from ${modelName})`}, {auto} auto-fixable.
         </p>
       </div>
       {onFix && v !== 'ship' && (

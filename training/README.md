@@ -8,6 +8,11 @@ A small open code model fine-tuned to review a Node.js/Express snippet and answe
 
 It is one arm of the Phase 2 comparison: **rules vs Gemini vs base Qwen vs fine-tuned Qwen**.
 
+**Why our own model:** the Gemini API can only be prompted, not fine-tuned, and sends code off the machine.
+QwenSkuld (the served name of this model) runs offline on a laptop, answers in 0.6 s instead of 4.9 s, costs nothing
+per call, and fine-tuning took it from 44% to 66% accuracy with 0 unusable answers on apps it never saw. See
+[Why QwenSkuld](../README.md#why-qwenskuld-our-own-fine-tuned-model-instead-of-the-gemini-api) in the main README.
+
 ## Result (held-out validation split, 68 examples)
 
 Same prompt, same code, greedy decoding, bf16; the only difference is the LoRA adapter
@@ -92,7 +97,8 @@ python -m venv .venv && .venv/Scripts/python -m pip install torch --index-url ht
 This Ollama build (0.40.16) cannot import Qwen2 safetensors directly ("unsupported MLX
 architecture"), so the merged model is converted to GGUF with llama.cpp's `convert_hf_to_gguf.py`
 (q8_0) and then imported with `ollama create slopstop-qwen -f Modelfile`. The demo serves the same
-model under its product name, **QwenSkuld** (`ollama create QwenSkuld -f Modelfile`).
+model under its product name, **QwenSkuld** (`ollama create QwenSkuld -f Modelfile.qwenskuld`): the same GGUF with up to
+4096 output tokens and an 8192-token context, so the AI patcher can return whole files.
 
 Both models are served by Ollama at **http://localhost:11434** on the training laptop:
 

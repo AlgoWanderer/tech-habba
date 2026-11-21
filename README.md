@@ -88,6 +88,61 @@ Both Qwen rows are like-for-like: 8-bit, the same code-only input as in training
 - **Gemini is still clearly better (86%), and rules lead on this corpus** (95%), because they were built from its flaw list. That is why the product is rules first, AI for what rules cannot express, and every AI fix verified.
 - **Measurement note:** an earlier version of this table showed base F1 0.09 vs fine-tuned 0.75. That comparison was not like-for-like (a 4-bit base, and an extra file-name header in the input), and the scorer dropped invalid answers. Role A caught both; the numbers above are the corrected ones.
 
+### Why QwenSkuld: our own fine-tuned model instead of the Gemini API
+
+| | Gemini API (where we started) | **QwenSkuld** (ours) |
+|---|---|---|
+| Can we train it on our task? | No: a hosted API can only be prompted | **Yes**: open weights, LoRA fine-tuned on vulnerable/fixed code pairs |
+| Where the code goes | Sent to Google's servers (secrets masked first) | **Never leaves the laptop**: runs offline in Ollama |
+| Speed per snippet | 4.9 s | **0.6 s** (8.5× faster) |
+| Cost | Pay per call, subject to quota | **Free** after a 5.4-minute training run |
+| Hardware | Cloud | A laptop RTX 4060 (8 GB); the model is 1.6 GB |
+
+**What fine-tuning bought us** (122 snippets from 31 apps it never saw, same base model before and after):
+- **Accuracy 44% → 66%** (+22 points), and the correct flaw category 28% → 70%.
+- **Unusable answers 36 → 0.** It always answers in the JSON format the pipeline expects, so every reply can be checked.
+- **On held-out training-style pairs: 54% → 85%** accuracy, with false alarms on safe code down from 9/34 to 3/34.
+- **Proven which model runs:** the served model is tied to its weights file by hash (see the fingerprint below).
+
+**Why it is safe to use a smaller model:** QwenSkuld never acts alone. The rules run first, its findings are always "review", and every patch it proposes must pass the verifier, including a live attack and a real-user check. In a local run on all 51 apps (1 run, not in the committed results), QwenSkuld on its own broke 8 apps. With the verifier in front of it, the verifier rejected 61% of its patches and **0 apps broke**.
+
+**The honest trade-off:** Gemini is still more accurate (86% vs 66%) and so are the rules on our corpus (95%). QwenSkuld wins on privacy, speed, cost and control, and the verifier makes up for its mistakes. Next step: retrain on full AI-generated apps with more auth, secret and dependency examples, which it barely saw in training.
+
+### QwenSkuld blueprint (how it is built)
+
+All values come from `training/train.py`, `training/Modelfile`, `training/Modelfile.qwenskuld`, the training run's `training/out/metrics.json` and the adapter file itself.
+
+| Part | Value |
+|---|---|
+| Base model | `Qwen/Qwen2.5-Coder-1.5B-Instruct` (about 1.5 billion parameters) |
+| Method | LoRA (PEFT) in bf16. The base weights are frozen and only a small adapter is trained. Loss is computed on the assistant's JSON answer only. |
+| LoRA settings | rank 16, alpha 16, dropout 0, on all attention and MLP projections (`q,k,v,o,gate,up,down`). That is **18,464,768** trainable parameters (counted in the saved adapter, `adapter_model.safetensors`), roughly 1.2% of the model. |
+| Data | 612 training and 68 validation examples: vulnerable/secure JavaScript pairs from CyberNative/Code_Vulnerability_Security_DPO and SecureCodePairs, with comments stripped |
+| Training | 2 epochs, learning rate 2e-4 (linear, 10 warm-up steps), batch 2 × 4 gradient accumulation, max length 2048, seed 42 |
+| Hardware and time | NVIDIA RTX 4060 Laptop GPU (8 GB), **5.4 minutes** |
+| Loss | train 1.29 → 0.16; validation 0.272 → 0.245 |
+| Packaging | The adapter is merged into the base model, converted to GGUF (8-bit, `q8_0`) with llama.cpp, then imported into Ollama: as `slopstop-qwen` from `training/Modelfile`, and as **QwenSkuld** from `training/Modelfile.qwenskuld` (same GGUF) |
+| Runtime settings | temperature 0.1 and a fixed system prompt. **QwenSkuld** (what the server uses) allows up to 4096 output tokens with an 8192-token context, so the AI patcher can return whole files. The 122-snippet evaluation used `slopstop-qwen`: the same weights, capped at 256 output tokens. |
+| Task (input → output) | code snippet → `{"vulnerable": bool, "category": "secret\|injection\|auth\|idor\|dependency\|none", "reason": string}` |
+
+### QwenSkuld fingerprint (proof of which model is running)
+
+A model's fingerprint is the hash of its weights. Changing even one weight changes it, so it shows that the fine-tuned model is the one answering, not the base Qwen or Gemini.
+
+- **The server says which model it uses.** `GET /api/health` returns `aiModel`: `ollama:QwenSkuld` for the fine-tuned model, or `gemini:…` for Gemini.
+- **Ollama's ID:** `ollama list` shows an ID for `QwenSkuld` that differs from the base `qwen-base-q8`. The ID also covers the settings, so `QwenSkuld` and `slopstop-qwen` have different IDs even though the weights are identical. `ollama show QwenSkuld --modelfile` prints the exact recipe (it should match `training/Modelfile.qwenskuld`).
+- **The weights file:** `certutil -hashfile training\out\gguf\slopstop-qwen-q8_0.gguf SHA256` on Windows, or `sha256sum` on Linux/macOS. The base model's GGUF gives a different hash.
+- **The link between the two:** Ollama stores the imported GGUF under its SHA-256. `ollama show QwenSkuld --modelfile` prints `FROM …\blobs\sha256-c292045f…`, the same hash as `slopstop-qwen-q8_0.gguf` below, so the model answering is provably built from that file.
+- **Behaviour:** on the 122 evaluation snippets the base model gives 36 invalid answers and QwenSkuld gives 0 (table above), which is a quick behavioural check.
+
+The weights and the GGUF are git-ignored (too large for the repo). Measured on the training laptop (Ollama 0.40.16):
+
+| | Ollama ID | SHA-256 of the GGUF |
+|---|---|---|
+| **QwenSkuld** (served; 4096 output tokens) | `7d93937e52e2` | `C292045F8E822F7E3AE9709625DEAAB1C1E7BC64547EF4F01376BCD30C3FE015` |
+| `slopstop-qwen` (evaluation; 256 output tokens) | `e4096e45da06` | same file as QwenSkuld |
+| `qwen-base-q8` (base model) | `8185ec8a66ee` | `5EF260AA72C9692D664982923DD66EE8D91E7BA325099967FF8CFA496976D1CE` |
+
 ## What it checks
 
 | Flaw | Example | Auto-fix |
@@ -112,7 +167,7 @@ npm run dev -w web          # dashboard on http://localhost:5173 (second termina
 
 Open the dashboard, pick a sample app, click **Scan code**, then **Fix automatically**. Without the API, set `VITE_USE_MOCK=true` in `web/.env` (see `web/.env.example`) to run on built-in sample data.
 
-**Hybrid mode with QwenSkuld (offline).** Build the model as in [training/README.md](training/README.md#ollama) (`ollama create QwenSkuld -f training/Modelfile`), then start the API with:
+**Hybrid mode with QwenSkuld (offline).** Build the model as in [training/README.md](training/README.md#ollama) (`cd training && ollama create QwenSkuld -f Modelfile.qwenskuld`), then start the API with:
 
 ```bash
 AI_PROVIDER=ollama OLLAMA_MODEL=QwenSkuld npm start -w server   # OLLAMA_URL defaults to http://localhost:11434
