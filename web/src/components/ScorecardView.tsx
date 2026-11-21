@@ -3,6 +3,7 @@ import { apiClient } from '../api';
 import { BenchmarkMetric, ExperimentArm, ExperimentArmStats, ExperimentSummary, ModelEvalResponse } from '../types';
 import { RefreshCw, ShieldAlert, ShieldCheck, Timer, Ban, ListChecks, Target, Cpu, FlaskConical } from 'lucide-react';
 import { Badge, Button, Card, CardHeader, cx } from './ui';
+import { GateStages, ModelChart } from './ScorecardGate';
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && !Number.isNaN(v);
 
@@ -78,16 +79,20 @@ export const ScorecardView: React.FC = () => {
     <div className="max-w-5xl mx-auto flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">Benchmark</h1>
+          <h1 className="text-xl font-semibold">Scorecard: the security gate, measured</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Measured on the team corpus (<code className="font-mono text-[13px]">corpus/benchmark/results.json</code>). Missing values
-            are shown as not measured, never estimated.
+            One section per gate stage. Every number comes from the committed results files; missing values are shown as not
+            measured, never estimated.
           </p>
         </div>
         <Button variant="secondary" onClick={load} disabled={loading} icon={<RefreshCw className={cx('w-4 h-4', loading && 'animate-spin')} />}>
           Reload
         </Button>
       </div>
+
+      <GateStages bench={data} ev={evalData} exp={expData} />
+
+      <ModelChart ev={evalData} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((k) => (
