@@ -6,7 +6,7 @@ import { RiskMeter } from './components/RiskMeter';
 import { GatePipeline, fmtMs } from './components/GatePipeline';
 import { ShipGate } from './components/ShipGate';
 import { HttpProbe } from './components/HttpProbe';
-import { IDLE_STAGES, LogLine, StageId, StageState, Stages, parseHttpChecks, plural, verdictOf } from './gate/pipeline';
+import { IDLE_STAGES, LogLine, StageId, StageState, Stages, modelLabel, parseHttpChecks, plural, verdictOf } from './gate/pipeline';
 import { FindingsList } from './components/FindingsList';
 import { DiffViewer } from './components/DiffViewer';
 import { ExploitSimulator } from './components/ExploitSimulator';
@@ -52,6 +52,7 @@ export default function App() {
   const [mode, setMode] = useState<ScanMode>('rules');
   const [aiAvailable, setAiAvailable] = useState<boolean>(true);
   const [aiModel, setAiModel] = useState<string | null>(null);
+  const model = modelLabel(aiModel);
   const [stages, setStages] = useState<Stages>(IDLE_STAGES);
   const [log, setLog] = useState<LogLine[]>([]);
 
@@ -153,7 +154,7 @@ export default function App() {
     return (['critical', 'high', 'medium', 'low'] as FindingSeverity[]).filter((s) => c[s]).map((s) => `${c[s]} ${s}`).join(', ') || 'none';
   };
 
-  /** Runs the gate as a real pipeline: stage 1 rules scan, stage 2 QwenSkuld (hybrid), stage 3 waits for the fix. */
+  /** Runs the gate as a real pipeline: stage 1 rules scan, stage 2 the AI model (hybrid), stage 3 waits for the fix. */
   const handleScan = async () => {
     setIsScanning(true);
     setError(null);
@@ -185,7 +186,7 @@ export default function App() {
 
       if (useModel) {
         setStage('qwen', { status: 'running' });
-        pushLog('qwen', `Masking secrets, then sending the code to ${aiModel ?? 'the model'} on this machine…`, 'muted');
+        pushLog('qwen', `Masking secrets, then sending the code to ${model.title}${model.local ? ' on this machine' : ' (hosted API)'}…`, 'muted');
         const t0 = performance.now();
         const r = await apiClient.scan(files, mode);
         const ms = performance.now() - t0;
@@ -198,8 +199,8 @@ export default function App() {
             ? ai.map((f) => `${f.category}${f.confidence !== undefined ? ` (${Math.round(f.confidence * 100)}%)` : ''} at line ${f.line}`).join(', ')
             : 'Agreed with the rules: no extra flaws found',
         });
-        if (ai.length) for (const f of ai) pushLog('qwen', `QwenSkuld flagged ${f.file}:${f.line}: ${f.message}${f.confidence !== undefined ? ` (confidence ${Math.round(f.confidence * 100)}%)` : ''}`, 'bad');
-        else pushLog('qwen', `QwenSkuld reviewed the code in ${fmtMs(ms)} and found nothing beyond the rules.`, 'good');
+        if (ai.length) for (const f of ai) pushLog('qwen', `${model.title} flagged ${f.file}:${f.line}: ${f.message}${f.confidence !== undefined ? ` (confidence ${Math.round(f.confidence * 100)}%)` : ''}`, 'bad');
+        else pushLog('qwen', `${model.title} reviewed the code in ${fmtMs(ms)} and found nothing beyond the rules.`, 'good');
         final = r;
       } else {
         setStage('qwen', { status: 'skipped', detail: mode === 'rules' ? 'Rules mode: switch to Hybrid to add the model' : 'AI not configured on the server' });
@@ -546,7 +547,7 @@ export default function App() {
 
             {/* Results */}
             <div className="flex flex-col gap-6 min-w-0">
-              <GatePipeline stages={stages} log={log} />
+              <GatePipeline stages={stages} log={log} model={model} />
 
               {editorNotice && (
                 <Callout tone="success" icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}>
@@ -562,7 +563,7 @@ export default function App() {
 
               {fixResponse && scanResponse ? (
                 <>
-                <ShipGate findings={fixResponse.rescan.findings} />
+                <ShipGate findings={fixResponse.rescan.findings} modelName={model.title} />
                 <HttpProbe checks={parseHttpChecks(fixResponse)} tested={fixResponse.results.filter((r) => r.status === 'applied').length} />
                 <DiffViewer
                   fixResponse={fixResponse}
@@ -574,7 +575,7 @@ export default function App() {
                 </>
               ) : scanResponse ? (
                 <>
-                  <ShipGate findings={scanResponse.findings} onFix={handleFixAll} isFixing={isFixing} />
+                  <ShipGate findings={scanResponse.findings} onFix={handleFixAll} isFixing={isFixing} modelName={model.title} />
                   <RiskMeter score={scanResponse.score} />
                   <FindingsList
                     findings={scanResponse.findings}
@@ -599,7 +600,7 @@ export default function App() {
                   <ul className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left w-full max-w-xl">
                     {[
                       ['1', 'Static rules', 'Deterministic AST scan'],
-                      ['2', 'QwenSkuld', 'Our fine-tuned model finds what rules miss'],
+                      ['2', model.title, model.title === 'QwenSkuld' ? 'Our fine-tuned model finds what rules miss' : 'AI model finds what rules miss'],
                       ['3', 'Live HTTP test', 'Each fix proven by a real attack'],
                     ].map(([n, t, d]) => (
                       <li key={n} className="flex gap-3 p-3 rounded-lg border border-slate-200">

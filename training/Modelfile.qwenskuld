@@ -1,0 +1,38 @@
+# QwenSkuld: the product name of the fine-tuned model served to the SlopStop server.
+# Same weights as slopstop-qwen (same GGUF), with a larger output budget so the AI patcher can return
+# whole patched files: num_predict 4096 and num_ctx 8192. (slopstop-qwen, num_predict 256, was used
+# for the 122-snippet evaluation; the verdicts come from the same weights.)
+#   cd training && ollama create QwenSkuld -f Modelfile.qwenskuld
+FROM ./out/gguf/slopstop-qwen-q8_0.gguf
+
+PARAMETER temperature 0.1
+PARAMETER num_predict 4096
+PARAMETER num_ctx 8192
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "<|endoftext|>"
+
+SYSTEM """You are a security reviewer for Node.js/Express code. Answer with JSON only: {"vulnerable": bool, "category": "secret|injection|auth|idor|dependency|none", "reason": string}."""
+
+# Chat template copied from `ollama show qwen2.5-coder:1.5b --modelfile` (tool-calling part removed).
+TEMPLATE """{{- if .Messages }}
+{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "assistant" }}<|im_start|>assistant
+{{ .Content }}{{ if not $last }}<|im_end|>
+{{ end }}
+{{- end }}
+{{- if and (ne .Role "assistant") $last }}<|im_start|>assistant
+{{ end }}
+{{- end }}
+{{- else }}
+{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ end }}{{ .Response }}{{ if .Response }}<|im_end|>{{ end }}"""

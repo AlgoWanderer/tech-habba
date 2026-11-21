@@ -89,3 +89,14 @@ export function verdictOf(findings: Finding[]): Verdict {
 }
 
 export const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
+export interface ModelLabel { title: string; sub: string; local: boolean }
+
+/** Stage-2 label from /api/health's aiModel, so the UI never claims a model the server is not running. */
+export function modelLabel(aiModel: string | null): ModelLabel {
+  if (!aiModel) return { title: 'AI model', sub: 'Not configured', local: false };
+  if (/qwenskuld|slopstop-qwen/i.test(aiModel)) return { title: 'QwenSkuld', sub: 'Fine-tuned, runs locally', local: true };
+  if (aiModel.startsWith('ollama:')) return { title: aiModel.slice(7), sub: 'Local model (Ollama)', local: true };
+  if (aiModel.startsWith('gemini:')) return { title: 'Gemini', sub: 'Hosted API, secrets masked first', local: false };
+  return { title: aiModel, sub: 'AI model', local: false };
+}

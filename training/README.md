@@ -92,7 +92,8 @@ python -m venv .venv && .venv/Scripts/python -m pip install torch --index-url ht
 This Ollama build (0.40.16) cannot import Qwen2 safetensors directly ("unsupported MLX
 architecture"), so the merged model is converted to GGUF with llama.cpp's `convert_hf_to_gguf.py`
 (q8_0) and then imported with `ollama create slopstop-qwen -f Modelfile`. The demo serves the same
-model under its product name, **QwenSkuld** (`ollama create QwenSkuld -f Modelfile`).
+model under its product name, **QwenSkuld** (`ollama create QwenSkuld -f Modelfile.qwenskuld`): the same GGUF with up to
+4096 output tokens and an 8192-token context, so the AI patcher can return whole files.
 
 Both models are served by Ollama at **http://localhost:11434** on the training laptop:
 
